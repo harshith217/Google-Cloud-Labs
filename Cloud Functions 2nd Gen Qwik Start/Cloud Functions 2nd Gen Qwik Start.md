@@ -5,7 +5,7 @@
 ## 🚀 **Solution Walkthrough**
 
 Watch the full video walkthrough:  
-[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432)
+[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://www.youtube.com/watch?v=v_v0J0CIaPM)
 
 ### Run the following Commands in CloudShell
 
