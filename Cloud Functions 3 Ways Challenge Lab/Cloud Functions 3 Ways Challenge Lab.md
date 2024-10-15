@@ -9,6 +9,7 @@ Watch the full video walkthrough:
 
 ---
 
+### Run In Cloud Shell
 ```
 export HTTP_FUNCTION=
 export FUNCTION_NAME=
