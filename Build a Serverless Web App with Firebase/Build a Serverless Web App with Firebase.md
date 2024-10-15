@@ -2,8 +2,10 @@
 
 ### Course: [GSP643](https://www.cloudskillsboost.google/focuses/8391?parent=catalog)
 
-## Solution Overview
-Watch the solution video [here](https://youtu.be/68qNZlzkg) for a step-by-step guide.
+## 🚀 **Solution Walkthrough**
+
+Watch the full video walkthrough:  
+[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://youtu.be/WWFzCrPHsCk)
 
 ---
 
