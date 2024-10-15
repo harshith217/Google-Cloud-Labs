@@ -326,7 +326,7 @@ gcloud run deploy slow-concurrent-function \
 
 echo "${TEXT_CYAN}${BOLD}Click here: "${RESET}""${TEXT_BLUE}${BOLD}"https://console.cloud.google.com/run/deploy/$REGION/slow-concurrent-function?project=$DEVSHELL_PROJECT_ID""${RESET}"
 ```
-
+### AFTER THIS FOLLOW VIDEO
 ---
 
 ### 🏆 Congratulations!!! You completed the Lab! 🎉
