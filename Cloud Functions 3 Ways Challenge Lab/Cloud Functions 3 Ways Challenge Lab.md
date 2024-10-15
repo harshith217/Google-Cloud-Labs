@@ -166,6 +166,6 @@ echo -e "${BG_GREEN}${BOLD}Subscribe to our Channel: \e]8;;https://www.youtube.c
 
 - [Whatsapp Group](https://chat.whatsapp.com/FbVg9NI6Dp4CzfdsYmy0AE)  
 
-[![Arcade Crew Channel](https://img.shields.io/badge/YouTube-Quick%20GCP%20Lab-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432)
+[![Arcade Crew Channel](https://img.shields.io/badge/YouTube-Arcade%20Crew-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432)
 
 ---
