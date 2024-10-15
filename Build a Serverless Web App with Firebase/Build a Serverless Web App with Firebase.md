@@ -13,11 +13,11 @@ Watch the full video walkthrough:
 Go to the [Firebase Console](https://console.firebase.google.com/).
 
 ### Step 2: Register Your App
-- **App Name:** Pet Theory
+- **App Name:** `Pet Theory`
 
 ### Step 3: Create a Firestore Collection
-1. **Collection ID:** customers
-2. **Document ID:** Your Username
+1. **Collection ID:** `customers`
+2. **Document ID:** `Your Username`
 
 ### Step 4: Add Document Fields
 Paste the following fields:
