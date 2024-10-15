@@ -275,9 +275,9 @@ gcloud run deploy slow-function \
 echo -e "${TEXT_RED}${BOLD}Check The Score Upto Task 6 then Process Next${RESET}"
 
 ```
-
+---
 * Now Check The Score Upto `Task 6` then Process Next
-
+---
 ```
 #!/bin/bash
 
