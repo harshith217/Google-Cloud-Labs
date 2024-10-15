@@ -337,6 +337,6 @@ echo "${TEXT_CYAN}${BOLD}Click here: "${RESET}""${TEXT_BLUE}${BOLD}"https://cons
 
 - [Whatsapp Group](https://chat.whatsapp.com/FbVg9NI6Dp4CzfdsYmy0AE)  
 
-[![Arcade Crew Channel](https://img.shields.io/badge/YouTube-Arcade%%20Crew-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432)
+[![Arcade Crew Channel](https://img.shields.io/badge/YouTube-Arcade%20Crew-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432)
 
 ---
