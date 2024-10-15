@@ -278,7 +278,7 @@ echo -e "${TEXT_RED}${BOLD}Check The Score Upto Task 6 then Process Next${RESET}
 ---
 * Now Check The Score Upto `Task 6` then Process Next
 ---
-#### FORTASK 7 FOLLOW VIDEO
+#### FOR TASK 7 FOLLOW VIDEO
 ---
 
 ### 🏆 Congratulations!!! You completed the Lab! 🎉
