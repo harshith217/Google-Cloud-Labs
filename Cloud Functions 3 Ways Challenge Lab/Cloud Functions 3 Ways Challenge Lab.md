@@ -18,7 +18,6 @@ export REGION=
 
 ```
 #!/bin/bash
-# Define color variables
 
 BG_RED=`tput setab 1`
 BG_GREEN=`tput setab 2`
