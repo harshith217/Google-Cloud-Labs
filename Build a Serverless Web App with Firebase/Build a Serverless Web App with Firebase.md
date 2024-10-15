@@ -5,7 +5,7 @@
 ## 🚀 **Solution Walkthrough**
 
 Watch the full video walkthrough:  
-[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://youtu.be/WWFzCrPHsCk)
+[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://www.youtube.com/watch?v=teOVqrkxCkQ)
 
 ---
 
@@ -41,6 +41,6 @@ Paste the following fields:
 
 - [Whatsapp Group](https://chat.whatsapp.com/FbVg9NI6Dp4CzfdsYmy0AE)  
 
-[![Arcade Crew Channel](https://img.shields.io/badge/YouTube-Quick%20GCP%20Lab-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432)
+[![Arcade Crew Channel](https://img.shields.io/badge/YouTube-Arcade%20Crew-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432)
 
 ---
