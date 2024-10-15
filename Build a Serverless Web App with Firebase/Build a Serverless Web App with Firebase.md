@@ -11,7 +11,7 @@ Watch the full video walkthrough:
 
 ### Step 1: Access Firebase Console
 Go to the [Firebase Console](https://console.firebase.google.com/).
-##THEN FOLLOW INSTRUCTIONS FROM VIDEO
+## THEN FOLLOW INSTRUCTIONS FROM VIDEO
 
 ### Step 2: Register Your App
 - **App Name:** `Pet Theory`
