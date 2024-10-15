@@ -9,7 +9,7 @@ Watch the full video walkthrough:
 
 ### Run the following Commands in CloudShell
 
-
+#### TASK 1-6
 ```
 export ZONE=
 ```
@@ -278,55 +278,7 @@ echo -e "${TEXT_RED}${BOLD}Check The Score Upto Task 6 then Process Next${RESET}
 ---
 * Now Check The Score Upto `Task 6` then Process Next
 ---
-```
-#!/bin/bash
-
-BG_RED=`tput setab 1`
-BG_GREEN=`tput setab 2`
-
-TEXT_RED=`tput setaf 1`
-TEXT_BLUE=`tput setaf 4`
-TEXT_CYAN=`tput setaf 6`
-
-BOLD=`tput bold`
-RESET=`tput sgr0`
-
-echo "${BG_RED}${BOLD}Starting Execution${RESET}"
-
-export REGION="${ZONE%-*}"
-
-cd min-instances/
-
-SLOW_URL=$(gcloud functions describe slow-function --region $REGION --gen2 --format="value(serviceConfig.uri)")
-
-hey -n 10 -c 10 $SLOW_URL
-
-gcloud run services delete slow-function --region $REGION --quiet
-
-gcloud functions deploy slow-concurrent-function \
-  --gen2 \
-  --runtime go116 \
-  --entry-point HelloWorld \
-  --source . \
-  --region $REGION \
-  --trigger-http \
-  --allow-unauthenticated \
-  --min-instances 1 \
-  --max-instances 4 \
-  --quiet
-
-gcloud run deploy slow-concurrent-function \
---image=$REGION-docker.pkg.dev/$DEVSHELL_PROJECT_ID/gcf-artifacts/slow--concurrent--function:version_1 \
---concurrency=100 \
---cpu=1 \
---max-instances=4 \
---region=$REGION \
---project=$DEVSHELL_PROJECT_ID \
- && gcloud run services update-traffic slow-concurrent-function --to-latest --region=$REGION
-
-echo "${TEXT_CYAN}${BOLD}Click here: "${RESET}""${TEXT_BLUE}${BOLD}"https://console.cloud.google.com/run/deploy/$REGION/slow-concurrent-function?project=$DEVSHELL_PROJECT_ID""${RESET}"
-```
-### AFTER THIS FOLLOW VIDEO
+#### FORTASK 7 FOLLOW VIDEO
 ---
 
 ### 🏆 Congratulations!!! You completed the Lab! 🎉
