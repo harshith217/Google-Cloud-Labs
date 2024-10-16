@@ -150,7 +150,7 @@ while true; do
   fi
 done
 
-# Final success message
+
 echo -e "${TEXT_RED}${BOLD}Congratulations For Completing The Lab !!!${RESET}"
 echo -e "${BG_GREEN}${BOLD}Subscribe to our Channel: \e]8;;https://www.youtube.com/@Arcade61432\e\\https://www.youtube.com/@Arcade61432\e]8;;\e\\${RESET}"
 
