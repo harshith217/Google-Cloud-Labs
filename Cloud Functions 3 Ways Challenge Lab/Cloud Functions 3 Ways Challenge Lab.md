@@ -1,6 +1,6 @@
 # Cloud Functions: 3 Ways: Challenge Lab
 
-### Course: [ARC104](https://www.cloudskillsboost.google/focuses/61974?parent=catalog)
+### LAB: [ARC104](https://www.cloudskillsboost.google/focuses/61974?parent=catalog)
 
 ## 🚀 **Solution Walkthrough**
 
