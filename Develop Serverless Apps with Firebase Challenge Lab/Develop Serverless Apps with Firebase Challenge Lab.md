@@ -9,7 +9,7 @@ Watch the full video walkthrough:
 ### Run In Cloud Shell
 
 ```
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Networking%20101/gsp344.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Develop%20Serverless%20Apps%20with%20Firebase%20Challenge%20Lab/gsp344.sh
 
 sudo chmod +x gsp344.sh
 
