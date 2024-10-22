@@ -12,7 +12,7 @@ NC='\033[0m'
 echo "${BG_RED}${BOLD}Starting Execution${RESET}"
 
 # Prompt the user for region input with colored text
-echo -e "${YELLOW}${BOLD}Please enter the region (e.g., us-east1):${RESET}"
+echo -e "${YELLOW}${BOLD}Please enter the region:${RESET}"
 read REGION
 
 # Set up other environment variables
