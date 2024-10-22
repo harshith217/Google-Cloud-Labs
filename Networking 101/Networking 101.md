@@ -9,7 +9,7 @@ Watch the full video walkthrough:
 ### Run In Cloud Shell
 
 ```
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/main/Networking%20101/gsp016.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Networking%20101/gsp016.sh
 
 sudo chmod +x gsp016.sh
 
