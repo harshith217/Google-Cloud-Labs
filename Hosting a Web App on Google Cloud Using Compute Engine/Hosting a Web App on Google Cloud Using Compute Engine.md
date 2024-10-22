@@ -1,5 +1,5 @@
 # 🌐 Hosting a Web App on Google Cloud Using Compute Engine
-### 📖 Lab Guide: [GSP662 - Hosting a Web App](https://www.cloudskillsboost.google/focuses/11952?catalog_rank=%7B%22rank%22%3A3%2C%22num_filters%22%3A0%2C%22has_search%22%3Atrue%7D&parent=catalog&search_id=38606878)
+### 📖 Lab: [GSP662](https://www.cloudskillsboost.google/focuses/11952?catalog_rank=%7B%22rank%22%3A3%2C%22num_filters%22%3A0%2C%22has_search%22%3Atrue%7D&parent=catalog&search_id=38606878)
 
 --- 
 
