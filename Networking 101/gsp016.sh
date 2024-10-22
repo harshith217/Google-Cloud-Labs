@@ -12,13 +12,13 @@ NC='\033[0m'
 
 echo "${BG_RED}${BOLD}Starting Execution${RESET}"
 
-echo -e "${YELLOW}Enter the main region (e.g., us-east4):${NC}"
+echo -e "${YELLOW}Enter the main region:${NC}"
 read REGION
 
-echo -e "${YELLOW}Enter the second region (e.g., europe-west1):${NC}"
+echo -e "${YELLOW}Enter the second region:${NC}"
 read REGION2
 
-echo -e "${YELLOW}Enter the third region (e.g., europe-west4):${NC}"
+echo -e "${YELLOW}Enter the third region:${NC}"
 read REGION3
 
 # Set the main region and corresponding default zone
