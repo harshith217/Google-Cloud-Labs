@@ -247,3 +247,6 @@ gcloud compute forwarding-rules create fancy-http-rule \
   --global \
   --target-http-proxy fancy-proxy \
   --ports 80
+
+
+echo -e "${TEXT_RED}${BOLD}Check all scores up to TASK 6.${RESET}"
