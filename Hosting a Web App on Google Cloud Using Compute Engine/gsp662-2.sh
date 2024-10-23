@@ -7,6 +7,11 @@ TEXT_RED=`tput setaf 1`
 BOLD=`tput bold`
 RESET=`tput sgr0`
 
+echo "${BG_RED}${BOLD}Starting Execution${RESET}"
+
+echo -e "${YELLOW}${BOLD}Please enter the ZONE:${RESET} "
+read ZONE
+
 export REGION="${ZONE%-*}"
 
 gcloud config set compute/zone $ZONE
