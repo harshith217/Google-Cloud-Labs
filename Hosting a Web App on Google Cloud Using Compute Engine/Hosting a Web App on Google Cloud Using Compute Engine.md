@@ -20,7 +20,7 @@ sudo chmod +x gsp662-1.sh
 ./gsp662-1.sh
 ```
 
-* ⚠️ **Note:** Ensure you check all scores up to \`Task 6\`.
+* ⚠️ **Note:** Ensure you check all scores up to `Task 6`.
 
 ### 2. After completing the above, run these commands again in **CloudShell**:
 
