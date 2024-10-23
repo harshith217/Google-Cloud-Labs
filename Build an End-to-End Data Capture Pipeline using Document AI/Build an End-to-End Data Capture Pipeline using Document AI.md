@@ -24,7 +24,7 @@ sudo chmod +x arcadecrew1.sh
 ### 2. After completing the above, run these commands again in **CloudShell**:
 
 ```
-curl -LO raw.githubusercontent.com/QUICK-GCP-LAB/2-Minutes-Labs-Solutions/main/Hosting%20a%20Web%20App%20on%20Google%20Cloud%20Using%20Compute%20Engine/arcadecrew2.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Build%20an%20End-to-End%20Data%20Capture%20Pipeline%20using%20Document%20AI/arcadecrew2.sh
 
 sudo chmod +x arcadecrew2.sh
 
