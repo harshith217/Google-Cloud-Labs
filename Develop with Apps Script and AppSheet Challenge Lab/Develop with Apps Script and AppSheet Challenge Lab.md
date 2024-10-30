@@ -32,7 +32,7 @@ This guide is provided to support your educational journey in this lab. Please o
 
 ---
 
-## **Task 3: Creating and Publishing a Google Chat Bot with Apps Script**
+##  **Task 3: Creating and Publishing a Google Chat Bot with Apps Script**
 
 1. Start a new **Apps Script Chat App** project from **[this link](https://script.google.com/home/projects/create?template=hangoutsChat)**.
 
@@ -104,7 +104,7 @@ This guide is provided to support your educational journey in this lab. Please o
 
 ---
 
-## 🔑 **Configuring OAuth Consent Screen**
+##  **Configuring OAuth Consent Screen**
 
 1. Go to the **OAuth consent screen** from **[here](https://console.cloud.google.com/apis/credentials/consent)**.
 
@@ -130,7 +130,7 @@ This guide is provided to support your educational journey in this lab. Please o
 
 ---
 
-## 🛠️ **Setting Up Google Chat API**
+##  **Setting Up Google Chat API**
 
 1. Visit **Google Chat API Configuration [here](https://console.cloud.google.com/apis/api/chat.googleapis.com/hangouts-chat)**.
 
@@ -172,7 +172,7 @@ This guide is provided to support your educational journey in this lab. Please o
 
 ---
 
-## 🔬 **Testing Your Helper Bot**
+##  **Testing Your Helper Bot**
 
 You can test your bot directly **[here](https://mail.google.com/chat/u/0/#chat/home)**.
 
