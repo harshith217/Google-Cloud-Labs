@@ -1,6 +1,11 @@
 # Cloud Functions: 3 Ways: Challenge Lab
 
 ### LAB: [ARC104](https://www.cloudskillsboost.google/focuses/61974?parent=catalog)
+---
+## ⚠️ **Important Note:**
+This guide is provided to support your educational journey in this lab. Please open and review each step of the script to gain full understanding. Be sure to follow the terms of Qwiklabs and YouTube’s guidelines as you proceed.
+
+---
 
 ## 🚀 **Solution Walkthrough**
 
