@@ -7,6 +7,10 @@ Watch the full video walkthrough for this lab:
 [![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://www.youtube.com/watch?v=Nrq12pG-m44)
 
 ---
+## ⚠️ **Important Note:**
+This guide is provided to support your educational journey in this lab. Please open and review each step of the script to gain full understanding. Be sure to follow the terms of Qwiklabs and YouTube’s guidelines as you proceed.
+
+---
 
 ## 🛠️ Steps to Complete the Lab
 
