@@ -1,4 +1,4 @@
-# 🎓 **Apps Script & AppSheet Development: Challenge Lab**
+# 🎓 **Develop with Apps Script and AppSheet: Challenge Lab**
 ### LAB: [ARC126](https://www.cloudskillsboost.google/focuses/66584?parent=catalog)
 Watch the full video walkthrough:  
 [![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://www.youtube.com/watch?v=NzpgLPJ31fs)
