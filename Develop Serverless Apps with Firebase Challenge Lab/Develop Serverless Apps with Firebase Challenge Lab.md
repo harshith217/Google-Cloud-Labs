@@ -5,6 +5,10 @@ Watch the full video walkthrough:
 [![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://youtu.be/dR4swqHXyFw)
 
 ---
+## ⚠️ **Important Note:**
+This guide is provided to support your educational journey in this lab. Please open and review each step of the script to gain full understanding. Be sure to follow the terms of Qwiklabs and YouTube’s guidelines as you proceed.
+
+---
 
 ### Run In Cloud Shell
 
