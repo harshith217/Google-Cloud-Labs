@@ -13,7 +13,7 @@ Watch the full video walkthrough for this lab:
 ### Run the following commands in **CloudShell**:
 
 ```
-curl -LO raw.githubusercontent.com/QUICK-GCP-LAB/2-Minutes-Labs-Solutions/main/Hosting%20a%20Web%20App%20on%20Google%20Cloud%20Using%20Compute%20Engine/arcadecrew1.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Multiple%20VPC%20Networks/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
