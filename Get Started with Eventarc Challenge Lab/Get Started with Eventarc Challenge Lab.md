@@ -20,7 +20,7 @@ This guide is provided to support your educational journey in this lab. Please o
 2. **Run the following commands** in **Cloud Shell** :
 
     ```bash
-    curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Multiple%20VPC%20Networks/arcadecrew.sh
+    curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Get%20Started%20with%20Eventarc%20Challenge%20Lab/arcadecrew.sh
 
     sudo chmod +x arcadecrew.sh
 
