@@ -1,13 +1,12 @@
 # Define color codes for output formatting
-YELLOW_COLOR='\033[0;33m'
+YELLOW_COLOR=$'\033[0;33m'
+NO_COLOR=$'\033[0m'
 BACKGROUND_RED=`tput setab 1`
 GREEN_TEXT=`tput setab 2`
 RED_TEXT=`tput setaf 1`
 
 BOLD_TEXT=`tput bold`
 RESET_FORMAT=`tput sgr0`
-
-NO_COLOR='\033[0m'
 
 echo "${BACKGROUND_RED}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
