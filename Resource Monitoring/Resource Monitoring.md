@@ -20,10 +20,9 @@ This guide is provided to support your educational journey in this lab. Please o
    - Confirm the existence of instances: `nginxstack-1`, `nginxstack-2`, and `nginxstack-3`.
 
 2. **Create Monitoring Workspace:**
-   - Run the following command in Cloud Shell:
-     ```bash
-     gcloud monitoring workspaces create --project=$(gcloud config get-value project)
-     ```
+   - On the Google Cloud console title bar, type Monitoring in the Search field, then click Monitoring in the Products & Page section.
+
+   - Wait for your workspace to be provisioned.
 
 ---
 
