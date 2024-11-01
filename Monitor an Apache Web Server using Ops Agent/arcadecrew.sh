@@ -10,52 +10,36 @@ RESET_FORMAT=`tput sgr0`
 
 echo "${BACKGROUND_RED}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
-# List all authenticated accounts
+# Prompt user to enter the desired compute zone
+read -p "${BACKGROUND_RED}${BOLD_TEXT}Enter ZONE:${RESET_FORMAT}" ZONE
+
 gcloud auth list
 
-# Set and capture the active project ID
-export ACTIVE_PROJECT=$(gcloud config get-value project)
+export PROJECT_ID=$(gcloud config get-value project)
 
-# Assign project ID from the environment variable if available
-export ACTIVE_PROJECT=$DEVSHELL_PROJECT_ID
+export PROJECT_ID=$DEVSHELL_PROJECT_ID
 
-# Prompt user to enter the desired compute zone
-read -p "${YELLOW_COLOR}${BOLD_TEXT}Enter ZONE:${RESET_FORMAT} " ZONE
-
-# Apply the zone setting for compute operations
+# Set the zone based on user input
 gcloud config set compute/zone $ZONE
 
-# Launch a VM with specified parameters and set up firewall rules for HTTP/HTTPS
-gcloud compute instances create demo-vm \
-    --project=$DEVSHELL_PROJECT_ID \
-    --zone=$ZONE \
-    --machine-type=e2-small \
-    --image-family=debian-11 \
-    --image-project=debian-cloud \
-    --tags=http-server,https-server && \
-gcloud compute firewall-rules create allow-http \
-    --target-tags=http-server \
-    --allow tcp:80 \
-    --description="Enable HTTP access" && \
-gcloud compute firewall-rules create allow-https \
-    --target-tags=https-server \
-    --allow tcp:443 \
-    --description="Enable HTTPS access"
+gcloud compute instances create quickstart-vm --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --machine-type=e2-small --image-family=debian-11 --image-project=debian-cloud --tags=http-server,https-server && gcloud compute firewall-rules create default-allow-http --target-tags=http-server --allow tcp:80 --description="Allow HTTP traffic" && gcloud compute firewall-rules create default-allow-https --target-tags=https-server --allow tcp:443 --description="Allow HTTPS traffic"
 
-# Write a script to install Apache and Google Ops Agent on the VM
-cat > setup_apache_agent.sh <<'SCRIPT_END'
+cat > cp_disk.sh <<'EOF_CP'
 
-# Update package lists and install Apache, PHP
 sudo apt-get update && sudo apt-get install apache2 php7.0 -y
 
-# Download and execute Ops Agent installation script
 curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
 sudo bash add-google-cloud-ops-agent-repo.sh --also-install
 
-# Backup existing Ops Agent config and apply new telemetry settings
+# Configures Ops Agent to collect telemetry from the app and restart Ops Agent.
+
 set -e
+
+# Create a back up of the existing file so existing configurations are not lost.
 sudo cp /etc/google-cloud-ops-agent/config.yaml /etc/google-cloud-ops-agent/config.yaml.bak
-sudo tee /etc/google-cloud-ops-agent/config.yaml > /dev/null << AGENT_CONFIG
+
+# Configure the Ops Agent.
+sudo tee /etc/google-cloud-ops-agent/config.yaml > /dev/null << EOF
 metrics:
   receivers:
     apache:
@@ -77,45 +61,40 @@ logging:
         receivers:
           - apache_access
           - apache_error
-AGENT_CONFIG
+EOF
 
-# Restart the Ops Agent service and allow time for the update
 sudo service google-cloud-ops-agent restart
 sleep 60
 
-SCRIPT_END
+EOF_CP
 
-# Transfer the script to the instance and run it
-gcloud compute scp setup_apache_agent.sh demo-vm:/tmp --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet
-gcloud compute ssh demo-vm --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet --command="bash /tmp/setup_apache_agent.sh"
+gcloud compute scp cp_disk.sh quickstart-vm:/tmp --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet
 
-# Create a JSON file to define a Pub/Sub notification channel
-cat > pubsub_channel_config.json <<'CHANNEL_JSON'
+gcloud compute ssh quickstart-vm --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet --command="bash /tmp/cp_disk.sh"
+
+cat > cp-channel.json <<EOF_CP
 {
   "type": "pubsub",
-  "displayName": "MyNotificationChannel",
-  "description": "Subscription channel for notifications",
+  "displayName": "arcadecrew",
+  "description": "subscribe to arcadecrew",
   "labels": {
-    "topic": "projects/$DEVSHELL_PROJECT_ID/topics/alertTopic"
+    "topic": "projects/$DEVSHELL_PROJECT_ID/topics/notificationTopic"
   }
 }
-CHANNEL_JSON
+EOF_CP
 
-# Set up a new monitoring notification channel using the config file
-gcloud beta monitoring channels create --channel-content-from-file=pubsub_channel_config.json
+gcloud beta monitoring channels create --channel-content-from-file=cp-channel.json
 
-# Retrieve the notification channel ID for alerting
-channel_info=$(gcloud beta monitoring channels list)
-channel_ref=$(echo "$channel_info" | grep -oP 'name: \K[^ ]+' | head -n 1)
+email_channel=$(gcloud beta monitoring channels list)
+channel_id=$(echo "$email_channel" | grep -oP 'name: \K[^ ]+' | head -n 1)
 
-# Define an alert policy for Apache traffic and save it in a JSON file
-cat > traffic_alert_policy.json <<ALERT_POLICY_JSON
+cat > stopped-vm-alert-policy.json <<EOF_CP
 {
-  "displayName": "High Apache Traffic Alert",
+  "displayName": "Apache traffic above threshold",
   "userLabels": {},
   "conditions": [
     {
-      "displayName": "High Traffic on Apache",
+      "displayName": "VM Instance - workload/apache.traffic",
       "conditionThreshold": {
         "filter": "resource.type = \"gce_instance\" AND metric.type = \"workload.googleapis.com/apache.traffic\"",
         "aggregations": [
@@ -140,14 +119,14 @@ cat > traffic_alert_policy.json <<ALERT_POLICY_JSON
   "combiner": "OR",
   "enabled": true,
   "notificationChannels": [
-    "$channel_ref"
+    "$channel_id"
   ],
   "severity": "SEVERITY_UNSPECIFIED"
 }
-ALERT_POLICY_JSON
+EOF_CP
 
-# Apply the alert policy based on the JSON file
-gcloud alpha monitoring policies create --policy-from-file=traffic_alert_policy.json
+gcloud alpha monitoring policies create --policy-from-file=stopped-vm-alert-policy.json
+
 
 
 # Completion message
