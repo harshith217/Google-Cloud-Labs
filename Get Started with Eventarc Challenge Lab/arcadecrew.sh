@@ -11,7 +11,8 @@ RESET_FORMAT=`tput sgr0`
 echo "${BACKGROUND_RED}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
 echo -e "${YELLOW_COLOR}${BOLD_TEXT}Enter the location:${RESET_FORMAT} \c"
-export LOCATION=$LOCATION
+read LOCATION
+export LOCATION
 
 # Enable required services on Google Cloud
 gcloud services enable run.googleapis.com
