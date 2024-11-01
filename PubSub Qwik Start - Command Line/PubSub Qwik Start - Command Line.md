@@ -13,7 +13,7 @@ Watch the full video walkthrough for this lab:
 ### Run the following commands in **CloudShell**:
 
 ```
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Multiple%20VPC%20Networks/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/PubSub%20Qwik%20Start%20-%20Command%20Line/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
