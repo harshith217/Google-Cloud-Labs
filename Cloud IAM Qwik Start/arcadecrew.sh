@@ -12,7 +12,7 @@ NO_COLOR='\033[0m'
 echo "${BACKGROUND_RED}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
 # Prompt user for their username
-read -p "Enter the username to add/remove from IAM policy: " USERNAME_2
+read -p "${YELLOW_COLOR}Enter USERNAME 2: ${NO_COLOR}" USERNAME_2
 
 # Set the storage bucket and enable uniform bucket-level access
 gsutil mb -l us -b on gs://$DEVSHELL_PROJECT_ID
