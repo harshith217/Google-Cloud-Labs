@@ -19,12 +19,6 @@ This guide is provided to support your educational journey in this lab. Please o
    - In the Google Cloud Console, go to **Compute Engine > VM Instances**.
    - Confirm the existence of instances: `nginxstack-1`, `nginxstack-2`, and `nginxstack-3`.
 
-2. **Create Monitoring Workspace:**
-   - Run the following command in Cloud Shell:
-     ```bash
-     gcloud monitoring workspaces create --project=$(gcloud config get-value project)
-     ```
-
 ---
 
 ## Task 2: Custom Dashboards
