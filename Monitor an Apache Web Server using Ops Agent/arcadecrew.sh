@@ -11,7 +11,7 @@ RESET_FORMAT=`tput sgr0`
 echo "${BACKGROUND_RED}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
 # Prompt user to enter the desired compute zone
-read -p "${BACKGROUND_RED}${BOLD_TEXT}Enter ZONE:${RESET_FORMAT}" ZONE
+read -p "${YELLOW_COLOR}${BOLD_TEXT}Enter ZONE:${RESET_FORMAT}" ZONE
 
 gcloud auth list
 
