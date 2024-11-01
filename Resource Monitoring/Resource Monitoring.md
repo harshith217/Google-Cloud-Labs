@@ -29,10 +29,9 @@ This guide is provided to support your educational journey in this lab. Please o
 
 2. **Add a Chart:**
    - Click **Add Widget** > **Line**.
-   - Set **Widget Title** to a descriptive name.
    - In the **Metric** field, select **CPU usage** or **CPU utilization** from **VM Instance > Instance**.
    - If you don’t see it, uncheck **Active**.
-   - Add a filter if needed, then click **Apply**.
+   - Click **Apply**.
 
 3. **Metrics Explorer:**
    - Go to **Metrics Explorer** in the Monitoring Console.
