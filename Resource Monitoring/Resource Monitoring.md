@@ -20,9 +20,10 @@ This guide is provided to support your educational journey in this lab. Please o
    - Confirm the existence of instances: `nginxstack-1`, `nginxstack-2`, and `nginxstack-3`.
 
 2. **Create Monitoring Workspace:**
-   - On the Google Cloud console title bar, type Monitoring in the Search field, then click Monitoring in the Products & Page section.
-
-   - Wait for your workspace to be provisioned.
+   - Run the following command in Cloud Shell:
+     ```bash
+     gcloud monitoring workspaces create --project=$(gcloud config get-value project)
+     ```
 
 ---
 
@@ -73,40 +74,38 @@ This guide is provided to support your educational journey in this lab. Please o
 
 ## Task 4: Resource Groups
 
-1. **Create a Monitoring Group:**
+### Create a Group:
 
-   ```bash
-   gcloud alpha monitoring groups create        --display-name="VM instances"        --filter="resource.label.instance_id=~\"nginx\""
-   ```
+1. Go to **Groups** in the Monitoring Console and click **+ Create Group**.
+2. Enter a name, such as **VM instances**, and set criteria to contain **nginx**.
 
-   
+### Review Group Dashboard:
+
+- After creating the group, a dashboard for this group will be displayed automatically.
 
 ---
 
 ## Task 5: Uptime Monitoring
 
-1. **Create an Uptime Check:**
+### Create Uptime Check:
 
-   ```bash
-   gcloud alpha monitoring uptime-checks create http        --display-name="My Uptime Check"        --http-check-path="/"        --timeout="10s"        --check-frequency="60s"        --resource-type="gce_instance"        --group="VM instances"
-   ```
+1. In **Monitoring**, go to **Uptime Checks** and click **+ Create Uptime Check**.
+2. Set the following options:
+   - **Protocol**: HTTP
+   - **Resource Type**: Instance
+   - **Applies To**: Group
+   - **Group**: Select the group created in Task 4.
+   - **Check Frequency**: 1 minute
+3. Click **Continue** to use default settings for the other options.
 
-   
+### Configure Notifications:
 
----
+1. Select the **Notification Channel** created in Task 3, then click **Continue**.
 
-## Task 6: Disable the Alert
+### Finalize and Test Uptime Check:
 
-1. **Disable an Alert Policy:**
-
-   
-
-     ```bash
-     POLICY_NAME=$(gcloud alpha monitoring policies list --filter="displayName:High CPU Utilization Alert" --format="value(name)")
-     gcloud alpha monitoring policies update "$POLICY_NAME" --enabled=false
-     ```
-
-   
+1. Enter a title, then click **Test** to verify the check.
+2. Once verified with a green check, click **Create**.
 
 ---
 
