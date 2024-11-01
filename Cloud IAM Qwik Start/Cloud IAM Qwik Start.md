@@ -4,7 +4,7 @@
 --- 
 
 Watch the full video walkthrough for this lab:  
-[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)]([https://www.youtube.com/watch?v=491L5_ymC_Q)
+[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)]([https://www.youtube.com/watch?v=491L5_ymC_Q])
 
 ---
 ## ⚠️ **Important Note:**
