@@ -1,6 +1,6 @@
 # 🌐 App Engine: 3 Ways: Challenge Lab
 
-### 📖 Lab: [ARC112](https://www.cloudskillsboost.google/course_templates/671/labs/461535)
+### 📖 Lab: [GSP222](https://www.cloudskillsboost.google/focuses/1290?parent=catalog)
 
 --- 
 
@@ -20,7 +20,7 @@ This guide is provided to support your educational journey in this lab. Please o
 2. **Run the following commands** in **Cloud Shell** :
 
     ```bash
-    curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Multiple%20VPC%20Networks/arcadecrew.sh
+    curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/It%20Speaks!%20Create%20Synthetic%20Speech%20Using%20Text-to-Speech/arcadecrew.sh
 
     sudo chmod +x arcadecrew.sh
 
