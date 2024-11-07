@@ -26,10 +26,6 @@ RESET_FORMAT=`tput sgr0`
 # Display initiation message
 echo "${BACKGROUND_RED}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
-# Export ZONE variable
-export ZONE=$(gcloud compute instances list lab-vm --format 'csv[no-heading](zone)')
-gcloud compute ssh lab-vm --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet
-
 # Prompt the user for inputs in yellow bold color
 echo -e "${YELLOW_COLOR}${BOLD_TEXT}Enter the API Key: ${NO_COLOR}${RESET_FORMAT}"
 read API_KEY
