@@ -20,8 +20,8 @@ This guide is provided to support your educational journey in this lab. Please o
 2. **Run the following commands** in **Cloud Shell** :
 
     ```bash
-    curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Multiple%20VPC%20Networks/arcadecrew.sh
-
+    curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/App%20Engine%20Qwik%20Start%20-%20Python/arcadecrew.sh
+    
     sudo chmod +x arcadecrew.sh
 
     ./arcadecrew.sh
