@@ -26,31 +26,6 @@ RESET_FORMAT=`tput sgr0`
 # Display initiation message
 echo "${BACKGROUND_RED}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
-# Prompt the user for inputs in yellow bold color
-echo -e "${YELLOW_COLOR}${BOLD_TEXT}Enter the API Key: ${NO_COLOR}${RESET_FORMAT}"
-read API_KEY
-
-echo -e "${YELLOW_COLOR}${BOLD_TEXT}Enter the task 2 file name: ${NO_COLOR}${RESET_FORMAT}"
-read task_2_file_name
-
-echo -e "${YELLOW_COLOR}${BOLD_TEXT}Enter the task 3 request file name: ${NO_COLOR}${RESET_FORMAT}"
-read task_3_request_file
-
-echo -e "${YELLOW_COLOR}${BOLD_TEXT}Enter the task 3 response file name: ${NO_COLOR}${RESET_FORMAT}"
-read task_3_response_file
-
-echo -e "${YELLOW_COLOR}${BOLD_TEXT}Enter the task 4 sentence: ${NO_COLOR}${RESET_FORMAT}"
-read task_4_sentence
-
-echo -e "${YELLOW_COLOR}${BOLD_TEXT}Enter the task 4 file name: ${NO_COLOR}${RESET_FORMAT}"
-read task_4_file
-
-echo -e "${YELLOW_COLOR}${BOLD_TEXT}Enter the task 5 sentence: ${NO_COLOR}${RESET_FORMAT}"
-read task_5_sentence
-
-echo -e "${YELLOW_COLOR}${BOLD_TEXT}Enter the task 5 file name: ${NO_COLOR}${RESET_FORMAT}"
-read task_5_file
-
 audio_uri="gs://cloud-samples-data/speech/corbeau_renard.flac"
 
 export PROJECT_ID=$(gcloud config get-value project)
