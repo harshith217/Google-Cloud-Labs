@@ -27,6 +27,17 @@ This guide is provided to support your educational journey in this lab. Please o
     ### Open Credentials from [here](https://console.cloud.google.com/apis/credentials)
 
     ```bash
+    export API_KEY=
+    export task_2_file_name=""
+    export task_3_request_file=""
+    export task_3_response_file=""
+    export task_4_sentence=""
+    export task_4_file=""
+    export task_5_sentence=""
+    export task_5_file=""
+    ```
+
+    ```bash
     curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Multiple%20VPC%20Networks/arcadecrew.sh
 
     sudo chmod +x arcadecrew.sh
