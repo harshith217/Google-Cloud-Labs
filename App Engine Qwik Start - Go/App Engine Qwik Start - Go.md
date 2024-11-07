@@ -1,4 +1,4 @@
-# 🌐 App Engine Qwik Start - Python
+# 🌐 App Engine Qwik Start - Go
 
 ### 📖 Lab: [GSP070](https://www.cloudskillsboost.google/focuses/2754?parent=catalog)
 
