@@ -27,7 +27,7 @@ This guide is provided to support your educational journey in this lab. Please o
     ./arcadecrew1.sh
     ```
 
-    ### `NOTE:` Now Check The Score Upto `Task 3` then Run again the following Commands in CloudShell.
+    ### `NOTE:` Now Check The Score Upto `Task 3` then again Run the following Commands in CloudShell.
 
     ```bash
     curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Speech%20to%20Text%20Transcription%20with%20the%20Cloud%20Speech%20API/arcadecrew2.sh
