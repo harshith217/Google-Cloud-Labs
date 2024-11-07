@@ -13,7 +13,8 @@ echo "${BACKGROUND_RED}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 #!/bin/bash
 
 # Prompt the user for the region
-read -p "Enter the region: " REGION
+echo -e "${YELLOW_COLOR}${BOLD_TEXT}Enter the region: ${NO_COLOR}${RESET_FORMAT}"
+read REGION
 
 # Set the compute region
 gcloud config set compute/region $REGION
