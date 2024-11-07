@@ -1,6 +1,6 @@
-# 🌐 App Engine: 3 Ways: Challenge Lab
+# 🌐 It Speaks! Create Synthetic Speech Using Text-to-Speech
 
-### 📖 Lab: [ARC112](https://www.cloudskillsboost.google/course_templates/671/labs/461535)
+### 📖 Lab: [GSP222](https://www.cloudskillsboost.google/course_templates/700/labs/461580)
 
 --- 
 
