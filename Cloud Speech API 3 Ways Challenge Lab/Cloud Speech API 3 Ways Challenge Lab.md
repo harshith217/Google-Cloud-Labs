@@ -20,7 +20,14 @@ This guide is provided to support your educational journey in this lab. Please o
 2. **Run the following commands** in **Cloud Shell** :
 
     ```bash
-    curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Cloud%20Speech%20API%203%20Ways%20Challenge%20Lab/arcadecrew.sh
+    export ZONE=$(gcloud compute instances list lab-vm --format 'csv[no-heading](zone)')
+    gcloud compute ssh lab-vm --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet
+    ```
+
+    ### Open Credentials from [here](https://console.cloud.google.com/apis/credentials)
+
+    ```bash
+    curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Multiple%20VPC%20Networks/arcadecrew.sh
 
     sudo chmod +x arcadecrew.sh
 
