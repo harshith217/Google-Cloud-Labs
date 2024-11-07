@@ -20,7 +20,7 @@ This guide is provided to support your educational journey in this lab. Please o
 2. **Run the following commands** in **Cloud Shell** :
 
     ```bash
-    curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Multiple%20VPC%20Networks/arcadecrew.sh
+    curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Speech%20to%20Text%20Transcription%20with%20the%20Cloud%20Speech%20API/arcadecrew1.sh
 
     sudo chmod +x arcadecrew1.sh
 
@@ -30,7 +30,7 @@ This guide is provided to support your educational journey in this lab. Please o
     ### `NOTE:` Now Check The Score Upto `Task 3` then Run again the following Commands in CloudShell.
 
     ```bash
-    curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Multiple%20VPC%20Networks/arcadecrew.sh
+    curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Speech%20to%20Text%20Transcription%20with%20the%20Cloud%20Speech%20API/arcadecrew2.sh
 
     sudo chmod +x arcadecrew2.sh
 
