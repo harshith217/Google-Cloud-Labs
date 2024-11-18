@@ -17,7 +17,7 @@ This guide is provided to support your educational journey in this lab. Please o
 Run the following commands step by step:  
 
 ```bash
-curl -LO 
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Monitoring%20in%20Google%20Cloud%20Challenge%20Lab/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
