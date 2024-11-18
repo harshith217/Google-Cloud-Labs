@@ -27,7 +27,7 @@ sudo chmod +x arcadecrew.sh
 ---
 
 ## 🛠️ Follow the Video Instructions  
-Watch the video [here](https://youtu.be/bJmehGefeek) and follow these steps to complete the lab.  
+Watch the video [here](https://www.youtube.com/watch?v=wjSrI-UHmM8) and follow these steps to complete the lab.  
 
 ### 1️⃣ **Create an Uptime Check**  
 - Go to the [Uptime Check Console](https://console.cloud.google.com/monitoring/uptime/create?).  
