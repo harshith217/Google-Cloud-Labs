@@ -1,41 +1,11 @@
-#!/bin/bash
 
-# Define color variables
-YELLOW_COLOR=$'\033[0;33m'
-NO_COLOR=$'\033[0m'
-BACKGROUND_RED=`tput setab 1`
-GREEN_TEXT=`tput setab 2`
-RED_TEXT=`tput setaf 1`
-BOLD_TEXT=`tput bold`
-RESET_FORMAT=`tput sgr0`
-BLUE_TEXT=`tput setaf 4`
 
-echo ""
-echo ""
-
-# Display initiation message
-echo "${GREEN_TEXT}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
-echo ""
-
-# Fetch the active Google Cloud Project ID
-PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
-
-# Check if PROJECT_ID is set
-if [ -z "$PROJECT_ID" ]; then
-  echo "Error: No active project found. Please set a project using 'gcloud config set project PROJECT_ID'."
-  exit 1
-fi
-
-# Prompt for REGION in bold yellow
-echo -e "\033[1;33mPlease enter the REGION:\033[0m"
-read -p "REGION: " REGION
-export REGION
-
-# Fetch the user account
-USER=$(gcloud config get-value account 2>/dev/null)
+PROJECT_ID=$(gcloud config get-value project)
 
 echo "PROJECT_ID=${PROJECT_ID}"
 echo "REGION=${REGION}"
+
+USER=$(gcloud config get-value account 2> /dev/null)
 echo "USER=${USER}"
 
 gcloud services enable cloudaicompanion.googleapis.com --project ${PROJECT_ID}
@@ -108,9 +78,3 @@ FROM
     )
   )
 "
-
-echo ""
-# Completion message
-echo -e "${YELLOW_TEXT}${BOLD_TEXT}Lab Completed Successfully!${RESET_FORMAT}"
-echo -e "${GREEN_TEXT}${BOLD_TEXT}Subscribe our Channel:${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
-
