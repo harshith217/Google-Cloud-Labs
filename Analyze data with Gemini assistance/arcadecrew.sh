@@ -17,17 +17,25 @@ echo ""
 echo "${GREEN_TEXT}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 echo ""
 
+# Fetch the active Google Cloud Project ID
+PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
+
+# Check if PROJECT_ID is set
+if [ -z "$PROJECT_ID" ]; then
+  echo "Error: No active project found. Please set a project using 'gcloud config set project PROJECT_ID'."
+  exit 1
+fi
+
 # Prompt for REGION in bold yellow
 echo -e "\033[1;33mPlease enter the REGION:\033[0m"
-read -p "REGION:" REGION
+read -p "REGION: " REGION
 export REGION
 
-PROJECT_ID=$(gcloud config get-value project)
+# Fetch the user account
+USER=$(gcloud config get-value account 2>/dev/null)
 
 echo "PROJECT_ID=${PROJECT_ID}"
 echo "REGION=${REGION}"
-
-USER=$(gcloud config get-value account 2> /dev/null)
 echo "USER=${USER}"
 
 gcloud services enable cloudaicompanion.googleapis.com --project ${PROJECT_ID}
