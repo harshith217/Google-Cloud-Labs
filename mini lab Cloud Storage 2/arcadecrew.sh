@@ -24,7 +24,7 @@ echo ""
 echo "${GREEN_TEXT}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 echo ""
 
-curl -LO 
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/mini%20lab%20Cloud%20Storage%202/lifecycle.json
 
 echo "${BOLD}${CYAN}Step 1: Fetching the current Google Cloud project ID...${RESET}"
 export PROJECT_ID=$(gcloud config get-value project)
