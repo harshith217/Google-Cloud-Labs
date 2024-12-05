@@ -32,10 +32,13 @@ echo "USER=${USER}"
 
 gcloud services enable cloudaicompanion.googleapis.com --project ${PROJECT_ID}
 
+
 gcloud projects add-iam-policy-binding ${PROJECT_ID} --member user:${USER} --role=roles/cloudaicompanion.user
 gcloud projects add-iam-policy-binding ${PROJECT_ID} --member user:${USER} --role=roles/serviceusage.serviceUsageViewer
 
+
 bq mk --dataset bqml_tutorial
+
 
 bq query --use_legacy_sql=false \
 "
@@ -48,8 +51,10 @@ ORDER BY avg_sale_price DESC
 LIMIT 10
 "
 
+
 bq query --use_legacy_sql=false \
 "
+# select the sum of sale_price by Date(created_at) and product_id casted to day from bigquery-public-data.thelook_ecommerce.order_id as t1 joined this with products table in the same dataset as t2
 SELECT
   SUM(sale_price),
   DATE(created_at) AS created_at_day,
@@ -80,6 +85,7 @@ AS t2
 ON t1.product_id = t2.id
 GROUP BY 2, 3;
 "
+
 
 export PROJECT_ID=$(gcloud config get-value project)
 
