@@ -17,11 +17,13 @@ echo ""
 echo "${GREEN_TEXT}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 echo ""
 
-#!/bin/bash
+# Fetch the current Google Cloud project ID
+PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
 
-# Prompt user for bucket name in yellow color
-echo -e "\033[1;33mEnter the name of your Cloud Storage bucket:\033[0m"
-read BUCKET_NAME
+# Derive the bucket name based on the project ID
+BUCKET_NAME="${PROJECT_ID}-bucket"
+
+echo -e "\033[1;33mUsing bucket name: $BUCKET_NAME\033[0m"
 
 # Define the lifecycle policy JSON
 cat <<EOL > lifecycle.json
