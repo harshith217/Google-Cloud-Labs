@@ -1,6 +1,6 @@
-# 🌐 mini lab : Cloud Storage : 4
+# 🌐 mini lab : Cloud Storage : 5
 
-### 📖 Lab: [Open](https://www.cloudskillsboost.google/focuses/36428?parent=game)
+### 📖 Lab: [Open](https://www.cloudskillsboost.google/focuses/36429?parent=game)
 
 --- 
 
