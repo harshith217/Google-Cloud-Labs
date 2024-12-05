@@ -13,9 +13,6 @@ BLUE_TEXT=`tput setaf 4`
 echo ""
 echo ""
 
-# Display initiation message
-echo "${GREEN_TEXT}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
-echo ""
 
 # Fetch the current Google Cloud project ID
 PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
@@ -65,7 +62,7 @@ cat <<EOL > lifecycle.json
       },
       "action": {
         "type": "SetStorageClass",
-        "storageClass": "STANDARD"
+        "storageClass": "NEARLINE"
       }
     }
   ]
@@ -79,6 +76,7 @@ gsutil lifecycle set lifecycle.json gs://$BUCKET_NAME
 rm lifecycle.json
 
 echo "Lifecycle management policy applied successfully to bucket: $BUCKET_NAME"
+
 
 echo ""
 # Completion message
