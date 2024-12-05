@@ -19,7 +19,7 @@ echo ""
 
 # Prompt for REGION in bold yellow
 echo -e "\033[1;33mPlease enter the REGION:\033[0m"
-read -p "REGION: " REGION
+read -p "REGION:" REGION
 export REGION
 
 PROJECT_ID=$(gcloud config get-value project)
