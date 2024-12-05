@@ -17,7 +17,7 @@ This guide is provided to support your educational journey in this lab. Please o
 Run the following commands step by step:  
 
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Multiple%20VPC%20Networks/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/mini%20lab%20%20Cloud%20Storage%20%205/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
