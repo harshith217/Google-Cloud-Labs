@@ -15,8 +15,6 @@ This guide is provided to support your educational journey in this lab. Please o
 Run the following commands step by step:  
 
 ```bash
-echo ""
-
 read -p "Enter BUCKET NAME: " BUCKET_NAME
 
 
