@@ -1,4 +1,4 @@
-# 🌐 mini lab BigQuery  1
+# 🌐 mini lab: BigQuery : 1
 
 --- 
 
