@@ -1,4 +1,4 @@
-# 🌐 mini lab: BigQuery : 1
+# 🌐 mini lab BigQuery  1
 
 --- 
 
@@ -15,16 +15,11 @@ This guide is provided to support your educational journey in this lab. Please o
 Run the following commands step by step:  
 
 ```bash
-read -p "Enter BUCKET NAME: " BUCKET_NAME
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Multiple%20VPC%20Networks/arcadecrew.sh
 
+sudo chmod +x arcadecrew.sh
 
-bq mk work_day
-
-bq mk --table work_day.employee \
-    employee_id:INTEGER,device_id:STRING,username:STRING,department:STRING,office:STRING
-
-bq load --source_format=CSV --skip_leading_rows=1 work_day.employee gs://$BUCKET_NAME/employees.csv employee_id:INTEGER,device_id:STRING,username:STRING,department:STRING,office:STRING
-
+./arcadecrew.sh
 ```
 
 ---
