@@ -27,7 +27,7 @@ sudo chmod +x arcadecrew.sh
 ## Task 2. Use Service Monitoring to create an availability SLO
 
 1. **Navigate to Monitoring**
-  - Go to **Monitoring > SLOs** from [here](https://console.cloud.google.com/monitoring/slos).
+  - Go to **Monitoring > SLOs** from [here](https://console.cloud.google.com/monitoring/).
 2. **Define the Service**:
   - Notice that Service Monitoring already sees your default App Engine application. "If it doesn't, wait a minute, refresh the page and click `+Define a service`, select `default`, and submit it."
 3. **Create SLO**:
