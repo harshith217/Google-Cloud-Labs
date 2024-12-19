@@ -33,8 +33,8 @@ sudo chmod +x arcadecrew.sh
 3. **Create SLO**:
    - Select `default` service.
    - Click **+Create SLO**.
-   - Set the metric type to **Availability**.
-   - Keep the evaluation method as **Request-based**.
+   - Set the metric type to **`Availability`**.
+   - Keep the evaluation method as **`Request-based`**.
    - Click **Continue**.
    - Define the SLO:
      - **Period type**: `Rolling`.
