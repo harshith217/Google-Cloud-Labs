@@ -54,13 +54,10 @@ sudo chmod +x arcadecrew.sh
 7. Return to the alert creation process, select the email notification channel you just created, and click **`Next`**.
 8. Skip the **`Steps to fix the issue`** field and click **`Save`**.
 
----
-
-## Step 4: 🔄 Redeploy the Application
-
-```bash
-gcloud app deploy
-```
+9. Redeploy the change to App Engine
+  ```bash
+  gcloud app deploy
+  ```
 
 - Type `y` when prompted to confirm the deployment.
 - Wait for the deployment to complete.
