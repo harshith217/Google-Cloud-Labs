@@ -21,10 +21,10 @@ sudo chmod +x arcadecrew.sh
 
 ./arcadecrew.sh
 ```
-## After this FOLLOW VIDEO.
+### ➖After this FOLLOW VIDEO.
 ---
 
-### 🏆 Congratulations! You've completed the Lab! 🎉
+## 🏆 Congratulations! You've completed the Lab! 🎉
 
 ---
 
