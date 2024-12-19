@@ -17,7 +17,7 @@ Perform the following step by step:
 ## Task 1. Deploy a test application
 
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Multiple%20VPC%20Networks/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Service%20Monitoring/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
