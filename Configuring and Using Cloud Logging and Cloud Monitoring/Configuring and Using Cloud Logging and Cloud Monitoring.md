@@ -21,6 +21,8 @@ sudo chmod +x arcadecrew.sh
 
 ./arcadecrew.sh
 ```
+### After this follow Video
+
 ---
 
 ### 🏆 Congratulations! You've completed the Lab! 🎉
