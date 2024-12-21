@@ -30,9 +30,9 @@ curl https://storage.googleapis.com/cloud-training/gcpsec/labs/stackdriver-lab.t
 
 cd stackdriver-lab
 
-curl -LO linux_startup.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Configuring%20and%20Using%20Cloud%20Logging%20and%20Cloud%20Monitoring/stackdriver-lab/linux_startup.sh
 
-curl -LO setup.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Configuring%20and%20Using%20Cloud%20Logging%20and%20Cloud%20Monitoring/stackdriver-lab/setup.sh
 
 sed -i 's/us-west1-b/$ZONE/g' setup.sh
 
