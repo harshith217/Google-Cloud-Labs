@@ -21,9 +21,9 @@ sudo chmod +x arcadecrew.sh
 
 ./arcadecrew.sh
 ```
-
+---
 ### ✨ Please proceed with the instructions provided in the video.
-
+---
 #### After this run the below command:
 
 ```
