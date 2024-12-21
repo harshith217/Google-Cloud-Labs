@@ -89,10 +89,13 @@ gcloud projects get-iam-policy $DEVSHELL_PROJECT_ID \
     --format="table(bindings.role)" \
     --filter="bindings.members:service-$PROJECT_NUMBER@gcp-sa-logging.iam.gserviceaccount.com"
 
+echo ""
+echo ""
 
 PROJECT_ID=$(gcloud config get-value project)
 echo "${GREEN_TEXT}${BOLD_TEXT}Click below link to go to BigQuery${RESET_FORMAT}"
 echo "${BOLD_TEXT}${BLUE_TEXT}https://console.cloud.google.com/bigquery?project=${PROJECT_ID}${RESET_FORMAT}"
+echo ""
 # Completion message
 # echo -e "${YELLOW_TEXT}${BOLD_TEXT}Lab Completed Successfully!${RESET_FORMAT}"
 # echo -e "${GREEN_TEXT}${BOLD_TEXT}Subscribe our Channel:${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
