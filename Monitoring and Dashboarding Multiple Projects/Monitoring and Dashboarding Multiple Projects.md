@@ -17,7 +17,7 @@ This guide is provided to support your educational journey in this lab. Please o
 
 Run in Cloudshell:  
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Multiple%20VPC%20Networks/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Monitoring%20and%20Dashboarding%20Multiple%20Projects/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
