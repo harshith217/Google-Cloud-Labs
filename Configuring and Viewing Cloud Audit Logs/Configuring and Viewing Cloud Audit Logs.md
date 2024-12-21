@@ -1,4 +1,4 @@
-# 🌐 [Configuring and Viewing Cloud Audit Logs](https://www.cloudskillsboost.google/course_templates/88/labs/514027)
+# 🌐 [Configuring and Viewing Cloud Audit Logs](https://www.cloudskillsboost.google/focuses/19183?parent=catalog)
 
 --- 
 
