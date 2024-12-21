@@ -22,6 +22,8 @@ sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
 ---
+- Go to **Monitoring** from [here](https://console.cloud.google.com/monitoring/).
+
 ### ✨ Please proceed with the instructions provided in the video.
 ---
 #### After this run the below command:
