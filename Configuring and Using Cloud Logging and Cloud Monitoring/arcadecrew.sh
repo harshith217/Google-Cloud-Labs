@@ -4,7 +4,7 @@
 YELLOW_COLOR=$'\033[0;33m'
 NO_COLOR=$'\033[0m'
 BACKGROUND_RED=`tput setab 1`
-GREEN_TEXT=`tput setab 2`
+GREEN_TEXT=$'\033[0;32m'
 RED_TEXT=`tput setaf 1`
 BOLD_TEXT=`tput bold`
 RESET_FORMAT=`tput sgr0`
