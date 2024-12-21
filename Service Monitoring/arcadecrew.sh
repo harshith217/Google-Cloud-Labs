@@ -4,7 +4,7 @@
 YELLOW_COLOR=$'\033[0;33m'
 NO_COLOR=$'\033[0m'
 BACKGROUND_RED=`tput setab 1`
-GREEN_TEXT=`tput setab 2`
+GREEN_TEXT=$'\033[0;32m'
 RED_TEXT=`tput setaf 1`
 BOLD_TEXT=`tput bold`
 RESET_FORMAT=`tput sgr0`
@@ -18,24 +18,32 @@ echo "${GREEN_TEXT}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
 echo ""
 
-# Clone the HelloLoggingNodeJS repository
+read -p "${YELLOW_COLOR}${BOLD_TEXT}Enter Region: ${RESET_FORMAT}" REGION
+export REGION
+
+gcloud auth list
+
 git clone https://github.com/haggman/HelloLoggingNodeJS.git
 
-# Change into the HelloLoggingNodeJS folder
 cd HelloLoggingNodeJS
 
-# Update the runtime in app.yaml to nodejs20
-sed -i 's/^runtime: .*/runtime: nodejs20/' app.yaml
+gcloud app create --region=$REGION
 
-# Prompt the user for the region
-echo "Enter the region for App Engine (e.g., europe-west):"
-read REGION
+gcloud app deploy --quiet
 
-# Create a new App Engine app using the user-provided region
-gcloud app create --region="$REGION"
 
-# Deploy the application to App Engine
-gcloud app deploy
+cat > email-channel.json <<EOF_CP
+{
+  "type": "email",
+  "displayName": "arcadecrew",
+  "description": "Subscribe",
+  "labels": {
+    "email_address": "$USER_EMAIL"
+  }
+}
+EOF_CP
+
+gcloud beta monitoring channels create --channel-content-from-file="email-channel.json"
 
 
 echo ""
