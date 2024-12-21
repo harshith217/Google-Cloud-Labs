@@ -29,7 +29,7 @@ sudo chmod +x arcadecrew.sh
 ```
 cd HelloLoggingNodeJS
 
-gcloud app deploy --quiet
+gcloud app deploy
 ```
 
 
