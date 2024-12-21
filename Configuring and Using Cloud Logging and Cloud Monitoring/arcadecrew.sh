@@ -18,9 +18,7 @@ echo "${GREEN_TEXT}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
 echo ""
 
-read -p "${YELLOW}${BOLD}Enter the ZONE: ${RESET}" ZONE
-
-# Export variables after collecting input
+read -p "${YELLOW_COLOR}${BOLD_TEXT}Enter Zone: ${RESET_FORMAT}" ZONE
 export ZONE
 
 
