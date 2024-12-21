@@ -16,8 +16,7 @@ echo ""
 # Display initiation message
 echo "${GREEN_TEXT}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
-export ZONE=$(gcloud compute project-info describe \
---format="value(commonInstanceMetadata.items[google-compute-default-zone])")
+export ZONE=us-central1-a
 
 echo ""
 
