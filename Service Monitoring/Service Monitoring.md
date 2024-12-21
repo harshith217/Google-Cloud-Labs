@@ -22,9 +22,9 @@ sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
 
-###✨ Please proceed with the instructions provided in the video.
+### ✨ Please proceed with the instructions provided in the video.
 
-After this run the below command:
+#### After this run the below command:
 
 ```
 cd HelloLoggingNodeJS
