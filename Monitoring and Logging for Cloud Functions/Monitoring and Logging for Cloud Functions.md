@@ -1,4 +1,4 @@
-# 🌐 [Monitoring and Logging for Cloud Functions](https://www.cloudskillsboost.google/focuses/1833?parent=catalog)
+# 🌐 [Monitoring and Logging for Cloud Functions || GSP092](https://www.cloudskillsboost.google/focuses/1833?parent=catalog)
 
 --- 
 
