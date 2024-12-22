@@ -13,8 +13,6 @@ This guide is provided to support your educational journey in this lab. Please o
 
 ## 🚀 Steps to Perform
 
-### First Follow Video To create VM Instances
-
 Run in Cloudshell:  
 ```bash
 curl -LO 'https://github.com/tsenart/vegeta/releases/download/v6.3.0/vegeta-v6.3.0-linux-386.tar.gz'
@@ -24,8 +22,6 @@ tar xvzf vegeta-v6.3.0-linux-386.tar.gz
 gcloud logging metrics create CloudFunctionLatency-Logs --project=$DEVSHELL_PROJECT_ID --description="Subscribe to Arcade Crew" --log-filter='resource.type="cloud_function"
 resource.labels.function_name="helloWorld"'
 ```
-
-### NOW follow the video guide to complete the remaining steps.
 ---
 
 ### 🏆 Congratulations! You've completed the Lab! 🎉
