@@ -18,6 +18,8 @@ echo "${GREEN_TEXT}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
 echo
 
+gcloud auth list
+
 export BUCKET_NAME=$DEVSHELL_PROJECT_ID-bucket
 
 export PROJECT_ID=$DEVSHELL_PROJECT_ID
