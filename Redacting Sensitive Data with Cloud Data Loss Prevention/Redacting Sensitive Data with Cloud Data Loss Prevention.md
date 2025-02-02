@@ -15,7 +15,7 @@ This guide is provided to support your educational journey in this lab. Please o
 
 Run in Cloudshell:  
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Alerting%20in%20Google%20Cloud/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Redacting%20Sensitive%20Data%20with%20Cloud%20Data%20Loss%20Prevention/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
