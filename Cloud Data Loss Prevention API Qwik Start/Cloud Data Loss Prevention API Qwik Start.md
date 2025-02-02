@@ -1,9 +1,9 @@
-# 🌐 [Cloud Data Loss Prevention API: Qwik Start || GSP107](https://www.cloudskillsboost.google/focuses/600?parent=catalog)
+# 🌐 [Cloud Data Loss Prevention API Qwik Start || GSP107](https://www.cloudskillsboost.google/focuses/600?parent=catalog)
 
 --- 
 
 🎥 Watch the full video walkthrough for this lab:  
-[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://youtu.be/BG5xTYfZFe4?si=vfTqDDooWGoJJ7Yn)
+[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://www.youtube.com/watch?v=wjSrI-UHmM8)
 
 ---
 ## ⚠️ **Important Note:**
@@ -11,17 +11,16 @@ This guide is provided to support your educational journey in this lab. Please o
 
 ---
 
-## 🚀 Quick Start Commands for CloudShell  
-Run the following commands step by step:  
+## 🚀 Steps to Perform
 
+Run in Cloudshell:  
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Cloud%20Data%20Loss%20Prevention%20API%20Qwik%20Start/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Alerting%20in%20Google%20Cloud/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
 ./arcadecrew.sh
 ```
-
 ---
 
 ### 🏆 Congratulations! You've completed the Lab! 🎉
@@ -32,6 +31,6 @@ sudo chmod +x arcadecrew.sh
 
 - [Whatsapp](https://chat.whatsapp.com/KkNEauOhBQXHdVcmqIlv9F)  
 
-[![Arcade Crew Channel](https://img.shields.io/badge/YouTube-Arcade%20Crew-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432)
+[![Arcade Crew Channel](https://img.shields.io/badge/YouTube-Arcade%20Crew-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432?sub_confirmation=1)
 
 ---
