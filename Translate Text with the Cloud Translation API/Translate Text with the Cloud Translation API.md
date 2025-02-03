@@ -1,11 +1,9 @@
-# 🌐 Translate Text with the Cloud Translation API
-
-### 📖 Lab: [GSP049](https://www.cloudskillsboost.google/focuses/697?parent=catalog)
+# 🌐 [Translate Text with the Cloud Translation API || GSP049](https://www.cloudskillsboost.google/focuses/697?parent=catalog
 
 --- 
 
-Watch the full video walkthrough for this lab:  
-[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://youtu.be/N0YPGoY00XA)
+🎥 Watch the full video walkthrough for this lab:  
+[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://www.youtube.com/watch?v=wjSrI-UHmM8)
 
 ---
 ## ⚠️ **Important Note:**
@@ -13,20 +11,16 @@ This guide is provided to support your educational journey in this lab. Please o
 
 ---
 
-## 🛠️ Steps to Complete the Lab
+## 🚀 Steps to Perform
 
-1. **Log in with Username and Password** in the Google Cloud Console.
+Run in Cloudshell:  
+```bash
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Alerting%20in%20Google%20Cloud/arcadecrew.sh
 
-2. **Run the following commands** in **Cloud Shell** :
+sudo chmod +x arcadecrew.sh
 
-    ```bash
-    curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Translate%20Text%20with%20the%20Cloud%20Translation%20API/arcadecrew.sh
-
-    sudo chmod +x arcadecrew.sh
-
-    ./arcadecrew.sh
-    ```
-
+./arcadecrew.sh
+```
 ---
 
 ### 🏆 Congratulations! You've completed the Lab! 🎉
@@ -35,8 +29,8 @@ This guide is provided to support your educational journey in this lab. Please o
 
 ### 🤝 Join the Community!
 
-- [Whatsapp Group](https://chat.whatsapp.com/FbVg9NI6Dp4CzfdsYmy0AE)  
+- [Whatsapp](https://chat.whatsapp.com/KkNEauOhBQXHdVcmqIlv9F)  
 
-[![Arcade Crew Channel](https://img.shields.io/badge/YouTube-Arcade%20Crew-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432)
+[![Arcade Crew Channel](https://img.shields.io/badge/YouTube-Arcade%20Crew-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432?sub_confirmation=1)
 
 ---
