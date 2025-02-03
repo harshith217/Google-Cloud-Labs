@@ -23,7 +23,7 @@ bq query --use_legacy_sql=false "SELECT current_date()"
 resource.type="bigquery_resource"
 protoPayload.methodName="jobservice.jobcompleted"
 ```
-### Create Sink name: `JobComplete`
+### Sink name: `JobComplete`
 
 ```bash
 curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Using%20BigQuery%20and%20Cloud%20Logging%20to%20Analyze%20BigQuery%20Usage/arcadecrew.sh
