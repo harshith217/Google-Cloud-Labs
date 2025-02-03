@@ -26,7 +26,7 @@ protoPayload.methodName="jobservice.jobcompleted"
 ### Create Sink name: `JobComplete`
 
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Alerting%20in%20Google%20Cloud/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Using%20BigQuery%20and%20Cloud%20Logging%20to%20Analyze%20BigQuery%20Usage/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
