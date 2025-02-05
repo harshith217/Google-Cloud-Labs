@@ -90,6 +90,6 @@ rm -- "$0"
 echo
 echo
 # Completion message
-echo -e "${MAGENTA_COLOR}IF GETTING ${BOLD_TEXT}ERROR RERUN THE COMMANDS.${RESET_FORMAT}"
+echo -e "${MAGENTA_COLOR}${BOLD_TEXT}Lab Completed Successfully!${RESET_FORMAT}"
 echo -e "${GREEN_TEXT}${BOLD_TEXT}Subscribe our Channel:${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
 echo
