@@ -19,7 +19,7 @@ echo "${GREEN_TEXT}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
 echo
 
-read -p "${YELLOW_COLOR}${BOLD_TEXT}Enter the CLUSTER_NAME: ${RESET_FORMAT}" CLUSTER_NAME
+read -p "${YELLOW_COLOR}${BOLD_TEXT}Enter CLUSTER_NAME: ${RESET_FORMAT}" CLUSTER_NAME
 
 # Export variables after collecting input
 export CLUSTER_NAME 
