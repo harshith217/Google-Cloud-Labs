@@ -19,6 +19,11 @@ echo "${GREEN_TEXT}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
 echo
 
+# **Prompt user for region input**
+echo "${BOLD_TEXT}${BLUE_TEXT}Please enter the region:${RESET_FORMAT}"
+read -p "${BOLD_TEXT}${YELLOW_COLOR}Enter region: ${RESET_FORMAT}" REGION
+export REGION=$REGION
+
 # **Enable required Google Cloud services**
 echo "${BOLD_TEXT}${BLUE_TEXT}Enabling Cloud Run and Cloud Build services...${RESET_FORMAT}"
 gcloud services enable run.googleapis.com 
