@@ -22,95 +22,102 @@ echo
 echo -e "\e[1;34mCreating dataset:\e[0m"
 bq mk --dataset $DEVSHELL_PROJECT_ID:bracketology
 
-echo -e "\e[1;34mQuerying games per tournament:\e[0m"
 bq query --use_legacy_sql=false \
 "
 SELECT
-  \e[1;32mseason\e[0m,
-  \e[1;32mCOUNT(*) as games_per_tournament\e[0m
-FROM
+  season,
+  COUNT(*) as games_per_tournament
+  FROM
  \`bigquery-public-data.ncaa_basketball.mbb_historical_tournament_games\`
-GROUP BY \e[1;32mseason\e[0m
-ORDER BY \e[1;32mseason\e[0m # default is Ascending (low to high)
+ GROUP BY season
+ ORDER BY season # default is Ascending (low to high)
 "
 
-echo -e "\e[1;34mCreating dataset rows for winning and losing teams:\e[0m"
 bq query --use_legacy_sql=false \
 "
-# Create a row for the \e[1;32mwinning team\e[0m
+# create a row for the winning team
 SELECT
-  \e[1;33mseason\e[0m, # ex: 2015 season has March 2016 tournament games
-  \e[1;33mround\e[0m, # sweet 16
-  days_from_epoch,
+  # features
+  season, # ex: 2015 season has March 2016 tournament games
+  round, # sweet 16
+  days_from_epoch, # how old is the game
   game_date,
-  \e[1;36mday\e[0m, # Friday
-  \e[1;32m'win' AS label\e[0m, # our label
-  win_seed AS seed,
+  day, # Friday
+  'win' AS label, # our label
+  win_seed AS seed, # ranking
   win_market AS market,
   win_name AS name,
   win_alias AS alias,
   win_school_ncaa AS school_ncaa,
-  lose_seed AS opponent_seed,
+  # win_pts AS points,
+  lose_seed AS opponent_seed, # ranking
   lose_market AS opponent_market,
   lose_name AS opponent_name,
   lose_alias AS opponent_alias,
   lose_school_ncaa AS opponent_school_ncaa
+  # lose_pts AS opponent_points
 FROM \`bigquery-public-data.ncaa_basketball.mbb_historical_tournament_games\`
-
 UNION ALL
-
-# Create a separate row for the \e[1;31mlosing team\e[0m
+# create a separate row for the losing team
 SELECT
+# features
   season,
   round,
   days_from_epoch,
   game_date,
   day,
-  \e[1;31m'loss' AS label\e[0m,
-  lose_seed AS seed,
+  'loss' AS label, # our label
+  lose_seed AS seed, # ranking
   lose_market AS market,
   lose_name AS name,
   lose_alias AS alias,
   lose_school_ncaa AS school_ncaa,
-  win_seed AS opponent_seed,
+  # lose_pts AS points,
+  win_seed AS opponent_seed, # ranking
   win_market AS opponent_market,
   win_name AS opponent_name,
   win_alias AS opponent_alias,
   win_school_ncaa AS opponent_school_ncaa
-FROM \`bigquery-public-data.ncaa_basketball.mbb_historical_tournament_games\`;
+  # win_pts AS opponent_points
+FROM
+\`bigquery-public-data.ncaa_basketball.mbb_historical_tournament_games\`;
 "
 
-echo -e "\e[1;34mCreating and training model:\e[0m"
 bq query --use_legacy_sql=false \
 "
 CREATE OR REPLACE MODEL
   \`bracketology.ncaa_model\`
 OPTIONS
   ( model_type='logistic_reg') AS
+# create a row for the winning team
 SELECT
+  # features
   season,
-  \e[1;32m'win' AS label\e[0m,
-  win_seed AS seed,
+  'win' AS label, # our label
+  win_seed AS seed, # ranking
   win_school_ncaa AS school_ncaa,
-  lose_seed AS opponent_seed,
+  lose_seed AS opponent_seed, # ranking
   lose_school_ncaa AS opponent_school_ncaa
 FROM \`bigquery-public-data.ncaa_basketball.mbb_historical_tournament_games\`
 WHERE season <= 2017
-
 UNION ALL
-
+# create a separate row for the losing team
 SELECT
+# features
   season,
-  \e[1;31m'loss' AS label\e[0m,
-  lose_seed AS seed,
+  'loss' AS label, # our label
+  lose_seed AS seed, # ranking
   lose_school_ncaa AS school_ncaa,
-  win_seed AS opponent_seed,
+  win_seed AS opponent_seed, # ranking
   win_school_ncaa AS opponent_school_ncaa
-FROM \`bigquery-public-data.ncaa_basketball.mbb_historical_tournament_games\`
+FROM
+\`bigquery-public-data.ncaa_basketball.mbb_historical_tournament_games\`
+# now we split our dataset with a WHERE clause so we can train on a subset of data and then evaluate and test the model's performance against a reserved subset so the model doesn't memorize or overfit to the training data.
+# tournament season information from 1985 - 2017
+# here we'll train on 1985 - 2017 and predict for 2018
 WHERE season <= 2017
 "
 
-echo -e "\e[1;34mEvaluating Model Performance:\e[0m"
 bq query --use_legacy_sql=false \
 "
 SELECT
@@ -123,24 +130,19 @@ FROM
     FROM
       ML.WEIGHTS(MODEL \`bracketology.ncaa_model\`)
     WHERE
-      processed_input = 'seed'))
-ORDER BY weight DESC;
-
+      processed_input = 'seed')) # try other features like 'school_ncaa'
+      ORDER BY weight DESC;
 SELECT
   *
 FROM
-  ML.EVALUATE(MODEL \`bracketology.ncaa_model\`);
-"
-
-echo -e "\e[1;34mGenerating Predictions for 2018:\e[0m"
-bq query --use_legacy_sql=false \
-"
+  ML.EVALUATE(MODEL   \`bracketology.ncaa_model\`);
 CREATE OR REPLACE TABLE \`bracketology.predictions\` AS (
 SELECT * FROM ML.PREDICT(MODEL \`bracketology.ncaa_model\`,
-(SELECT * FROM \`data-to-insights.ncaa.2018_tournament_results\`))
+# predicting for 2018 tournament games (2017 season)
+(SELECT * FROM \`data-to-insights.ncaa.2018_tournament_results\`)
+)
 );
 "
-
 
 bq query --use_legacy_sql=false \
 "
