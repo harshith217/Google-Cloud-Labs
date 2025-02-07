@@ -19,6 +19,12 @@ echo "${GREEN_TEXT}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
 echo
 
+echo -e "\033[1;33mEnter REGION:\033[0m"
+read REGION
+
+# Display the input
+echo -e "\033[1;33mYou entered: $REGION\033[0m"
+
 # Enable necessary GCP services
 echo "${BLUE_TEXT}${BOLD_TEXT}Step 1: Enabling required Google Cloud services...${RESET_FORMAT}"
 gcloud services enable run.googleapis.com
