@@ -19,26 +19,21 @@ echo "${GREEN_TEXT}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
 echo
 
-# **Prompt user for region input**
-echo "${BOLD_TEXT}${BLUE_TEXT}Please enter the region:${RESET_FORMAT}"
-read -p "${BOLD_TEXT}${YELLOW_COLOR}Enter region: ${RESET_FORMAT}" REGION
-export REGION=$REGION
-
-# **Enable required Google Cloud services**
-echo "${BOLD_TEXT}${BLUE_TEXT}Enabling Cloud Run and Cloud Build services...${RESET_FORMAT}"
-gcloud services enable run.googleapis.com 
+# Enable necessary GCP services
+echo "${BLUE_TEXT}${BOLD_TEXT}Step 1: Enabling required Google Cloud services...${RESET_FORMAT}"
+gcloud services enable run.googleapis.com
 gcloud services enable cloudbuild.googleapis.com
 
-# **Set the active Google Cloud project**
-echo "${BOLD_TEXT}${YELLOW_COLOR}Setting Google Cloud project...${RESET_FORMAT}"
+# Set the GCP project
+echo "${BLUE_TEXT}${BOLD_TEXT}Step 2: Setting the Google Cloud project...${RESET_FORMAT}"
 gcloud config set project $(gcloud projects list --format='value(PROJECT_ID)' --filter='qwiklabs-gcp')
 
-# **Clone the repository and navigate to the project directory**
-echo "${BOLD_TEXT}${MAGENTA_COLOR}Cloning repository and navigating to lab08 directory...${RESET_FORMAT}"
+# Clone the repository and navigate to the lab directory
+echo "${BLUE_TEXT}${BOLD_TEXT}Step 3: Cloning the pet-theory repository and navigating to lab08...${RESET_FORMAT}"
 git clone https://github.com/rosera/pet-theory.git && cd pet-theory/lab08
 
-# **Create main.go file**
-echo "${BOLD_TEXT}${GREEN_TEXT}Creating main.go...${RESET_FORMAT}" 
+# Create the main.go file
+echo "${BLUE_TEXT}${BOLD_TEXT}Step 4: Creating the main.go file...${RESET_FORMAT}"
 cat > main.go <<EOF
 package main
 
@@ -64,8 +59,8 @@ func main() {
 }
 EOF
 
-# **Create Dockerfile**
-echo "${BOLD_TEXT}${GREEN_TEXT}Creating Dockerfile...${RESET_FORMAT}" 
+# Create the Dockerfile
+echo "${BLUE_TEXT}${BOLD_TEXT}Step 5: Creating the Dockerfile...${RESET_FORMAT}"
 cat > Dockerfile <<EOF
 FROM gcr.io/distroless/base-debian12
 WORKDIR /usr/src/app
@@ -73,21 +68,21 @@ COPY server .
 CMD [ "/usr/src/app/server" ]
 EOF
 
-# **Build the Go application**
-echo "${BOLD_TEXT}${BLUE_TEXT}Building the Go application...${RESET_FORMAT}" 
+# Build the Go server
+echo "${BLUE_TEXT}${BOLD_TEXT}Step 6: Building the Go server...${RESET_FORMAT}"
 go build -o server
 
-# **List files in the directory**
-echo "${BOLD_TEXT}${YELLOW_COLOR}Listing files...${RESET_FORMAT}" 
+# List files in the directory
+echo "${BLUE_TEXT}${BOLD_TEXT}Step 7: Listing files in the current directory...${RESET_FORMAT}"
 ls -la
 
-# **Submit the build to Google Cloud Build**
-echo "${BOLD_TEXT}${MAGENTA_COLOR}Submitting build to Google Cloud Build...${RESET_FORMAT}" 
+# Submit the build to Google Cloud Build
+echo "${BLUE_TEXT}${BOLD_TEXT}Step 8: Submitting the build to Google Cloud Build...${RESET_FORMAT}"
 gcloud builds submit \
   --tag gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.1
 
-# **Deploy the application to Cloud Run**
-echo "${BOLD_TEXT}${GREEN_TEXT}Deploying application to Cloud Run...${RESET_FORMAT}" 
+# Deploy the REST API to Cloud Run
+echo "${BLUE_TEXT}${BOLD_TEXT}Step 9: Deploying the REST API to Cloud Run...${RESET_FORMAT}"
 gcloud run deploy rest-api \
   --image gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.1 \
   --platform managed \
@@ -95,12 +90,12 @@ gcloud run deploy rest-api \
   --allow-unauthenticated \
   --max-instances=2
 
-# **Create Firestore database**
-echo "${BOLD_TEXT}${BLUE_TEXT}Creating Firestore database...${RESET_FORMAT}" 
+# Create a Firestore database
+echo "${BLUE_TEXT}${BOLD_TEXT}Step 10: Creating a Firestore database...${RESET_FORMAT}"
 gcloud firestore databases create --location nam5
 
-# **Modify main.go for Firestore integration**
-echo "${BOLD_TEXT}${GREEN_TEXT}Updating main.go for Firestore integration...${RESET_FORMAT}" 
+# Update the main.go file with Firestore integration
+echo "${BLUE_TEXT}${BOLD_TEXT}Step 11: Updating the main.go file with Firestore integration...${RESET_FORMAT}"
 cat > main.go <<'EOF_END'
 package main
 
@@ -182,7 +177,6 @@ func customerHandler(w http.ResponseWriter, r *http.Request) {
   }
   fmt.Fprintf(w, fmt.Sprintf(`{"status": "success", "data": %s}`, data))
 }
-EOF_END
 
 type Customer struct {
   Email string `firestore:"email"`
@@ -241,12 +235,12 @@ func getAmounts(ctx context.Context, c *Customer) (map[string]int64, error) {
 }
 EOF_END
 
-# **Rebuild the application**
-echo "${BOLD_TEXT}${YELLOW_COLOR}Rebuilding application...${RESET_FORMAT}" 
+# Rebuild the Go server
+echo "${BLUE_TEXT}${BOLD_TEXT}Step 12: Rebuilding the Go server with Firestore integration...${RESET_FORMAT}"
 go build -o server
 
-# **Submit the new build to Google Cloud Build**
-echo "${BOLD_TEXT}${MAGENTA_COLOR}Submitting updated build...${RESET_FORMAT}" 
+# Submit the updated build to Google Cloud Build
+echo "${BLUE_TEXT}${BOLD_TEXT}Step 13: Submitting the updated build to Google Cloud Build...${RESET_FORMAT}"
 gcloud builds submit \
   --tag gcr.io/$GOOGLE_CLOUD_PROJECT/rest-api:0.2
 
