@@ -30,9 +30,9 @@ echo
 # Instruction: Downloading Demo Images
 echo "${BLUE_TEXT}${BOLD_TEXT}Step 2: Downloading Demo Images...${RESET_FORMAT}"
 
-curl -LO demo-image1.png
-curl -LO demo-image2.png
-curl -LO demo-image1-copy.png
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/APIs%20Explorer%20Cloud%20Storage/demo-image1.png
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/APIs%20Explorer%20Cloud%20Storage/demo-image2.png
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/APIs%20Explorer%20Cloud%20Storage/demo-image1-copy.png
 
 echo
 
