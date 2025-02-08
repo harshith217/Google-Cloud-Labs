@@ -16,11 +16,18 @@ This guide is provided to support your educational journey in this lab. Please o
 Run in Cloudshell:  
 
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Alerting%20in%20Google%20Cloud/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Get%20Started%20with%20Sensitive%20Data%20Protection%20Challenge%20Lab/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
 ./arcadecrew.sh
+```
+```bash
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Get%20Started%20with%20Sensitive%20Data%20Protection%20Challenge%20Lab/arcadecrew1.sh
+
+sudo chmod +x arcadecrew1.sh
+
+./arcadecrew1.sh
 ```
 ---
 
