@@ -1,4 +1,4 @@
-# 🌐 [Introduction to Cloud Dataproc: Hadoop and Spark on Google Cloud || GSP123](https://www.cloudskillsboost.google/focuses/672?parent=catalog)
+# 🌐 [Introduction to Cloud Dataproc Hadoop and Spark on Google Cloud || GSP123](https://www.cloudskillsboost.google/focuses/672?parent=catalog)
 
 --- 
 
@@ -16,7 +16,7 @@ This guide is provided to support your educational journey in this lab. Please o
 Run in Cloudshell:  
 
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Introduction%20to%20Cloud%20Dataproc%20Hadoop%20and%20Spark%20on%20Google%20Cloud/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Alerting%20in%20Google%20Cloud/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 

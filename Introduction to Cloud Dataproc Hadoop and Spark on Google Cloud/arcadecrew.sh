@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # Define color variables
-YELLOW_COLOR=$'\033[0;33m'
-MAGENTA_COLOR="\e[35m"
+YELLOW_TEXT=$'\033[0;33m'
+MAGENTA_TEXT=$'\033[0;35m'
 NO_COLOR=$'\033[0m'
-BACKGROUND_RED=`tput setab 1`
 GREEN_TEXT=$'\033[0;32m'
-RED_TEXT=`tput setaf 1`
+RED_TEXT=$'\033[0;31m'
+CYAN_TEXT=$'\033[0;36m'
 BOLD_TEXT=`tput bold`
 RESET_FORMAT=`tput sgr0`
-BLUE_TEXT=`tput setaf 4`
+BLUE_TEXT=$'\033[0;34m'
 
 echo
 echo
@@ -19,59 +19,58 @@ echo "${GREEN_TEXT}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
 echo
 
-# Set Variables Dynamically
-PROJECT_ID=$(gcloud config get-value project)
-CLUSTER_NAME="dataproc-cluster"
-REGION="us-central1"
-ZONE="us-central1-a"
-MASTER_MACHINE_TYPE="n1-standard-2"
-WORKER_MACHINE_TYPE="n1-standard-2"
-JOB_TYPE="pyspark"
-MAIN_CLASS="org.apache.spark.examples.SparkPi"
-JAR_FILE="file:///usr/lib/spark/examples/jars/spark-examples.jar"
-ARGUMENTS="1000"
+# Fetching project region and zone
+echo "${CYAN_TEXT}${BOLD_TEXT}Fetching project region and zone...${RESET_FORMAT}"
+export REGION=$(gcloud compute project-info describe \
+--format="value(commonInstanceMetadata.items[google-compute-default-region])")
 
-# Fetch Service Account
-SERVICE_ACCOUNT=$(gcloud iam service-accounts list --format='value(email)' | grep "compute@developer")
+export ZONE=$(gcloud compute project-info describe \
+--format="value(commonInstanceMetadata.items[google-compute-default-zone])")
 
-# Assign Storage Admin Role
-printf "${BOLD_TEXT}${YELLOW_COLOR}Assigning Storage Admin role to service account...${NO_COLOR}\n"
+# Fetching project ID
+echo "${YELLOW_TEXT}${BOLD_TEXT}Fetching Project ID...${RESET_FORMAT}"
+PROJECT_ID=`gcloud config get-value project`
+
+# Fetching project number
+echo "${YELLOW_TEXT}${BOLD_TEXT}Fetching Project Number...${RESET_FORMAT}"
+PROJECT_NUMBER=$(gcloud projects describe $(gcloud config get-value project) --format="value(projectNumber)")
+echo "${MAGENTA_TEXT}Project Number: ${PROJECT_NUMBER}${RESET_FORMAT}"
+
+# Granting Storage Admin role
+echo "${BLUE_TEXT}${BOLD_TEXT}Granting Storage Admin role to service account...${RESET_FORMAT}"
 gcloud projects add-iam-policy-binding $PROJECT_ID \
-    --member="serviceAccount:$SERVICE_ACCOUNT" \
-    --role="roles/storage.admin" || { printf "${RED_TEXT}Failed to assign IAM role!${NO_COLOR}\n"; exit 1; }
+    --member="serviceAccount:$PROJECT_NUMBER-compute@developer.gserviceaccount.com" \
+    --role="roles/storage.admin"
 
-# Create Cloud Dataproc Cluster
-printf "${BOLD_TEXT}${MAGENTA_COLOR}Creating Dataproc Cluster...${NO_COLOR}\n"
-gcloud dataproc clusters create $CLUSTER_NAME \
+echo "${GREEN_TEXT}${BOLD_TEXT}Waiting for changes to take effect...${RESET_FORMAT}"
+sleep 60
+
+# Creating Dataproc cluster
+echo "${CYAN_TEXT}${BOLD_TEXT}Creating Dataproc cluster 'qlab'...${RESET_FORMAT}"
+gcloud dataproc clusters create qlab --enable-component-gateway --region $REGION --zone $ZONE --master-machine-type e2-standard-4 --master-boot-disk-type pd-balanced --master-boot-disk-size 100 --num-workers 2 --worker-machine-type e2-standard-2 --worker-boot-disk-size 100 --image-version 2.2-debian12 --project $PROJECT_ID
+
+echo "${GREEN_TEXT}${BOLD_TEXT}Waiting for cluster creation...${RESET_FORMAT}"
+sleep 120
+
+# Deleting Dataproc cluster
+echo "${RED_TEXT}${BOLD_TEXT}Deleting Dataproc cluster 'qlab'...${RESET_FORMAT}"
+gcloud dataproc clusters delete qlab --region $REGION --quiet
+
+echo "${CYAN_TEXT}${BOLD_TEXT}Recreating Dataproc cluster 'qlab'...${RESET_FORMAT}"
+gcloud dataproc clusters create qlab --enable-component-gateway --region $REGION --zone $ZONE --master-machine-type e2-standard-4 --master-boot-disk-type pd-balanced --master-boot-disk-size 100 --num-workers 2 --worker-machine-type e2-standard-2 --worker-boot-disk-size 100 --image-version 2.2-debian12 --project $PROJECT_ID
+
+echo "${GREEN_TEXT}${BOLD_TEXT}Waiting for cluster to be ready...${RESET_FORMAT}"
+sleep 120
+
+# Submitting Spark job
+echo "${YELLOW_TEXT}${BOLD_TEXT}Submitting Spark job to cluster...${RESET_FORMAT}"
+gcloud dataproc jobs submit spark \
+    --cluster=qlab \
     --region=$REGION \
-    --zone=$ZONE \
-    --master-machine-type=$MASTER_MACHINE_TYPE \
-    --worker-machine-type=$WORKER_MACHINE_TYPE \
-    --num-workers=2 \
-    --worker-boot-disk-size=100GB \
-    --worker-boot-disk-type=pd-standard \
-    --no-address || { printf "${RED_TEXT}Failed to create cluster!${NO_COLOR}\n"; exit 1; }
+    --class=org.apache.spark.examples.SparkPi \
+    --jars=file:///usr/lib/spark/examples/jars/spark-examples.jar \
+    -- 1000
 
-# Verify Cluster Creation
-printf "${BOLD_TEXT}${GREEN_TEXT}Waiting for cluster to be ready...${NO_COLOR}\n"
-sleep 10
-gcloud dataproc clusters list --region=$REGION | grep $CLUSTER_NAME || { printf "${RED_TEXT}Cluster creation failed!${NO_COLOR}\n"; exit 1; }
-
-# Submit Spark Job
-printf "${BOLD_TEXT}${BLUE_TEXT}Submitting Spark job...${NO_COLOR}\n"
-gcloud dataproc jobs submit $JOB_TYPE \
-    --region=$REGION \
-    --cluster=$CLUSTER_NAME \
-    --class=$MAIN_CLASS \
-    --jars=$JAR_FILE \
-    -- $ARGUMENTS || { printf "${RED_TEXT}Job submission failed!${NO_COLOR}\n"; exit 1; }
-
-# Verify Job Completion
-printf "${BOLD_TEXT}${GREEN_TEXT}Waiting for job to complete...${NO_COLOR}\n"
-sleep 10
-gcloud dataproc jobs list --region=$REGION | grep Succeeded || { printf "${RED_TEXT}Job did not succeed!${NO_COLOR}\n"; exit 1; }
-
-echo
 # Safely delete the script if it exists
 SCRIPT_NAME="arcadecrew.sh"
 if [ -f "$SCRIPT_NAME" ]; then
@@ -82,6 +81,6 @@ fi
 echo
 echo
 # Completion message
-echo -e "${MAGENTA_COLOR}${BOLD_TEXT}Lab Completed Successfully!${RESET_FORMAT}"
+echo -e "${MAGENTA_TEXT}${BOLD_TEXT}Lab Completed Successfully!${RESET_FORMAT}"
 echo -e "${GREEN_TEXT}${BOLD_TEXT}Subscribe our Channel:${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
 echo
