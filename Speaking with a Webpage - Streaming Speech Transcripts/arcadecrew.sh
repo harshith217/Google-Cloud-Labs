@@ -11,11 +11,18 @@ BOLD_TEXT=`tput bold`
 RESET_FORMAT=`tput sgr0`
 BLUE_TEXT=$'\033[0;34m'
 
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Stopping any running Jetty server on the VM instance...${RESET_FORMAT}"
 gcloud compute ssh "speaking-with-a-webpage" --zone "$ZONE" --project "$DEVSHELL_PROJECT_ID" --quiet --command "pkill -f 'java.*jetty'"
 
 sleep 5
 
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Starting the WebAudio application on the VM instance...${RESET_FORMAT}"
 gcloud compute ssh "speaking-with-a-webpage" --zone "$ZONE" --project "$DEVSHELL_PROJECT_ID" --quiet --command "cd ~/speaking-with-a-webpage/02-webaudio && mvn clean jetty:run"
+
+echo
+echo "${GREEN_TEXT}${BOLD_TEXT}The WebAudio application is now running!${RESET_FORMAT}"
 
 
 # # Safely delete the script if it exists
@@ -25,7 +32,6 @@ gcloud compute ssh "speaking-with-a-webpage" --zone "$ZONE" --project "$DEVSHELL
 #     rm -- "$SCRIPT_NAME"
 # fi
 
-echo
 echo
 # Completion message
 echo -e "${MAGENTA_TEXT}${BOLD_TEXT}Lab Completed Successfully!${RESET_FORMAT}"
