@@ -11,21 +11,11 @@ BOLD_TEXT=`tput bold`
 RESET_FORMAT=`tput sgr0`
 BLUE_TEXT=$'\033[0;34m'
 
-# Print instructions before execution
-echo "${BOLD_TEXT}${CYAN_TEXT}Starting GCP Cloud Shell script...${RESET_FORMAT}"
-echo "${BOLD_TEXT}${YELLOW_TEXT}Step 1: Stopping any running Jetty server instance...${RESET_FORMAT}"
-
 gcloud compute ssh "speaking-with-a-webpage" --zone "$ZONE" --project "$DEVSHELL_PROJECT_ID" --quiet --command "pkill -f 'java.*jetty'"
 
-echo "${GREEN_TEXT}✔ Jetty server process terminated (if running).${NO_COLOR}"
-
-echo "${BOLD_TEXT}${MAGENTA_TEXT}Waiting for 5 seconds before restarting the server...${RESET_FORMAT}"
 sleep 5
 
-echo "${BOLD_TEXT}${BLUE_TEXT}Step 2: Restarting Jetty server...${RESET_FORMAT}"
 gcloud compute ssh "speaking-with-a-webpage" --zone "$ZONE" --project "$DEVSHELL_PROJECT_ID" --quiet --command "cd ~/speaking-with-a-webpage/02-webaudio && mvn clean jetty:run"
-
-echo "${BOLD_TEXT}${GREEN_TEXT}✔ Jetty server restarted successfully.${RESET_FORMAT}"
 
 
 # # Safely delete the script if it exists
