@@ -12,6 +12,24 @@ RESET_FORMAT=`tput sgr0`
 BLUE_TEXT=$'\033[0;34m'
 
 echo
+
+if [ -z "$ZONE" ]; then
+  echo "${RED_TEXT}${BOLD_TEXT}Error: ZONE is not set.${RESET_FORMAT}"
+  echo "${YELLOW_TEXT}Please enter the ZONE:${RESET_FORMAT}"
+  read ZONE
+  export ZONE
+  echo "${GREEN_TEXT}The zone is set to: $ZONE${RESET_FORMAT}"
+fi
+
+if [ -z "$DEVSHELL_PROJECT_ID" ]; then
+  echo "${RED_TEXT}${BOLD_TEXT}Error: DEVSHELL_PROJECT_ID is not set.${RESET_FORMAT}"
+  echo "${YELLOW_TEXT}Please enter your GCP project ID:${RESET_FORMAT}"
+  read DEVSHELL_PROJECT_ID
+  export DEVSHELL_PROJECT_ID
+  echo "${GREEN_TEXT}The project ID is set to: $DEVSHELL_PROJECT_ID${RESET_FORMAT}"
+fi
+
+echo
 echo "${BLUE_TEXT}${BOLD_TEXT}Stopping any running Jetty server on the VM instance...${RESET_FORMAT}"
 gcloud compute ssh "speaking-with-a-webpage" --zone "$ZONE" --project "$DEVSHELL_PROJECT_ID" --quiet --command "pkill -f 'java.*jetty'"
 
