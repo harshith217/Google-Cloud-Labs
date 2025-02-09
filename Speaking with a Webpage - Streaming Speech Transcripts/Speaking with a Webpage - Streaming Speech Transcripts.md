@@ -23,13 +23,6 @@ sudo chmod +x arcadecrew1.sh
 ./arcadecrew1.sh
 ```
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Speaking%20with%20a%20Webpage%20-%20Streaming%20Speech%20Transcripts/arcadecrew2.sh
-
-sudo chmod +x arcadecrew2.sh
-
-./arcadecrew2.sh
-```
-```bash
 curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Speaking%20with%20a%20Webpage%20-%20Streaming%20Speech%20Transcripts/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
