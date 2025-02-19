@@ -16,7 +16,7 @@ This guide is provided to support your educational journey in this lab. Please o
 Run in Cloudshell:  
 
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Alerting%20in%20Google%20Cloud/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Service%20Directory%20Qwik%20Start/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
