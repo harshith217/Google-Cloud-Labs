@@ -16,24 +16,6 @@ echo
 echo "${CYAN_TEXT}${BOLD_TEXT}Starting the process...${RESET_FORMAT}"
 echo
 
-#!/bin/bash
-
-# Define color variables
-YELLOW_TEXT=$'\033[0;33m'
-MAGENTA_TEXT=$'\033[0;35m'
-NO_COLOR=$'\033[0m'
-GREEN_TEXT=$'\033[0;32m'
-RED_TEXT=$'\033[0;31m'
-CYAN_TEXT=$'\033[0;36m'
-BOLD_TEXT=$'\033[1m'
-RESET_FORMAT=$'\033[0m'
-BLUE_TEXT=$'\033[0;34m'
-
-# Start of the script
-echo
-echo "${CYAN_TEXT}${BOLD_TEXT}Starting the process...${RESET_FORMAT}"
-echo
-
 GCP_PROJECT_ID=$(gcloud config get-value project)
 echo "${GREEN_TEXT}${BOLD_TEXT}Using GCP Project ID: ${YELLOW_TEXT}$GCP_PROJECT_ID${RESET_FORMAT}"
 
@@ -102,6 +84,6 @@ fi
 echo
 echo
 # Completion message
-echo -e "${MAGENTA_TEXT}${BOLD_TEXT}Lab Completed Successfully!${RESET_FORMAT}"
+echo -e "${MAGENTA_TEXT}${BOLD_TEXT}NOW FOLLOW STEPS IN THE VIDEO.${RESET_FORMAT}"
 echo -e "${GREEN_TEXT}${BOLD_TEXT}Subscribe our Channel:${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
 echo
