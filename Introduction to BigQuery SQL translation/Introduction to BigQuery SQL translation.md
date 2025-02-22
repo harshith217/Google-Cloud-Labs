@@ -17,7 +17,7 @@ This guide is provided to support your educational journey in this lab. Please o
 ### Run in Cloudshell:  
 
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Alerting%20in%20Google%20Cloud/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Introduction%20to%20BigQuery%20SQL%20translation/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
