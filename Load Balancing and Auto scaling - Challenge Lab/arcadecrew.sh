@@ -211,7 +211,7 @@ curl -X POST -H "Content-Type: application/json" \
   -H "Authorization: Bearer $token" \
   -d '{
     "defaultService": "projects/'"$project_id"'/global/backendServices/backend1",
-    "name": "quicklab"
+    "name": "arcadecrew"
   }' \
   "https://compute.googleapis.com/compute/v1/projects/$project_id/global/urlMaps"
 
@@ -221,8 +221,8 @@ sleep 30
 curl -X POST -H "Content-Type: application/json" \
   -H "Authorization: Bearer $token" \
   -d '{
-    "name": "quicklab-target-proxy",
-    "urlMap": "projects/'"$project_id"'/global/urlMaps/quicklab"
+    "name": "arcadecrew-target-proxy",
+    "urlMap": "projects/'"$project_id"'/global/urlMaps/arcadecrew"
   }' \
   "https://compute.googleapis.com/compute/v1/projects/$project_id/global/targetHttpProxies"
 
@@ -232,13 +232,13 @@ sleep 20
 curl -X POST -H "Content-Type: application/json" \
   -H "Authorization: Bearer $token" \
   -d '{
-    "name": "quicklab-target-proxy-2",
-    "urlMap": "projects/'"$project_id"'/global/urlMaps/quicklab"
+    "name": "arcadecrew-target-proxy-2",
+    "urlMap": "projects/'"$project_id"'/global/urlMaps/arcadecrew"
   }' \
   "https://compute.googleapis.com/compute/v1/projects/$project_id/global/targetHttpProxies"
 
 
-LB_IP_ADDRESS=$(gcloud compute forwarding-rules describe quicklab --global --format="value(IPAddress)")
+LB_IP_ADDRESS=$(gcloud compute forwarding-rules describe arcadecrew --global --format="value(IPAddress)")
 
 
 
