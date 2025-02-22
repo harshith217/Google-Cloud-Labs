@@ -39,7 +39,7 @@ export GOOGLE_APPLICATION_CREDENTIALS="/home/USER/key.json"
 echo "${BLUE_TEXT}${BOLD_TEXT}Connecting to the Compute Engine instance...${RESET_FORMAT}"
 gcloud compute ssh --zone "$ZONE" "linux-instance" --project "$DEVSHELL_PROJECT_ID" --quiet --command "gcloud ml language analyze-entities --content='Michelangelo Caravaggio, Italian painter, is known for \"The Calling of Saint Matthew\".' > result.json"
 echo "${GREEN_TEXT}${BOLD_TEXT}Process completed.${RESET_FORMAT}"
-
+echo
 
 # Safely delete the script if it exists
 SCRIPT_NAME="arcadecrew.sh"
@@ -48,7 +48,6 @@ if [ -f "$SCRIPT_NAME" ]; then
     rm -- "$SCRIPT_NAME"
 fi
 
-echo
 echo
 # Completion message
 echo -e "${MAGENTA_TEXT}${BOLD_TEXT}Lab Completed Successfully!${RESET_FORMAT}"
