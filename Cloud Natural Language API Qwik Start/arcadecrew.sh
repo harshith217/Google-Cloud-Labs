@@ -18,27 +18,18 @@ echo
 # Displaying instructions
 echo "${YELLOW_TEXT}${BOLD_TEXT}Fetching the Compute Engine instance zone...${RESET_FORMAT}"
 ZONE="$(gcloud compute instances list --project=$DEVSHELL_PROJECT_ID --format='value(ZONE)')"
-echo "${GREEN_TEXT}Zone detected: $ZONE${RESET_FORMAT}"
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Setting up Google Cloud Project...${RESET_FORMAT}"
+
 export GOOGLE_CLOUD_PROJECT=$(gcloud config get-value core/project)
-echo "${GREEN_TEXT}Project set to: $GOOGLE_CLOUD_PROJECT${RESET_FORMAT}"
-
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating a service account...${RESET_FORMAT}"
 gcloud iam service-accounts create my-natlang-sa \
   --display-name "my natural language service account"
-echo "${GREEN_TEXT}Service account created successfully.${RESET_FORMAT}"
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Generating and saving service account key...${RESET_FORMAT}"
 gcloud iam service-accounts keys create ~/key.json \
   --iam-account my-natlang-sa@${GOOGLE_CLOUD_PROJECT}.iam.gserviceaccount.com
-echo "${GREEN_TEXT}Key saved as ~/key.json${RESET_FORMAT}"
 
 export GOOGLE_APPLICATION_CREDENTIALS="/home/USER/key.json"
 
-echo "${BLUE_TEXT}${BOLD_TEXT}Connecting to the Compute Engine instance...${RESET_FORMAT}"
 gcloud compute ssh --zone "$ZONE" "linux-instance" --project "$DEVSHELL_PROJECT_ID" --quiet --command "gcloud ml language analyze-entities --content='Michelangelo Caravaggio, Italian painter, is known for \"The Calling of Saint Matthew\".' > result.json"
-echo "${GREEN_TEXT}${BOLD_TEXT}Process completed.${RESET_FORMAT}"
 echo
 
 # Safely delete the script if it exists
