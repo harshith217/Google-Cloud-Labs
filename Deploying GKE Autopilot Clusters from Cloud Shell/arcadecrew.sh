@@ -17,7 +17,7 @@ echo "${CYAN_TEXT}${BOLD_TEXT}Starting the process...${RESET_FORMAT}"
 echo
 
 # Prompt user for region
-echo "${YELLOW_TEXT}${BOLD_TEXT}Enter the GCP region (e.g., us-central1):${RESET_FORMAT}"
+echo "${YELLOW_TEXT}${BOLD_TEXT}Enter REGION:${RESET_FORMAT}"
 read -r REGION
 echo "${GREEN_TEXT}You have selected region: $REGION${RESET_FORMAT}"
 
