@@ -17,7 +17,7 @@ echo
 
 # Instruction for setting the zone
 echo "${YELLOW_TEXT}${BOLD_TEXT}Step 1: Set the zone for your GCP resources.${RESET_FORMAT}"
-echo "${MAGENTA_TEXT}Please enter the zone (e.g., us-central1-a):${RESET_FORMAT}"
+echo "${MAGENTA_TEXT}Please enter ZONE:${RESET_FORMAT}"
 read -p "Zone: " ZONE
 export ZONE=$ZONE
 
