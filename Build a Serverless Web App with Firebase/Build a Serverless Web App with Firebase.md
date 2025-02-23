@@ -21,6 +21,8 @@ This guide is provided to support your educational journey in this lab. Please o
 ### Step 2: Register Your App
 - **App Name:** `Pet Theory`
 
+#### FOLLOW VIDEO FOR CREATING DATABASE...
+
 ### Step 3: Run in Terminal:  
 
 ```bash
@@ -28,7 +30,10 @@ curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/
 sed -i 's/\r$//' arcadecrewgsp643.sh
 source arcadecrewgsp643.sh
 ```
-▶️ **NOW FOLLOW STEPS IN THE VIDEO**
+### ▶️ **NOW FOLLOW STEPS IN THE VIDEO**
+
+#### Customer name: `John` 
+#### Customer phone: `98473757454`
 ---
 
 ## 🏆 **Congratulations! You've Completed the Lab!** 🎉
