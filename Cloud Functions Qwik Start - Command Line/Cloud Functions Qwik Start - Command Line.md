@@ -1,5 +1,4 @@
-# Cloud Functions: Qwik Start - Command Line 
-### LAB: [GSP080](https://www.cloudskillsboost.google/focuses/916?parent=catalog) 
+# [Cloud Functions: Qwik Start - Command Line || GSP080](https://www.cloudskillsboost.google/focuses/916?parent=catalog) 
 
 Watch the full video walkthrough:  
 [![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432/featured)
