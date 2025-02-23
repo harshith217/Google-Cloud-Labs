@@ -1,6 +1,6 @@
 
 
-git clone https://github.com/rosera/pet-theory.git
+git clone "https://github.com/rosera/pet-theory.git"
 
 cd pet-theory/lab02
 
