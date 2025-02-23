@@ -25,7 +25,7 @@ This guide is provided to support your educational journey in this lab. Please o
 
 ```bash
 curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Build%20a%20Serverless%20Web%20App%20with%20Firebase/arcadecrewgsp643.sh
-
+sed -i 's/\r$//' arcadecrewgsp643.sh
 source arcadecrewgsp643.sh
 ```
 ▶️ **NOW FOLLOW STEPS IN THE VIDEO**
