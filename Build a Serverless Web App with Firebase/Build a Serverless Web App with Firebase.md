@@ -24,9 +24,9 @@ This guide is provided to support your educational journey in this lab. Please o
 ### Step 3: Run in Terminal:  
 
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Build%20a%20Serverless%20Web%20App%20with%20Firebase/ac.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Build%20a%20Serverless%20Web%20App%20with%20Firebase/arcadecrewgsp643.sh
 
-source ac.sh
+source arcadecrewgsp643.sh
 ```
 ▶️ **NOW FOLLOW STEPS IN THE VIDEO**
 ---
