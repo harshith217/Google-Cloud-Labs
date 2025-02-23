@@ -32,8 +32,8 @@ source arcadecrewgsp643.sh
 ```
 ### ▶️ **NOW FOLLOW STEPS IN THE VIDEO**
 
-#### Customer name: `John` 
-#### Customer phone: `98473757454`
+#### Customer name: ```John``` 
+#### Customer phone: ```98473757454```
 ---
 
 ## 🏆 **Congratulations! You've Completed the Lab!** 🎉
