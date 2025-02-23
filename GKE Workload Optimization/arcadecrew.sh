@@ -18,7 +18,7 @@ echo
 
 # Prompt user to set the zone
 echo "${YELLOW_TEXT}${BOLD_TEXT}Step 1: Set the compute zone.${RESET_FORMAT}"
-echo "${MAGENTA_TEXT}Please Enter ZONE:${RESET_FORMAT}"
+echo "${BLUE_TEXT}${BOLD_TEXT}Please Enter ZONE:${RESET_FORMAT}"
 read -p "Zone: " ZONE
 export ZONE=$ZONE
 
