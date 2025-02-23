@@ -28,7 +28,7 @@ curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/
 
 source ac.sh
 ```
-
+▶️ **NOW FOLLOW STEPS IN THE VIDEO**
 ---
 
 ## 🏆 **Congratulations! You've Completed the Lab!** 🎉
