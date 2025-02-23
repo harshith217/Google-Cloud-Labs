@@ -15,7 +15,7 @@ This guide is provided to support your educational journey in this lab. Please o
 ## 🚀 **Steps to Perform**
 
 ### Step 1: Access Firebase Console
-Go to the [Firebase Console](https://console.firebase.google.com/).
+👉 Go to the [Firebase Console](https://console.firebase.google.com/).
 ### THEN FOLLOW INSTRUCTIONS FROM VIDEO
 
 ### Step 2: Register Your App
