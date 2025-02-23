@@ -16,6 +16,11 @@ echo
 echo "${CYAN_TEXT}${BOLD_TEXT}Starting the process...${RESET_FORMAT}"
 echo
 
+# Take user input for ZONE
+echo "${YELLOW_TEXT}${BOLD_TEXT}Please Enter ZONE:${RESET_FORMAT}"
+read -p "${YELLOW_TEXT}${BOLD_TEXT}ZONE: ${RESET_FORMAT}" ZONE
+export ZONE
+
 # Instructions for the user
 echo "${YELLOW_TEXT}${BOLD_TEXT}Step 1: Enabling required Google Cloud services...${RESET_FORMAT}"
 echo
