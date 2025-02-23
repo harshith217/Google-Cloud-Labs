@@ -16,52 +16,41 @@ echo
 echo "${CYAN_TEXT}${BOLD_TEXT}Starting the process...${RESET_FORMAT}"
 echo
 
-echo "${YELLOW_TEXT}Enter ZONE:${RESET_FORMAT}"
-read -p "Zone: " ZONE
+# Instructions for the user
+echo "${YELLOW_TEXT}${BOLD_TEXT}Step 1: Enabling required Google Cloud services...${RESET_FORMAT}"
 echo
 
-# Enable necessary APIs
-echo "${BLUE_TEXT}${BOLD_TEXT}Step 2: Enabling required Google Cloud APIs...${RESET_FORMAT}"
-echo "${CYAN_TEXT}Enabling notebooks.googleapis.com...${RESET_FORMAT}"
-gcloud services enable notebooks.googleapis.com
+gcloud services enable aiplatform.googleapis.com storage-component.googleapis.com dataflow.googleapis.com artifactregistry.googleapis.com dataplex.googleapis.com compute.googleapis.com dataform.googleapis.com notebooks.googleapis.com datacatalog.googleapis.com visionai.googleapis.com 
 
-echo "${CYAN_TEXT}Enabling aiplatform.googleapis.com...${RESET_FORMAT}"
-gcloud services enable aiplatform.googleapis.com
+sleep 30
+
+# Instructions for the user
+echo
+echo "${YELLOW_TEXT}${BOLD_TEXT}Step 2: Creating a new notebook instance...${RESET_FORMAT}"
 echo
 
-# Create Notebook instance
-echo "${BLUE_TEXT}${BOLD_TEXT}Step 3: Creating the Jupyter Notebook instance...${RESET_FORMAT}"
-export NOTEBOOK_NAME="awesome-jupyter"
-export MACHINE_TYPE="e2-standard-2"
+# Create a new notebook instance
+gcloud notebooks instances create my-notebook --location=$ZONE --vm-image-project=deeplearning-platform-release --vm-image-family=tf-2-11-cu113-notebooks --machine-type=e2-standard-2
 
-echo "${GREEN_TEXT}Creating instance with the following details:${RESET_FORMAT}"
-echo "${YELLOW_TEXT}Notebook Name: ${NOTEBOOK_NAME}${RESET_FORMAT}"
-echo "${YELLOW_TEXT}Machine Type: ${MACHINE_TYPE}${RESET_FORMAT}"
-echo "${YELLOW_TEXT}Zone: ${ZONE}${RESET_FORMAT}"
+# Instructions for the user
+echo
+echo "${YELLOW_TEXT}${BOLD_TEXT}Step 3: Accessing your notebook instance...${RESET_FORMAT}"
 echo
 
-gcloud notebooks instances create $NOTEBOOK_NAME \
-  --location=$ZONE \
-  --vm-image-project=deeplearning-platform-release \
-  --vm-image-family=tf-2-11-cu113-notebooks \
-  --machine-type=$MACHINE_TYPE
-
+echo "########################## Click the link below ##########################"
+echo "${GREEN_TEXT}${BOLD_TEXT}Click the link on here:${RESET_FORMAT} https://console.cloud.google.com/vertex-ai/workbench/user-managed?cloudshell=true&project=$DEVSHELL_PROJECT_ID"
 echo
-echo "${GREEN_TEXT}${BOLD_TEXT}Your Jupyter Notebook instance has been created successfully!${RESET_FORMAT}"
-echo
-
-
 
 # Safely delete the script if it exists
 SCRIPT_NAME="arcadecrew.sh"
 if [ -f "$SCRIPT_NAME" ]; then
-    echo -e "${BOLD_TEXT}${RED_TEXT}Deleting the script ($SCRIPT_NAME) for safety purposes...${RESET_FORMAT}${NO_COLOR}"
+    echo -e "${RED_TEXT}${BOLD_TEXT}Deleting the script ($SCRIPT_NAME) for safety purposes...${RESET_FORMAT}${NO_COLOR}"
     rm -- "$SCRIPT_NAME"
 fi
 
 echo
 echo
 # Completion message
-echo -e "${MAGENTA_TEXT}${BOLD_TEXT}Lab Completed Successfully!${RESET_FORMAT}"
+echo -e "${MAGENTA_TEXT}${BOLD_TEXT}NOW FOLLOW VIDEO INSTRUCTIONS...${RESET_FORMAT}"
 echo -e "${GREEN_TEXT}${BOLD_TEXT}Subscribe our Channel:${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
 echo
