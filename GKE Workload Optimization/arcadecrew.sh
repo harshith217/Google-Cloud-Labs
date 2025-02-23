@@ -114,9 +114,8 @@ kubectl get ingress gb-frontend-ingress
 echo
 echo "${YELLOW_TEXT}${BOLD_TEXT}NOW${RESET_FORMAT} ${WHITE_TEXT}${BOLD_TEXT}Check The Score${RESET_FORMAT} ${GREEN_TEXT}${BOLD_TEXT}For Task 1.${RESET_FORMAT}"
 
-# Replace sleep 120 with a yes/no prompt
 while true; do
-    read -p "${MAGENTA_TEXT}Have you checked the progress for Task 1? (Y/N): ${RESET_FORMAT}" user_input
+    read -p "${MAGENTA_TEXT}${BOLD_TEXT}Have you checked the progress for Task 1? (Y/N): ${RESET_FORMAT}" user_input
     case $user_input in
         [Yy]|[Yy][Ee][Ss])
             echo "${GREEN_TEXT}Proceeding to the next step...${RESET_FORMAT}"
