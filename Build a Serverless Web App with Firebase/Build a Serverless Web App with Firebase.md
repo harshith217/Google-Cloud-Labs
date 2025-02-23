@@ -1,17 +1,18 @@
-# Build a Serverless Web App with Firebase
-
-### Course: [GSP643](https://www.cloudskillsboost.google/focuses/8391?parent=catalog)
-
-## 🚀 **Solution Walkthrough**
-
-Watch the full video walkthrough:  
-[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://www.youtube.com/watch?v=teOVqrkxCkQ)
+# 🌐 [Build a Serverless Web App with Firebase || GSP643](https://www.cloudskillsboost.google/focuses/8391?parent=catalog)
 
 ---
-## ⚠️ **Important Note:**
-This guide is provided to support your educational journey in this lab. Please open and review each step of the script to gain full understanding. Be sure to follow the terms of Qwiklabs and YouTube’s guidelines as you proceed.
+
+🎥 **Watch the Full Video Walkthrough for This Lab:**  
+[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432?sub_confirmation=1)
 
 ---
+
+## ⚠️ **Important Note:**  
+This guide is provided to support your educational journey in this lab. Please open and review each step of the script to gain a full understanding. Be sure to follow the terms of Qwiklabs and YouTube’s guidelines as you proceed.
+
+---
+
+## 🚀 **Steps to Perform**
 
 ### Step 1: Access Firebase Console
 Go to the [Firebase Console](https://console.firebase.google.com/).
@@ -20,32 +21,21 @@ Go to the [Firebase Console](https://console.firebase.google.com/).
 ### Step 2: Register Your App
 - **App Name:** `Pet Theory`
 
-### Step 3: Create a Firestore Collection
-1. **Collection ID:** `customers`
-2. **Document ID:** `Your Username`
+### Step 3: Run in Cloudshell:  
 
-### Step 4: Add Document Fields
-Paste the following fields:
+```bash
+curl -LO raw
 
-| Field |  Type  | Value             |
-|-------|--------|-------------------|
-| email | string | Your Username      |
-| name  | string | John              |
-| phone | string | 98473757454       |
-
-### Step 5: Save Your Document
-- Click **Save** to finalize the creation.
+source ac.sh
+```
 
 ---
 
-### 🏆 Congratulations!!! You completed the Lab! 🎉
+## 🏆 **Congratulations! You've Completed the Lab!** 🎉
 
 ---
 
-### **Join the Community!**
+## 🤝 **Join the Community!**
 
-- [Whatsapp Group](https://chat.whatsapp.com/FbVg9NI6Dp4CzfdsYmy0AE)  
-
-[![Arcade Crew Channel](https://img.shields.io/badge/YouTube-Arcade%20Crew-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432)
-
----
+- [Whatsapp Group](https://chat.whatsapp.com/KkNEauOhBQXHdVcmqIlv9F)  
+[![Arcade Crew Channel](https://img.shields.io/badge/YouTube-Arcade%20Crew-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432?sub_confirmation=1)
