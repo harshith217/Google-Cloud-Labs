@@ -16,23 +16,36 @@ echo
 echo "${CYAN_TEXT}${BOLD_TEXT}Starting the process...${RESET_FORMAT}"
 echo
 
-echo "${YELLOW_TEXT}${BOLD_TEXT}Please enter the following details:${RESET_FORMAT}"
-read -p "${MAGENTA_TEXT}Enter INSTANCE_NAME: ${NO_COLOR}" INSTANCE_NAME
-read -p "${MAGENTA_TEXT}Enter FIREWALL_NAME: ${NO_COLOR}" FIREWALL_NAME
-read -p "${MAGENTA_TEXT}Enter ZONE: ${NO_COLOR}" ZONE
+# Collect user inputs
+read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter INSTANCE_NAME: ${RESET_FORMAT}" INSTANCE_NAME
+read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter FIREWALL_RULE: ${RESET_FORMAT}" FIREWALL_RULE
 
-echo "${GREEN_TEXT}${BOLD_TEXT}You entered:${RESET_FORMAT}"
-echo "${GREEN_TEXT}INSTANCE_NAME: ${BOLD_TEXT}$INSTANCE_NAME${RESET_FORMAT}"
-echo "${GREEN_TEXT}FIREWALL_NAME: ${BOLD_TEXT}$FIREWALL_NAME${RESET_FORMAT}"
-echo "${GREEN_TEXT}ZONE: ${BOLD_TEXT}$ZONE${RESET_FORMAT}"
+# Export variables after collecting input
+export INSTANCE_NAME FIREWALL_RULE
 
+# Display current authenticated user
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Checking authenticated accounts...${RESET_FORMAT}"
+gcloud auth list
+
+# Set default zone, region, and project
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Setting up default zone, region, and project...${RESET_FORMAT}"
+export ZONE=$(gcloud compute project-info describe --format="value(commonInstanceMetadata.items[google-compute-default-zone])")
 export PORT=8082
 export REGION="${ZONE%-*}"
+gcloud config set project $DEVSHELL_PROJECT_ID
+gcloud config set compute/zone $ZONE
+gcloud config set compute/region $REGION
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating network...${RESET_FORMAT}"
+# Create VPC network
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating VPC network...${RESET_FORMAT}"
 gcloud compute networks create nucleus-vpc --subnet-mode=auto
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating instance...${RESET_FORMAT}"
+# Create a compute instance
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating a compute instance...${RESET_FORMAT}"
 gcloud compute instances create $INSTANCE_NAME \
           --network nucleus-vpc \
           --zone $ZONE  \
@@ -40,6 +53,9 @@ gcloud compute instances create $INSTANCE_NAME \
           --image-family debian-12  \
           --image-project debian-cloud 
 
+# Create a startup script for the instance
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating a startup script for the instance...${RESET_FORMAT}"
 cat << EOF > startup.sh
 #! /bin/bash
 apt-get update
@@ -48,69 +64,74 @@ service nginx start
 sed -i -- 's/nginx/Google Cloud Platform - '"\$HOSTNAME"'/' /var/www/html/index.nginx-debian.html
 EOF
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating instance template...${RESET_FORMAT}"
-gcloud compute instance-templates create web-server-template \
---metadata-from-file startup-script=startup.sh \
---network nucleus-vpc \
---machine-type e2-medium \
---region $ZONE
+# Create an instance template
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating an instance template...${RESET_FORMAT}"
+gcloud compute instance-templates create web-server-template --region=$ZONE --machine-type g1-small --metadata-from-file startup-script=startup.sh --network nucleus-vpc
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating target pool...${RESET_FORMAT}"
+# Create a target pool
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating a target pool...${RESET_FORMAT}"
 gcloud compute target-pools create nginx-pool --region=$REGION
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating managed instance group...${RESET_FORMAT}"
-gcloud compute instance-groups managed create web-server-group \
---base-instance-name web-server \
--- $REGION
+# Create a managed instance group
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating a managed instance group...${RESET_FORMAT}"
+gcloud compute instance-groups managed create web-server-group --region=$REGION --base-instance-name web-server --size 2 --template web-server-template
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating firewall rule...${RESET_FORMAT}"
-gcloud compute firewall-rules create $FIREWALL_NAME \
---allow tcp:80 \
---network nucleus-vpc
+# Create a firewall rule
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating a firewall rule...${RESET_FORMAT}"
+gcloud compute firewall-rules create $FIREWALL_RULE --network nucleus-vpc --allow tcp:80
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating health check...${RESET_FORMAT}"
+# Create an HTTP health check
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating an HTTP health check...${RESET_FORMAT}"
 gcloud compute http-health-checks create http-basic-check
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Setting named ports...${RESET_FORMAT}"
+# Set named ports for the instance group
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Setting named ports for the instance group...${RESET_FORMAT}"
 gcloud compute instance-groups managed \
-set-named-ports web-server-group \
---named-ports http:80 \
---region $REGION
+set-named-ports web-server-group --region=$REGION \
+--named-ports http:80
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating backend service...${RESET_FORMAT}"
-gcloud compute backend-services create web-server-backend \
---protocol HTTP \
---http-health-checks http-basic-check \
---global
+# Create a backend service
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating a backend service...${RESET_FORMAT}"
+gcloud compute backend-services create web-server-backend --protocol HTTP --http-health-checks http-basic-check --global
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Adding backend to service...${RESET_FORMAT}"
-gcloud compute backend-services add-backend web-server-backend \
---instance-group web-server-group \
---instance-group-region $REGION \
---global
+# Add backend to the backend service
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Adding backend to the backend service...${RESET_FORMAT}"
+gcloud compute backend-services add-backend web-server-backend --instance-group web-server-group --instance-group-region $REGION --global
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating URL map...${RESET_FORMAT}"
-gcloud compute url-maps create web-server-map \
---default-service web-server-backend
+# Create a URL map
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating a URL map...${RESET_FORMAT}"
+gcloud compute url-maps create web-server-map --default-service web-server-backend
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating HTTP proxy...${RESET_FORMAT}"
-gcloud compute target-http-proxies create http-lb-proxy \
---url-map web-server-map
+# Create a target HTTP proxy
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating a target HTTP proxy...${RESET_FORMAT}"
+gcloud compute target-http-proxies create http-lb-proxy --url-map web-server-map
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating forwarding rule...${RESET_FORMAT}"
-gcloud compute forwarding-rules create http-content-rule \
---global \
---target-http-proxy http-lb-proxy \
---ports 80
+# Create a forwarding rule
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating a forwarding rule...${RESET_FORMAT}"
+gcloud compute forwarding-rules create http-content-rule --global --target-http-proxy http-lb-proxy --ports 80
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating forwarding rule for firewall...${RESET_FORMAT}"
-gcloud compute forwarding-rules create $FIREWALL_NAME \
---global \
---target-http-proxy http-lb-proxy \
---ports 80
+# Create another forwarding rule for the firewall rule
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating another forwarding rule for the firewall rule...${RESET_FORMAT}"
+gcloud compute forwarding-rules create $FIREWALL_RULE --global --target-http-proxy http-lb-proxy --ports 80
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Listing forwarding rules...${RESET_FORMAT}"
+# List forwarding rules
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Listing all forwarding rules...${RESET_FORMAT}"
 gcloud compute forwarding-rules list
+
+# End of the script
 echo
 
 
