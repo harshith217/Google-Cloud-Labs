@@ -1,5 +1,9 @@
+
+
 git clone https://github.com/rosera/pet-theory.git
+
 cd pet-theory/lab02
+
 npm i && npm audit fix --force
 
 firebase login --no-localhost
