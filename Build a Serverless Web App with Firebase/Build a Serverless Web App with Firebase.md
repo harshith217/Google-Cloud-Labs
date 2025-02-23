@@ -21,7 +21,7 @@ This guide is provided to support your educational journey in this lab. Please o
 ### Step 2: Register Your App
 - **App Name:** `Pet Theory`
 
-### Step 3: Run in Cloudshell:  
+### Step 3: Run in Terminal:  
 
 ```bash
 curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Build%20a%20Serverless%20Web%20App%20with%20Firebase/ac.sh
