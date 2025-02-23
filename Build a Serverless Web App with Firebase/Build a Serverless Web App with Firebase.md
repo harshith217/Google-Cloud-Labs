@@ -24,7 +24,7 @@ Go to the [Firebase Console](https://console.firebase.google.com/).
 ### Step 3: Run in Cloudshell:  
 
 ```bash
-curl -LO raw
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Build%20a%20Serverless%20Web%20App%20with%20Firebase/ac.sh
 
 source ac.sh
 ```
