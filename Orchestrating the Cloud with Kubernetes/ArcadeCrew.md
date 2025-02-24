@@ -17,7 +17,7 @@ This guide is provided to support your educational journey in this lab. Please o
 ### Run in Cloudshell:  
 
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/APIs%20Explorer%20Cloud%20Storage/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Orchestrating%20the%20Cloud%20with%20Kubernetes/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
