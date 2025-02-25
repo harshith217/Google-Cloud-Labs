@@ -32,7 +32,7 @@ This guide is designed to support your learning experience in this lab. Please e
 Run the following commands in **Cloud Shell**:  
 
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/APIs%20Explorer%20Cloud%20Storage/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Google%20Kubernetes%20Engine%20Pipeline%20using%20Cloud%20Build/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
