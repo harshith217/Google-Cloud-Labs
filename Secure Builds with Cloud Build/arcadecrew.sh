@@ -165,38 +165,37 @@ steps:
   args: ['build', '-t', '$REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image', '.']
   waitFor: ['-']
 
-#Run a vulnerability scan at _SECURITY level
-- id: scan
+# Run a vulnerability scan
+- id: "scan"
   name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'bash'
   args:
   - '-c'
   - |
-    (gcloud artifacts docker images scan \
+    gcloud artifacts docker images scan \
     $REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image \
     --location us \
-    --format="value(response.scan)") > /workspace/scan_id.txt
+    --format="value(response.scan)" > /workspace/scan_id.txt
 
-#Analyze the result of the scan
-- id: severity check
+# Analyze the result of the scan
+- id: "severity_check"
   name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'bash'
   args:
   - '-c'
   - |
-      gcloud artifacts docker images list-vulnerabilities \$(cat /workspace/scan_id.txt) \
-      --format="value(vulnerability.effectiveSeverity)" | if grep -Fxq CRITICAL; \
-      then echo "${BRIGHT_RED_TEXT}${BOLD_TEXT}Failed vulnerability check for CRITICAL level${RESET_FORMAT}" && exit 1; else echo "${BRIGHT_GREEN_TEXT}${BOLD_TEXT}No CRITICAL vulnerability found, congrats!${RESET_FORMAT}" && exit 0; fi
+    gcloud artifacts docker images list-vulnerabilities \$(cat /workspace/scan_id.txt) \
+    --format="value(vulnerability.effectiveSeverity)" | if grep -Fxq CRITICAL; \
+    then echo "Failed vulnerability check for CRITICAL level" && exit 1; else echo "No CRITICAL vulnerability found!" && exit 0; fi
 
-#Retag
+# Retagging and pushing
 - id: "retag"
   name: 'gcr.io/cloud-builders/docker'
-  args: ['tag',  '$REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image', '$REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:good']
+  args: ['tag', '$REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image', '$REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:good']
 
-#pushing to artifact registry
 - id: "push"
   name: 'gcr.io/cloud-builders/docker'
-  args: ['push',  '$REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:good']
+  args: ['push', '$REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:good']
 
 images:
   - $REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image
