@@ -179,7 +179,7 @@ git checkout -b production
 
 rm cloudbuild.yaml
 
-curl -LO ENV-cloudbuild.yaml
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Google%20Kubernetes%20Engine%20Pipeline%20using%20Cloud%20Build/ENV-cloudbuild.yaml
 
 mv ENV-cloudbuild.yaml cloudbuild.yaml
 
@@ -208,7 +208,7 @@ git push google master
 
 rm cloudbuild.yaml
 
-curl -LO APP-cloudbuild.yaml
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Google%20Kubernetes%20Engine%20Pipeline%20using%20Cloud%20Build/APP-cloudbuild.yaml
 
 mv APP-cloudbuild.yaml cloudbuild.yaml
 
