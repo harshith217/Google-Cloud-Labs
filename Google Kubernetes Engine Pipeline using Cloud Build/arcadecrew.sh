@@ -20,7 +20,7 @@ echo "${BRIGHT_MAGENTA_TEXT}${BOLD_TEXT}Starting the process...${RESET_FORMAT}"
 echo
 
 # Step 1: Set environment variables
-echo "${BOLD}${CYAN}Setting up environment variables${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_CYAN_TEXT}Setting up environment variables${RESET_FORMAT}"
 export PROJECT_ID=$(gcloud config get-value project)
 export PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
 export REGION=$(gcloud compute project-info describe \
@@ -28,28 +28,28 @@ export REGION=$(gcloud compute project-info describe \
 gcloud config set compute/region $REGION
 
 # Step 2: Enable required services
-echo "${BOLD}${YELLOW}Enabling necessary Google Cloud services${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_YELLOW_TEXT}Enabling necessary Google Cloud services${RESET_FORMAT}"
 gcloud services enable container.googleapis.com \
     cloudbuild.googleapis.com \
     secretmanager.googleapis.com \
     containeranalysis.googleapis.com
 
 # Step 3: Create Artifact Registry repository
-echo "${BOLD}${BLUE}Creating Artifact Registry repository${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_BLUE_TEXT}Creating Artifact Registry repository${RESET_FORMAT}"
 gcloud artifacts repositories create my-repository \
   --repository-format=docker \
   --location=$REGION
 
 # Step 4: Create GKE cluster
-echo "${BOLD}${MAGENTA}Creating GKE Cluster${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_MAGENTA_TEXT}Creating GKE Cluster${RESET_FORMAT}"
 gcloud container clusters create hello-cloudbuild --num-nodes 1 --region $REGION
 
 # Step 5: Install GitHub CLI
-echo "${BOLD}${CYAN}Installing GitHub CLI${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_CYAN_TEXT}Installing GitHub CLI${RESET_FORMAT}"
 curl -sS https://webi.sh/gh | sh
 
 # Step 6: Authenticate GitHub
-echo "${BOLD}${GREEN} Authenticating with GitHub${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_GREEN_TEXT} Authenticating with GitHub${RESET_FORMAT}"
 gh auth login 
 gh api user -q ".login"
 GITHUB_USERNAME=$(gh api user -q ".login")
@@ -59,13 +59,13 @@ echo ${GITHUB_USERNAME}
 echo ${USER_EMAIL}
 
 # Step 7: Create GitHub Repositories
-echo "${BOLD}${YELLOW}Creating GitHub repositories${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_YELLOW_TEXT}Creating GitHub repositories${RESET_FORMAT}"
 gh repo create  hello-cloudbuild-app --private 
 
 gh repo create  hello-cloudbuild-env --private
 
 # Step 8: Clone Google Storage files
-echo "${BOLD}${MAGENTA}Cloning source files${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_MAGENTA_TEXT}Cloning source files${RESET_FORMAT}"
 cd ~
 mkdir hello-cloudbuild-app
 
@@ -74,14 +74,14 @@ gcloud storage cp -r gs://spls/gsp1077/gke-gitops-tutorial-cloudbuild/* hello-cl
 cd ~/hello-cloudbuild-app
 
 # Step 9: Update region values in files
-echo "${BOLD}${CYAN}Updating region values in configuration files${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_CYAN_TEXT}Updating region values in configuration files${RESET_FORMAT}"
 sed -i "s/us-central1/$REGION/g" cloudbuild.yaml
 sed -i "s/us-central1/$REGION/g" cloudbuild-delivery.yaml
 sed -i "s/us-central1/$REGION/g" cloudbuild-trigger-cd.yaml
 sed -i "s/us-central1/$REGION/g" kubernetes.yaml.tpl
 
 # Step 10: Initialize git repository
-echo "${BOLD}${GREEN}Initializing Git repository${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_GREEN_TEXT}Initializing Git repository${RESET_FORMAT}"
 git init
 git config credential.helper gcloud.sh
 git remote add google https://github.com/${GITHUB_USERNAME}/hello-cloudbuild-app
@@ -89,20 +89,20 @@ git branch -m master
 git add . && git commit -m "initial commit"
 
 # Step 11: Submit build to Cloud Build
-echo "${BOLD}${BLUE}Submitting build to Cloud Build${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_BLUE_TEXT}Submitting build to Cloud Build${RESET_FORMAT}"
 COMMIT_ID="$(git rev-parse --short=7 HEAD)"
 
 gcloud builds submit --tag="${REGION}-docker.pkg.dev/${PROJECT_ID}/my-repository/hello-cloudbuild:${COMMIT_ID}" .
 
 echo
 
-echo "${BOLD}${BLUE}Click here to set up triggers: ${RESET}""https://console.cloud.google.com/cloud-build/triggers;region=global/add?project=$PROJECT_ID"
+echo "${BOLD_TEXT}${BRIGHT_BLUE_TEXT}Click here to set up triggers: ${RESET_FORMAT}""https://console.cloud.google.com/cloud-build/triggers;region=global/add?project=$PROJECT_ID"
 
 # Call function to check progress before proceeding
 check_progress
 
 # Step 12: Commit and push changes
-echo "${BOLD}${MAGENTA}Pushing changes to GitHub${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_MAGENTA_TEXT}Pushing changes to GitHub${RESET_FORMAT}"
 git add .
 
 git commit -m "Type Any Commit Message here"
@@ -112,20 +112,20 @@ git push google master
 cd ~
 
 # Step 13: Create SSH Key for GitHub authentication
-echo "${BOLD}${CYAN}Generating SSH key for GitHub${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_CYAN_TEXT}Generating SSH key for GitHub${RESET_FORMAT}"
 mkdir workingdir
 cd workingdir
 
 ssh-keygen -t rsa -b 4096 -N '' -f id_github -C "${USER_EMAIL}"
 
 # Step 14: Store SSH key in Secret Manager
-echo "${BOLD}${GREEN}Storing SSH key in Secret Manager${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_GREEN_TEXT}Storing SSH key in Secret Manager${RESET_FORMAT}"
 gcloud secrets create ssh_key_secret --replication-policy="automatic"
 
 gcloud secrets versions add ssh_key_secret --data-file=id_github
 
 # Step 15: Add SSH key to GitHub
-echo "${BOLD}${BLUE}Adding SSH key to GitHub${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_BLUE_TEXT}Adding SSH key to GitHub${RESET_FORMAT}"
 GITHUB_TOKEN=$(gh auth token)
 
 SSH_KEY_CONTENT=$(cat ~/workingdir/id_github.pub)
@@ -139,7 +139,7 @@ gh api --method POST -H "Accept: application/vnd.github.v3+json" \
 rm id_github*
 
 # Step 16: Grant permissions
-echo "${BOLD}${YELLOW}Granting IAM permissions${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_YELLOW_TEXT}Granting IAM permissions${RESET_FORMAT}"
 gcloud projects add-iam-policy-binding ${PROJECT_NUMBER} \
 --member=serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com \
 --role=roles/secretmanager.secretAccessor
@@ -151,12 +151,12 @@ gcloud projects add-iam-policy-binding ${PROJECT_NUMBER} \
 --role=roles/container.developer
 
 # Step 17: Clone environment repository
-echo "${BOLD}${MAGENTA}Cloning environment repository${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_MAGENTA_TEXT}Cloning environment repository${RESET_FORMAT}"
 mkdir hello-cloudbuild-env
 gcloud storage cp -r gs://spls/gsp1077/gke-gitops-tutorial-cloudbuild/* hello-cloudbuild-env
 
 # Step 18: Modify files and push
-echo "${BOLD}${CYAN}Modifying files and pushing to GitHub${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_CYAN_TEXT}Modifying files and pushing to GitHub${RESET_FORMAT}"
 cd hello-cloudbuild-env
 sed -i "s/us-central1/$REGION/g" cloudbuild.yaml
 sed -i "s/us-central1/$REGION/g" cloudbuild-delivery.yaml
@@ -174,7 +174,7 @@ git add . && git commit -m "initial commit"
 git push google master
 
 # Step 19: Checkout and modify deployment branch
-echo "${BOLD}${GREEN}Configuring deployment pipeline${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_GREEN_TEXT}Configuring deployment pipeline${RESET_FORMAT}"
 git checkout -b production
 
 rm cloudbuild.yaml
@@ -197,7 +197,7 @@ git push google production
 git push google candidate
 
 # Step 20: Trigger CD pipeline
-echo "${BOLD}${YELLOW}Triggering the CD pipeline${RESET}"
+echo "${BOLD_TEXT}${BRIGHT_YELLOW_TEXT}Triggering the CD pipeline${RESET_FORMAT}"
 cd ~/hello-cloudbuild-app
 ssh-keyscan -t rsa github.com > known_hosts.github
 chmod +x known_hosts.github
@@ -221,6 +221,7 @@ git commit -m "Trigger CD pipeline"
 
 git push google master
 echo
+
 
 # Safely delete the script if it exists
 SCRIPT_NAME="arcadecrew.sh"
