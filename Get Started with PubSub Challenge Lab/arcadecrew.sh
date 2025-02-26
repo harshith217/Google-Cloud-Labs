@@ -113,7 +113,6 @@ EOF_END
             deploy_success=true
         else
             echo "${BRIGHT_YELLOW_TEXT}${BOLD_TEXT}Waiting for Cloud Function to be deployed...${RESET_FORMAT}"
-            echo "${BRIGHT_CYAN_TEXT}${BOLD_TEXT}Meanwhile, make sure to subscribe to Arcade Crew: https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
             sleep 20
         fi
     done
