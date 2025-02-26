@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Bright Foreground Colors
-BRIGHT_BLACK_TEXT=$'\033[0;90m'
-BRIGHT_RED_TEXT=$'\033[0;91m'
-BRIGHT_GREEN_TEXT=$'\033[0;92m'
-BRIGHT_YELLOW_TEXT=$'\033[0;93m'
-BRIGHT_BLUE_TEXT=$'\033[0;94m'
-BRIGHT_MAGENTA_TEXT=$'\033[0;95m'
-BRIGHT_CYAN_TEXT=$'\033[0;96m'
-BRIGHT_WHITE_TEXT=$'\033[0;97m'
+BLACK_TEXT=$'\033[0;90m'
+RED_TEXT=$'\033[0;91m'
+GREEN_TEXT=$'\033[0;92m'
+YELLOW_TEXT=$'\033[0;93m'
+BLUE_TEXT=$'\033[0;94m'
+MAGENTA_TEXT=$'\033[0;95m'
+CYAN_TEXT=$'\033[0;96m'
+WHITE_TEXT=$'\033[0;97m'
 
 NO_COLOR=$'\033[0m'
 RESET_FORMAT=$'\033[0m'
@@ -16,11 +16,20 @@ BOLD_TEXT=$'\033[1m'
 
 # Start of the script
 echo
-echo "${BRIGHT_MAGENTA_TEXT}${BOLD_TEXT}Starting the process...${RESET_FORMAT}"
+echo "${MAGENTA_TEXT}${BOLD_TEXT}Starting the process...${RESET_FORMAT}"
 echo
 
+# User instructions for setting the ZONE variable
+echo "${CYAN_TEXT}${BOLD_TEXT}Enter ZONE:${RESET_FORMAT}"
+read -p "${WHITE_TEXT}ZONE: ${RESET_FORMAT}" ZONE
+export ZONE=$ZONE
 
-export ZONE=
+# Confirmation message
+echo
+echo "${GREEN_TEXT}${BOLD_TEXT}ZONE set to: ${ZONE}${RESET_FORMAT}"
+echo
+
+# Create the prepare_disk.sh script
 cat > prepare_disk.sh <<'EOF_END'
 
 gcloud services enable apikeys.googleapis.com
@@ -53,21 +62,26 @@ cat result.json
 
 EOF_END
 
+# Instructions for SCP and SSH
+echo "${YELLOW_TEXT}${BOLD_TEXT}Copying the script to the GCP instance...${RESET_FORMAT}"
 gcloud compute scp prepare_disk.sh linux-instance:/tmp --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet
 
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}Running the script on the GCP instance...${RESET_FORMAT}"
 gcloud compute ssh linux-instance --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet --command="bash /tmp/prepare_disk.sh"
+
 echo
 
 
 # Safely delete the script if it exists
 SCRIPT_NAME="arcadecrew.sh"
 if [ -f "$SCRIPT_NAME" ]; then
-    echo -e "${BRIGHT_RED_TEXT}${BOLD_TEXT}Deleting the script ($SCRIPT_NAME) for safety purposes...${RESET_FORMAT}${NO_COLOR}"
+    echo -e "${RED_TEXT}${BOLD_TEXT}Deleting the script ($SCRIPT_NAME) for safety purposes...${RESET_FORMAT}${NO_COLOR}"
     rm -- "$SCRIPT_NAME"
 fi
 
 echo
 # Completion message
-echo -e "${BRIGHT_GREEN_TEXT}${BOLD_TEXT}Lab Completed Successfully!${RESET_FORMAT}"
-echo -e "${BRIGHT_RED_TEXT}${BOLD_TEXT}Subscribe our Channel:${RESET_FORMAT} ${BRIGHT_BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
+echo -e "${GREEN_TEXT}${BOLD_TEXT}Lab Completed Successfully!${RESET_FORMAT}"
+echo -e "${RED_TEXT}${BOLD_TEXT}Subscribe our Channel:${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
 echo
