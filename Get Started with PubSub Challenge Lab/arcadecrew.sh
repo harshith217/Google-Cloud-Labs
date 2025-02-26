@@ -67,10 +67,6 @@ run_form_1() {
     create_scheduler_job() {
         info_message "Starting Task 2: Creating a Cloud Scheduler job..."
 
-    # Get the region from the Lab Details panel (manually entered by the user)
-        echo "${BRIGHT_YELLOW_TEXT}${BOLD_TEXT}Please enter the REGION (e.g., us-central1):${RESET_FORMAT}"
-        read -r REGION
-
     # Check if the Cloud Scheduler job already exists
         info_message "Checking if Cloud Scheduler job 'cron-scheduler-job' already exists..."
         if gcloud scheduler jobs describe cron-scheduler-job --location="$REGION" >/dev/null 2>&1; then
