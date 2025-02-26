@@ -21,7 +21,8 @@ echo
 
 # Function to run form 1 code
 run_form_1() {
-    echo "${BRIGHT_GREEN_TEXT}${BOLD_TEXT}Running Form 1: Enabling Cloud Scheduler, creating Pub/Sub topic, subscription, and scheduler job...${RESET_FORMAT}"
+    echo "${BRIGHT_GREEN_TEXT}${BOLD_TEXT}Running Form 1...${RESET_FORMAT}"
+    
     gcloud services enable cloudscheduler.googleapis.com
 
     gcloud pubsub topics create cloud-pubsub-topic
@@ -37,7 +38,8 @@ run_form_1() {
 
 # Function to run form 2 code
 run_form_2() {
-    echo "${BRIGHT_GREEN_TEXT}${BOLD_TEXT}Running Form 2: Creating Pub/Sub schema, topic, and deploying a Cloud Function...${RESET_FORMAT}"
+    echo "${BRIGHT_GREEN_TEXT}${BOLD_TEXT}Running Form 2...${RESET_FORMAT}"
+    
     gcloud beta pubsub schemas create city-temp-schema \
         --type=avro \
         --definition='{
@@ -120,7 +122,8 @@ EOF_END
 
 # Function to run form 3 code
 run_form_3() {
-    echo "${BRIGHT_GREEN_TEXT}${BOLD_TEXT}Running Form 3: Creating Pub/Sub subscription, publishing a message, and creating a snapshot...${RESET_FORMAT}"
+    echo "${BRIGHT_GREEN_TEXT}${BOLD_TEXT}Running Form 3...${RESET_FORMAT}"
+    
     gcloud pubsub subscriptions create pubsub-subscription-message --topic gcloud-pubsub-topic
 
     gcloud pubsub topics publish gcloud-pubsub-topic --message="Hello World"
