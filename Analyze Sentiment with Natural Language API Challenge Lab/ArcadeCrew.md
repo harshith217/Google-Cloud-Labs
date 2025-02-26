@@ -19,13 +19,11 @@ This guide is designed to enhance your learning experience during this lab. Plea
 Run the following commands in **Cloud Shell**:  
 
 ```bash
-echo -e "Enter ZONE:"
-read -r ZONE
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/APIs%20Explorer%20Cloud%20Storage/arcadecrew.sh
 
-echo -e "Enter API KEY:"
-read -r API_KEY
+sudo chmod +x arcadecrew1.sh
 
-gcloud compute ssh lab-vm --zone=$ZONE --quiet --command "curl -LO https://raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Analyze%20Sentiment%20with%20Natural%20Language%20API%20Challenge%20Lab/arcadecrew.sh && sudo chmod +x arcadecrew.sh && ./arcadecrew.sh"
+./arcadecrew1.sh
 ```  
 ---
 
