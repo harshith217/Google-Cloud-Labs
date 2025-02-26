@@ -19,7 +19,7 @@ This guide is designed to enhance your learning experience during this lab. Plea
 Run the following commands in **Cloud Shell**:  
 
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/APIs%20Explorer%20Cloud%20Storage/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Entity%20and%20Sentiment%20Analysis%20with%20the%20Natural%20Language%20API/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
