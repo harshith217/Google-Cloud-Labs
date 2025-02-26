@@ -156,7 +156,7 @@ echo
 # Safely delete the script if it exists
 SCRIPT_NAME="arcadecrew.sh"
 if [ -f "$SCRIPT_NAME" ]; then
-    echo -e "${BOLD_TEXT}${RED_TEXT}Deleting the script ($SCRIPT_NAME) for safety purposes...${RESET_FORMAT}${NO_COLOR}"
+    echo -e "${BRIGHT_RED_TEXT}${BOLD_TEXT}Deleting the script ($SCRIPT_NAME) for safety purposes...${RESET_FORMAT}${NO_COLOR}"
     rm -- "$SCRIPT_NAME"
 fi
 
