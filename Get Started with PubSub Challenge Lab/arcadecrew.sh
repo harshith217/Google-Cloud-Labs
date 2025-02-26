@@ -46,27 +46,20 @@ run_form_1() {
         fi
     }
 
-# Step 1: Set up Cloud Pub/Sub
-    setup_pubsub() {
-        info_message "Starting Task 1: Setting up Cloud Pub/Sub..."
+    echo "${BRIGHT_GREEN_TEXT}${BOLD_TEXT}Running Form 1...${RESET_FORMAT}"
+    echo
 
     # Create a Cloud Pub/Sub topic
         info_message "Creating Pub/Sub topic 'cloud-pubsub-topic'..."
         gcloud pubsub topics create cloud-pubsub-topic
         verify_command "Pub/Sub topic 'cloud-pubsub-topic' created successfully." "Failed to create Pub/Sub topic."
-
+    echo
     # Create a Cloud Pub/Sub subscription
         info_message "Creating Pub/Sub subscription 'cloud-pubsub-subscription'..."
         gcloud pubsub subscriptions create cloud-pubsub-subscription --topic=cloud-pubsub-topic
         verify_command "Pub/Sub subscription 'cloud-pubsub-subscription' created successfully." "Failed to create Pub/Sub subscription."
-
-        success_message "Task 1 completed: Cloud Pub/Sub setup is done."
-    }
-
-# Step 2: Create a Cloud Scheduler job
-    create_scheduler_job() {
-        info_message "Starting Task 2: Creating a Cloud Scheduler job..."
-
+    
+    echo
     # Check if the Cloud Scheduler job already exists
         info_message "Checking if Cloud Scheduler job 'cron-scheduler-job' already exists..."
         if gcloud scheduler jobs describe cron-scheduler-job --location="$REGION" >/dev/null 2>&1; then
@@ -74,7 +67,7 @@ run_form_1() {
             gcloud scheduler jobs delete cron-scheduler-job --location="$REGION"
             verify_command "Cloud Scheduler job 'cron-scheduler-job' deleted successfully." "Failed to delete Cloud Scheduler job."
         fi
-
+    echo
     # Create a Cloud Scheduler job
         info_message "Creating Cloud Scheduler job 'cron-scheduler-job'..."
         gcloud scheduler jobs create pubsub cron-scheduler-job \
@@ -83,25 +76,15 @@ run_form_1() {
             --message-body="Hello World!" \
             --location="$REGION"
         verify_command "Cloud Scheduler job 'cron-scheduler-job' created successfully." "Failed to create Cloud Scheduler job."
-
-        success_message "Task 2 completed: Cloud Scheduler job is created."
-    }
-
-# Step 3: Verify the results in Cloud Pub/Sub
-    verify_pubsub_results() {
-        info_message "Starting Task 3: Verifying results in Cloud Pub/Sub..."
+    echo
 
     # Pull messages from the subscription
         info_message "Pulling messages from subscription 'cloud-pubsub-subscription'..."
         gcloud pubsub subscriptions pull cloud-pubsub-subscription --limit=5
         verify_command "Messages pulled successfully from subscription 'cloud-pubsub-subscription'." "Failed to pull messages from subscription."
 
-        success_message "Task 3 completed: Verification of Pub/Sub messages is done."
-    }
-
 # Main script execution
     main() {
-        echo "${BRIGHT_MAGENTA_TEXT}${BOLD_TEXT}Starting the lab automation script...${RESET_FORMAT}"
 
     # Task 1: Set up Cloud Pub/Sub
         setup_pubsub
@@ -111,17 +94,16 @@ run_form_1() {
 
     # Task 3: Verify the results in Cloud Pub/Sub
         verify_pubsub_results
-
-        echo "${BRIGHT_MAGENTA_TEXT}${BOLD_TEXT}Lab automation script completed successfully!${RESET_FORMAT}"
     }
 
 # Execute the main function
     main
-}
 
+} 
 # Function to run form 2 code
 run_form_2() {
-    echo "${BRIGHT_GREEN_TEXT}${BOLD_TEXT}Running Form 2: Creating Pub/Sub schema, topic, and deploying a Cloud Function...${RESET_FORMAT}"
+    echo
+    echo "${BRIGHT_GREEN_TEXT}${BOLD_TEXT}Running Form 2...${RESET_FORMAT}"
     gcloud beta pubsub schemas create city-temp-schema \
         --type=avro \
         --definition='{
@@ -205,6 +187,7 @@ EOF_END
 
 # Function to run form 3 code
 run_form_3() {
+    echo
     echo "${BRIGHT_GREEN_TEXT}${BOLD_TEXT}Running Form 3: Creating Pub/Sub subscription, publishing a message, and creating a snapshot...${RESET_FORMAT}"
     gcloud pubsub subscriptions create pubsub-subscription-message --topic gcloud-pubsub-topic
 
@@ -240,7 +223,7 @@ echo
 # Safely delete the script if it exists
 SCRIPT_NAME="arcadecrew.sh"
 if [ -f "$SCRIPT_NAME" ]; then
-    echo -e "${BOLD_TEXT}${RED_TEXT}Deleting the script ($SCRIPT_NAME) for safety purposes...${RESET_FORMAT}${NO_COLOR}"
+    echo -e "${BRIGHT_RED_TEXT}${BOLD_TEXT}Deleting the script ($SCRIPT_NAME) for safety purposes...${RESET_FORMAT}${NO_COLOR}"
     rm -- "$SCRIPT_NAME"
 fi
 
