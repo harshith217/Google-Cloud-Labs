@@ -15,15 +15,13 @@ This guide is designed to enhance your learning experience during this lab. Plea
 ---
 
 ## 💻 **Execute in Cloud Shell**  
-
 Run the following commands in **Cloud Shell**:  
-
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/APIs%20Explorer%20Cloud%20Storage/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Dataplex%20Qwik%20Start%20-%20Command%20Line/arcadecrew.sh
 
-sudo chmod +x arcadecrew1.sh
+sudo chmod +x arcadecrew.sh
 
-./arcadecrew1.sh
+./arcadecrew.sh
 ```  
 ---
 
