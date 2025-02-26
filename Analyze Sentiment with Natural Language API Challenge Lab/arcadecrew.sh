@@ -30,12 +30,21 @@ echo "${GREEN_TEXT}${BOLD_TEXT}Zone: $ZONE${RESET_FORMAT}"
 
 # Task 1: Create an API Key
 echo "${BLUE_TEXT}${BOLD_TEXT}Creating an API Key...${RESET_FORMAT}"
-API_KEY=$(gcloud services api-keys create "nl-api-key" --display-name="Natural Language API Key" --format="value(keyString)")
-if [[ -z "$API_KEY" ]]; then
-    echo "${RED_TEXT}${BOLD_TEXT}Failed to create an API key.${RESET_FORMAT}"
+API_KEY_NAME=$(gcloud api-keys create --display-name="Natural Language API Key" --format="value(name)")
+
+if [[ -z "$API_KEY_NAME" ]]; then
+    echo "${BOLD_TEXT}${RED_TEXT}Failed to create an API key.${RESET_FORMAT}"
     exit 1
 fi
-echo "${GREEN_TEXT}${BOLD_TEXT}API Key Created: $API_KEY${RESET_FORMAT}"
+
+API_KEY=$(gcloud api-keys get-key-string "$API_KEY_NAME" --format="value(keyString)")
+
+if [[ -z "$API_KEY" ]]; then
+    echo "${BOLD_TEXT}${RED_TEXT}Error retrieving API key string.${RESET_FORMAT}"
+    exit 1
+fi
+
+echo "${BOLD_TEXT}${GREEN_TEXT}API Key Created: $API_KEY${RESET_FORMAT}"
 
 # Enable required APIs
 echo "${BLUE_TEXT}${BOLD_TEXT}Enabling Cloud Natural Language API...${RESET_FORMAT}"
