@@ -20,7 +20,7 @@ echo "${BLUE_TEXT}${BOLD_TEXT}Starting the process...${RESET_FORMAT}"
 echo
 
 # Prompt user for input
-echo "${GREEN_TEXT}${BOLD_TEXT}Please enter the zone for your GCP resources (e.g., us-central1-a):${RESET_FORMAT}"
+echo "${GREEN_TEXT}${BOLD_TEXT}Enter ZONE:${RESET_FORMAT}"
 read -p "Zone: " ZONE
 export ZONE
 
