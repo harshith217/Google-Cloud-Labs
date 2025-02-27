@@ -67,7 +67,7 @@ EOF
 # Create an instance template
 echo
 echo "${BLUE_TEXT}${BOLD_TEXT}Creating an instance template...${RESET_FORMAT}"
-gcloud compute instance-templates create web-server-template --region=$ZONE --machine-type g1-small --metadata-from-file startup-script=startup.sh --network nucleus-vpc
+gcloud compute instance-templates create web-server-template --region=$ZONE --machine-type e2-medium --metadata-from-file startup-script=startup.sh --network nucleus-vpc
 
 # Create a target pool
 echo
