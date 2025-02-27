@@ -5,8 +5,8 @@
 
 ---
 ## ⚠️ **Important Notice**  
-
 This guide is designed to enhance your learning experience during this lab. Please review each step carefully to fully understand the concepts. Ensure you adhere to **Qwiklabs** and **YouTube** policies while following this guide.  
+
 ---
 ## 💻 **Execute in Cloud Shell**  
 Run the following commands in **Cloud Shell**:  
