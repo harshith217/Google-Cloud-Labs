@@ -13,9 +13,9 @@ Run the following commands in **Cloud Shell**:
 ```bash
 curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Running%20Databases%20in%20GKE/arcadecrew.sh
 
-sudo chmod +x arcadecrew1.sh
+sudo chmod +x arcadecrew.sh
 
-./arcadecrew1.sh
+./arcadecrew.sh
 ```  
 ---
 
