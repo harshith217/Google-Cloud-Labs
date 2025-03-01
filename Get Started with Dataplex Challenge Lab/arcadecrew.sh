@@ -88,8 +88,8 @@ URL="https://console.cloud.google.com/dataplex/templates/create?project=${PROJEC
 
 echo
 echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Open Dataplex Templates URL ========================== ${RESET_FORMAT}"
-echo "${YELLOW_TEXT}${BOLD_TEXT}          Open the following URL:            ${RESET_FORMAT}"
-echo "${YELLOW_TEXT}${BOLD_TEXT}                       $URL                        ${RESET_FORMAT}"
+echo "${YELLOW_TEXT}${BOLD_TEXT}Open the following URL:${RESET_FORMAT}"
+echo "${WHITE_TEXT}${BOLD_TEXT} $URL ${RESET_FORMAT}"
 echo
 
 # echo "${GREEN_TEXT}${BOLD_TEXT}╔════════════════════════════════════════════════════════╗${RESET_FORMAT}"
