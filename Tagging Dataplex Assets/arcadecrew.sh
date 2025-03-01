@@ -24,9 +24,7 @@ echo
 
 echo
 echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Set the Region ========================== ${RESET_FORMAT}"
-echo "${YELLOW_TEXT}${BOLD_TEXT} Please enter the desired region (e.g., us-central1, europe-west1): ${RESET_FORMAT}"
-echo "${GREEN_TEXT}${BOLD_TEXT} ======================================================================= ${RESET_FORMAT}"
-echo
+echo "${YELLOW_TEXT}${BOLD_TEXT} Enter REGION: ${RESET_FORMAT}"
 read -r REGION
 
 export REGION=$REGION
