@@ -347,8 +347,6 @@ gcloud run deploy slow-function \
 --region=$REGION \
 --project=$DEVSHELL_PROJECT_ID
 
-echo "${YELLOW_TEXT}${BOLD_TEXT}NOW${RESET_FORMAT}" "${WHITE_TEXT}${BOLD_TEXT}Check The Score${RESET_FORMAT}" "${GREEN_TEXT}${BOLD_TEXT}Upto Task 6 then Process Next${RESET_FORMAT}"
-
 echo
 echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Please check the score till Task 6, then Proceed ========================== ${RESET_FORMAT}"
 echo
