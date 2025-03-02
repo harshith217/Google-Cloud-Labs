@@ -21,16 +21,16 @@ echo "${CYAN_TEXT}${BOLD_TEXT}╔═══════════════�
 echo "${CYAN_TEXT}${BOLD_TEXT}                  Starting the process...                   ${RESET_FORMAT}"
 echo "${CYAN_TEXT}${BOLD_TEXT}╚════════════════════════════════════════════════════════╝${RESET_FORMAT}"
 echo
-read -p "Enter Bucket Name: " BUCKET
+read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter Bucket Name: ${RESET_FORMAT}" BUCKET
 
 echo
-read -p "Enter REGION: " REGION
+read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter REGION: ${RESET_FORMAT}" REGION
 
 echo
-read -p "Enter Topic Name: " TOPIC
+read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter Topic Name: ${RESET_FORMAT}" TOPIC
 
 echo
-read -p "Enter Cloud Function Name: " FUNCTION
+read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter Cloud Function Name: ${RESET_FORMAT}" FUNCTION
 
 
 gcloud config set compute/region $REGION
