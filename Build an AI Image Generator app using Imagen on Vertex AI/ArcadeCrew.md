@@ -7,14 +7,12 @@ This guide is designed to enhance your learning experience during this lab. Plea
 
 ---
 
-## 💻 **Execute in Cloud Shell**  
-Run the following commands in **Cloud Shell**:  
+## 💻 **Execute in Terminal**  
+Run the following commands in **Terminal**:  
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/APIs%20Explorer%20Cloud%20Storage/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Build%20an%20AI%20Image%20Generator%20app%20using%20Imagen%20on%20Vertex%20AI/arcadecrew.sh
 
-sudo chmod +x arcadecrew.sh
-
-./arcadecrew.sh
+source arcadecrew.sh
 ```  
 ---
 
