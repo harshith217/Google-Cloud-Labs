@@ -7,7 +7,7 @@ This guide is designed to enhance your learning experience during this lab. Plea
 
 ---
 
-Create a View with Name **`users_limited`**.
+- Create a View with Name **`users_limited`**.
 
 
 ```
@@ -46,7 +46,7 @@ view: users_limited {
   }
 ```
 
-**`training_ecommerce.model`**
+- **`training_ecommerce.model`**
 
 ```
 connection: "bigquery_public_data_looker"
