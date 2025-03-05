@@ -10,7 +10,7 @@ This guide is designed to enhance your learning experience during this lab. Plea
 ## 💻 **Execute in Cloud Shell**  
 Run the following commands in **Cloud Shell**:  
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/APIs%20Explorer%20Cloud%20Storage/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Secure%20Software%20Supply%20Chain%20Using%20Cloud%20Build%20%26%20Cloud%20Deploy%20to%20Deploy%20Containerized%20Applications/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
