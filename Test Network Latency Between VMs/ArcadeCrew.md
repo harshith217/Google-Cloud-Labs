@@ -10,7 +10,7 @@ This guide is designed to enhance your learning experience during this lab. Plea
 ## 💻 **Execute in Cloud Shell**  
 Run the following commands in **Cloud Shell**:  
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/APIs%20Explorer%20Cloud%20Storage/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Test%20Network%20Latency%20Between%20VMs/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
