@@ -22,25 +22,26 @@ echo "${CYAN_TEXT}${BOLD_TEXT}                  Starting the process...         
 echo "${CYAN_TEXT}${BOLD_TEXT}╚════════════════════════════════════════════════════════╝${RESET_FORMAT}"
 echo
 
-# Prompt user for Zone 2
-echo "${YELLOW_TEXT}${BOLD_TEXT}Enter ZONE_2:${RESET_FORMAT}"
+# Prompt user for Zone 2 input
+echo "${YELLOW_TEXT}${BOLD_TEXT}Please enter a second GCP zone:${RESET_FORMAT}"
 read -r ZONE_2
+echo "${GREEN_TEXT}You entered: ${BOLD_TEXT}$ZONE_2${RESET_FORMAT}"
 
-export ZONE_2
 export ZONE_1=$(gcloud compute project-info describe \
 --format="value(commonInstanceMetadata.items[google-compute-default-zone])")
 
-#Instruction before create network
-echo "${BLUE_TEXT}${BOLD_TEXT}Creating a new VPC network named 'mynetwork'...${RESET_FORMAT}"
+# Creating network
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating VPC network: mynetwork...${RESET_FORMAT}"
 gcloud compute networks create mynetwork \
   --project=$DEVSHELL_PROJECT_ID \
   --subnet-mode=auto \
   --mtu=1460 \
   --bgp-routing-mode=regional
-echo "${GREEN_TEXT}${BOLD_TEXT}Successfully created mynetwork!${RESET_FORMAT}"
 
-#Instruction before first vm create
-echo "${BLUE_TEXT}${BOLD_TEXT}Creating the first VM instance 'mynet-us-vm' in zone: ${ZONE_1}...${RESET_FORMAT}"
+echo "${GREEN_TEXT}Network creation completed.${RESET_FORMAT}"
+
+# Creating first VM
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating first VM in zone: $ZONE_1...${RESET_FORMAT}"
 gcloud compute instances create mynet-us-vm \
   --project=$DEVSHELL_PROJECT_ID \
   --zone=$ZONE_1 \
@@ -55,10 +56,11 @@ gcloud compute instances create mynet-us-vm \
   --shielded-integrity-monitoring \
   --labels=goog-ec-src=vm_add-gcloud \
   --reservation-affinity=any
-echo "${GREEN_TEXT}${BOLD_TEXT}Successfully created mynet-us-vm!${RESET_FORMAT}"
 
-#Instruction before second vm create
-echo "${BLUE_TEXT}${BOLD_TEXT}Creating the second VM instance 'mynet-second-vm' in zone: ${ZONE_2}...${RESET_FORMAT}"
+echo "${GREEN_TEXT}First VM created successfully.${RESET_FORMAT}"
+
+# Creating second VM
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating second VM in zone: $ZONE_2...${RESET_FORMAT}"
 gcloud compute instances create mynet-second-vm \
   --project=$DEVSHELL_PROJECT_ID \
   --zone=$ZONE_2 \
@@ -73,7 +75,8 @@ gcloud compute instances create mynet-second-vm \
   --shielded-integrity-monitoring \
   --labels=goog-ec-src=vm_add-gcloud \
   --reservation-affinity=any
-echo "${GREEN_TEXT}${BOLD_TEXT}Successfully created mynet-second-vm!${RESET_FORMAT}"
+
+echo "${GREEN_TEXT}Second VM created successfully.${RESET_FORMAT}"
 
 echo
 echo "${GREEN_TEXT}${BOLD_TEXT}╔════════════════════════════════════════════════════════╗${RESET_FORMAT}"
