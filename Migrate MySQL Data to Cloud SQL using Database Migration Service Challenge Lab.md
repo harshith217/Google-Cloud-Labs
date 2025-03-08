@@ -8,6 +8,10 @@ This guide is crafted to elevate your learning experience during this lab. Caref
 
 ---
 
+## **🔌 Enable APIs** 
+1. **Database Migration API**
+2. **Service Networking API**
+
 ## **🔌 Connect to the MySQL Interactive Console**  
 
 To connect to the MySQL interactive console, follow these steps:  
