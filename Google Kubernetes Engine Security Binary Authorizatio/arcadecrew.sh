@@ -15,6 +15,11 @@ RESET_FORMAT=$'\033[0m'
 BOLD_TEXT=$'\033[1m'
 UNDERLINE_TEXT=$'\033[4m'
 
+echo
+echo "${CYAN_TEXT}${BOLD_TEXT}╔════════════════════════════════════════════════════════╗${RESET_FORMAT}"
+echo "${CYAN_TEXT}${BOLD_TEXT}                  Starting the process...                   ${RESET_FORMAT}"
+echo "${CYAN_TEXT}${BOLD_TEXT}╚════════════════════════════════════════════════════════╝${RESET_FORMAT}"
+echo
 
 echo "${YELLOW_TEXT}${BOLD_TEXT}Enter ZONE:${NO_COLOR}"
 read -p "${BOLD_TEXT}Zone: ${NO_COLOR}" ZONE
