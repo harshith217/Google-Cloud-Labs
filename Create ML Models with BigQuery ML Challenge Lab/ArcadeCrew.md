@@ -10,10 +10,8 @@ This guide is designed to enhance your learning experience during this lab. Plea
 ## 💻 **Execute in Cloud Shell**  
 Run the following commands in **Cloud Shell**:  
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/APIs%20Explorer%20Cloud%20Storage/arcadecrew.sh
-
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Create%20ML%20Models%20with%20BigQuery%20ML%20Challenge%20Lab/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
-
 ./arcadecrew.sh
 ```  
 ---
