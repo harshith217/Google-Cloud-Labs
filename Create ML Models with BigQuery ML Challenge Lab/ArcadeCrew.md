@@ -1,5 +1,5 @@
-# 🌐 Create ML Models with BigQuery ML Challenge Lab || GSP341
-[![Open Lab](https://img.shields.io/badge/Open-Lab-green?style=flat)](https://www.cloudskillsboost.google/focuses/14294?parent=catalog) 
+# 🚀 **Create ML Models with BigQuery ML: Challenge Lab || GSP341**  
+[![Open Lab](https://img.shields.io/badge/Open-Lab-pink?style=for-the-badge&logo=google-cloud&logoColor=white)](https://www.cloudskillsboost.google/focuses/20049?parent=catalog) 
 ---
 
 ## ⚠️ **Important Notice**  
@@ -23,4 +23,4 @@ sudo chmod +x arcadecrew.sh
 ## 🤝 **Join the Arcade Crew Community!**  
 
 - **WhatsApp Group:** [Join Here](https://chat.whatsapp.com/KkNEauOhBQXHdVcmqIlv9F)  
-- **YouTube Channel:** [![Subscribe to Arcade Crew](https://img.shields.io/badge/YouTube-Arcade%20Crew-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432?sub_confirmation=1)  
+- **YouTube Channel:** [![Subscribe to Arcade Crew](https://img.shields.io/badge/Youtube-Arcade%20Crew-red?style=for-the-badge&logo=google-cloud&logoColor=white)](https://www.youtube.com/@Arcade61432?sub_confirmation=1)   
