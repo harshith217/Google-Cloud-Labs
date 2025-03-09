@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Bright Foreground Colors
+# Define color variables
 BLACK_TEXT=$'\033[0;90m'
 RED_TEXT=$'\033[0;91m'
 GREEN_TEXT=$'\033[0;92m'
@@ -15,125 +15,266 @@ RESET_FORMAT=$'\033[0m'
 BOLD_TEXT=$'\033[1m'
 UNDERLINE_TEXT=$'\033[4m'
 
-# Displaying start message
 echo
 echo "${CYAN_TEXT}${BOLD_TEXT}╔════════════════════════════════════════════════════════╗${RESET_FORMAT}"
 echo "${CYAN_TEXT}${BOLD_TEXT}                  Starting the process...                   ${RESET_FORMAT}"
 echo "${CYAN_TEXT}${BOLD_TEXT}╚════════════════════════════════════════════════════════╝${RESET_FORMAT}"
+echo
 
-read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter REGION: ${RESET_FORMAT}" REGION
+# Function to display section headers
+section() {
+  echo ""
+  echo "${BLUE_TEXT}${BOLD_TEXT}===== $1 =====${RESET_FORMAT}"
+  echo ""
+}
 
-echo "${GREEN_TEXT}${BOLD_TEXT}You have selected region: ${REGION}${RESET_FORMAT}"
+# Function to display steps
+step() {
+  echo "${CYAN_TEXT}${BOLD_TEXT}>> $1${RESET_FORMAT}"
+}
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Authenticating with Google Cloud...${RESET_FORMAT}"
-gcloud auth list
+# Function to display success messages
+success() {
+  echo "${GREEN_TEXT}${BOLD_TEXT}✓ $1${RESET_FORMAT}"
+}
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Cloning the repository...${RESET_FORMAT}"
-git clone https://github.com/GoogleCloudPlatform/ruby-docs-samples.git
+# Function to display error messages and exit
+error() {
+  echo "${RED_TEXT}${BOLD_TEXT}✗ ERROR: $1${RESET_FORMAT}"
+  exit 1
+}
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Navigating to the Rails directory...${RESET_FORMAT}"
-cd ruby-docs-samples/run/rails
+# Function to display warnings
+warning() {
+  echo "${YELLOW_TEXT}${BOLD_TEXT}! WARNING: $1${RESET_FORMAT}"
+}
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Installing dependencies with bundle...${RESET_FORMAT}"
+# Function to display manual steps
+manual() {
+  echo "${MAGENTA_TEXT}${BOLD_TEXT}⟹ MANUAL STEP: $1${RESET_FORMAT}"
+}
+
+# Function to check command execution status
+check_status() {
+  if [ $? -eq 0 ]; then
+    success "$1"
+  else
+    error "$2"
+  fi
+}
+
+# Get user confirmation to proceed
+confirm_proceed() {
+  echo "${YELLOW_TEXT}${BOLD_TEXT}? $1 (y/n)${RESET_FORMAT}"
+  read -r response
+  if [[ ! "$response" =~ ^[Yy]$ ]]; then
+    echo "Operation cancelled by user."
+    exit 0
+  fi
+}
+
+# Check if gcloud is installed and authenticated
+check_gcloud() {
+  step "Checking if gcloud CLI is installed and authenticated..."
+  if ! command -v gcloud &> /dev/null; then
+    error "gcloud CLI is not installed. Please install it first."
+  fi
+  
+  if ! gcloud auth list --filter=status:ACTIVE --format="value(account)" &> /dev/null; then
+    error "Not authenticated with gcloud. Please run 'gcloud auth login' first."
+  fi
+  
+  success "gcloud CLI is installed and authenticated"
+}
+
+# Set region based on user input or default
+set_region() {
+  # Ask for region or use default
+  echo "${CYAN_TEXT}${BOLD_TEXT}Enter REGION:${RESET_FORMAT}"
+  read -r user_region
+  REGION=${user_region:-"us-central1"}
+  
+  echo "${GREEN_TEXT}Using region: $REGION${RESET_FORMAT}"
+}
+
+########################
+# BEGIN SCRIPT EXECUTION
+########################
+
+# Check prerequisites
+check_gcloud
+set_region
+
+# Set environment variables
+INSTANCE_NAME="postgres-instance"
+DATABASE_NAME="mydatabase"
+PROJECT_ID=$(gcloud config get-value project)
+BUCKET_NAME="${PROJECT_ID}-ruby"
+APP_NAME="myrubyapp"
+
+section "TASK 1: PREPARING YOUR ENVIRONMENT"
+
+# Clone the repository
+step "Cloning the Rails app repository..."
+if [ ! -d "ruby-docs-samples" ]; then
+  git clone https://github.com/GoogleCloudPlatform/ruby-docs-samples.git
+  check_status "Repository cloned successfully" "Failed to clone repository"
+else
+  warning "Repository already exists, skipping clone"
+fi
+
+# Install dependencies
+step "Installing required dependencies..."
+cd ruby-docs-samples/run/rails || error "Failed to navigate to rails directory"
 bundle install
+check_status "Dependencies installed successfully" "Failed to install dependencies"
 
-INSTANCE_NAME=postgres-instance
-DATABASE_NAME=mydatabase
+section "TASK 2: PREPARING THE BACKING SERVICES"
 
-echo "${BLUE_TEXT}${BOLD_TEXT}Enabling required services (secretmanager.googleapis.com and run.googleapis.com)...${RESET_FORMAT}"
-gcloud services enable secretmanager.googleapis.com
-gcloud services enable run.googleapis.com
-
-echo "${BLUE_TEXT}${BOLD_TEXT}Creating Cloud SQL instance...${RESET_FORMAT}"
+# Set up Cloud SQL for PostgreSQL instance
+step "Creating PostgreSQL instance (this may take a few minutes)..."
 gcloud sql instances create $INSTANCE_NAME \
   --database-version POSTGRES_12 \
   --tier db-g1-small \
   --region $REGION
+check_status "PostgreSQL instance created successfully" "Failed to create PostgreSQL instance"
 
-echo "${BLUE_TEXT}${BOLD_TEXT}Creating database within the Cloud SQL instance...${RESET_FORMAT}"
+# Create the database
+step "Creating database '$DATABASE_NAME'..."
 gcloud sql databases create $DATABASE_NAME \
   --instance $INSTANCE_NAME
+check_status "Database created successfully" "Failed to create database"
 
-echo "${BLUE_TEXT}${BOLD_TEXT}Generating a random password for the database user...${RESET_FORMAT}"
-cat /dev/urandom | LC_ALL=C tr -dc '[:alpha:]'| fold -w 50 | head -n1 > dbpassword
+# Generate random password and create user
+step "Generating random password for database user..."
+cat /dev/urandom | LC_ALL=C tr -dc '[:alpha:]' | fold -w 50 | head -n1 > dbpassword
+check_status "Password generated successfully" "Failed to generate password"
 
-echo "${BLUE_TEXT}${BOLD_TEXT}Creating a database user...${RESET_FORMAT}"
+step "Creating database user 'qwiklabs_user'..."
 gcloud sql users create qwiklabs_user \
   --instance=$INSTANCE_NAME --password=$(cat dbpassword)
+check_status "Database user created successfully" "Failed to create database user"
 
-BUCKET_NAME=$DEVSHELL_PROJECT_ID-ruby
-echo "${BLUE_TEXT}${BOLD_TEXT}Creating a Cloud Storage bucket...${RESET_FORMAT}"
+# Set up Cloud Storage bucket
+step "Creating Cloud Storage bucket '$BUCKET_NAME'..."
 gsutil mb -l $REGION gs://$BUCKET_NAME
+check_status "Storage bucket created successfully" "Failed to create storage bucket"
 
-echo "${BLUE_TEXT}${BOLD_TEXT}Setting bucket permissions to public read...${RESET_FORMAT}"
+step "Setting bucket permissions for public image viewing..."
 gsutil iam ch allUsers:objectViewer gs://$BUCKET_NAME
+check_status "Bucket permissions set successfully" "Failed to set bucket permissions"
 
-PASSWORD="$(cat ~/ruby-docs-samples/run/rails/dbpassword)"
+section "TASK 3: STORE SECRET VALUES IN SECRET MANAGER"
 
-# Make sure PASSWORD is set
-if [ -z "$PASSWORD" ]; then
-  echo "${RED_TEXT}${BOLD_TEXT}PASSWORD environment variable is not set.${RESET_FORMAT}"
-  exit 1
-fi
+# Create encrypted credentials file
+step "Generating Rails credentials file..."
+warning "The following step requires manual intervention to edit the credentials file"
+manual "When the editor opens, add this at the end of the file:"
+echo "${YELLOW_TEXT}gcp:
+  db_password: $(cat dbpassword)${RESET_FORMAT}"
+manual "Then save and exit the editor (Ctrl+X, then Y to confirm)"
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Decrypting and modifying Rails credentials...${RESET_FORMAT}"
-# Decrypt, add the line with the actual password, and re-encrypt
-EDITOR="sed -i -e '\$a\\gcp:\n  db_password: $PASSWORD'" bin/rails credentials:edit
+confirm_proceed "Ready to open the editor and create credentials file?"
+EDITOR="nano" bin/rails credentials:edit
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Creating a secret in Secret Manager...${RESET_FORMAT}"
+# Store key in Secret Manager
+step "Creating Secret Manager secret 'rails_secret'..."
+gcloud services enable secretmanager.googleapis.com
+check_status "Secret Manager API enabled" "Failed to enable Secret Manager API"
+
 gcloud secrets create rails_secret --data-file config/master.key
+check_status "Secret created successfully" "Failed to create secret"
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Describing the newly created secret...${RESET_FORMAT}"
-gcloud secrets describe rails_secret
+step "Verifying secret creation..."
+gcloud secrets describe rails_secret > /dev/null
+check_status "Secret verified" "Failed to verify secret"
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Accessing the latest version of the secret...${RESET_FORMAT}"
-gcloud secrets versions access latest --secret rails_secret
+# Get project number for IAM permissions
+step "Getting project number for IAM permissions..."
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
+check_status "Project number retrieved" "Failed to retrieve project number"
 
-PROJECT_NUMBER=$(gcloud projects describe $DEVSHELL_PROJECT_ID --format='value(projectNumber)')
-
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Granting Secret Manager access to compute engine service account...${RESET_FORMAT}"
+# Grant access to secret
+step "Granting access to secret for Cloud Run service account..."
 gcloud secrets add-iam-policy-binding rails_secret \
   --member serviceAccount:$PROJECT_NUMBER-compute@developer.gserviceaccount.com \
   --role roles/secretmanager.secretAccessor
+check_status "Access granted to Cloud Run service account" "Failed to grant access"
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Granting Secret Manager access to cloud build service account...${RESET_FORMAT}"
+step "Granting access to secret for Cloud Build service account..."
 gcloud secrets add-iam-policy-binding rails_secret \
   --member serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com \
   --role roles/secretmanager.secretAccessor
+check_status "Access granted to Cloud Build service account" "Failed to grant access"
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Creating the .env file with environment variables...${RESET_FORMAT}"
+# Configure Rails app to connect to database and storage
+step "Configuring Rails app environment variables..."
 cat << EOF > .env
 PRODUCTION_DB_NAME: $DATABASE_NAME
 PRODUCTION_DB_USERNAME: qwiklabs_user
-CLOUD_SQL_CONNECTION_NAME: $DEVSHELL_PROJECT_ID:$REGION:$INSTANCE_NAME
-GOOGLE_PROJECT_ID: $DEVSHELL_PROJECT_ID
+CLOUD_SQL_CONNECTION_NAME: $PROJECT_ID:$REGION:$INSTANCE_NAME
+GOOGLE_PROJECT_ID: $PROJECT_ID
 STORAGE_BUCKET_NAME: $BUCKET_NAME
 EOF
+check_status "Environment variables configured" "Failed to configure environment variables"
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Granting Cloud SQL Client role to Cloud Build service account...${RESET_FORMAT}"
-gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID \
+# Grant Cloud Build access to Cloud SQL
+step "Granting Cloud Build access to Cloud SQL..."
+gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com \
     --role roles/cloudsql.client
+check_status "Cloud SQL access granted to Cloud Build" "Failed to grant Cloud SQL access"
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Updating the Dockerfile with the correct Ruby version...${RESET_FORMAT}"
+section "TASK 4: DEPLOYING THE APP TO CLOUD RUN"
+
+# Update Ruby version in Dockerfile
+step "Updating Ruby version in Dockerfile..."
 RUBY_VERSION=$(ruby -v | cut -d ' ' -f2 | cut -c1-3)
 sed -i "/FROM/c\FROM ruby:$RUBY_VERSION-buster" Dockerfile
+check_status "Dockerfile updated successfully" "Failed to update Dockerfile"
 
-APP_NAME=myrubyapp
+# Create Artifact Registry repository
+step "Creating Artifact Registry repository..."
+gcloud services enable artifactregistry.googleapis.com
+check_status "Artifact Registry API enabled" "Failed to enable Artifact Registry API"
 
-echo "${YELLOW_TEXT}${BOLD_TEXT}Submitting the build to Cloud Build... This might take a few minutes.${RESET_FORMAT}"
+gcloud artifacts repositories create cloud-run-source-deploy \
+  --repository-format=docker \
+  --location=$REGION
+check_status "Artifact Repository created successfully" "Failed to create Artifact Repository"
+
+# Enable Cloud Run Admin API
+step "Enabling Cloud Run Admin API..."
+gcloud services enable run.googleapis.com
+check_status "Cloud Run Admin API enabled" "Failed to enable Cloud Run Admin API"
+
+# Build and deploy using Cloud Build
+step "Building and deploying application with Cloud Build (this may take several minutes)..."
 gcloud builds submit --config cloudbuild.yaml \
-    --substitutions _SERVICE_NAME=$APP_NAME,_INSTANCE_NAME=$INSTANCE_NAME,_REGION=$REGION,_SECRET_NAME=rails_secret --timeout=20m
+    --substitutions _SERVICE_NAME=$APP_NAME,_INSTANCE_NAME=$INSTANCE_NAME,_REGION=$REGION,_SECRET_NAME=rails_secret \
+    --timeout=20m
+check_status "Cloud Build completed successfully" "Cloud Build failed - try increasing timeout with --timeout=30m"
 
-echo "${YELLOW_TEXT}${BOLD_TEXT}Deploying the application to Cloud Run...${RESET_FORMAT}"
+# Deploy to Cloud Run
+step "Deploying application to Cloud Run..."
 gcloud run deploy $APP_NAME \
     --platform managed \
     --region $REGION \
-    --image gcr.io/$DEVSHELL_PROJECT_ID/$APP_NAME \
-    --add-cloudsql-instances $DEVSHELL_PROJECT_ID:$REGION:$INSTANCE_NAME \
+    --image $REGION-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/$APP_NAME \
+    --add-cloudsql-instances $PROJECT_ID:$REGION:$INSTANCE_NAME \
     --allow-unauthenticated \
-    --max-instances=3 \
-    --quiet
+    --max-instances=3
+check_status "Cloud Run deployment completed successfully" "Failed to deploy to Cloud Run"
+
+# Get the service URL
+SERVICE_URL=$(gcloud run services describe $APP_NAME --region=$REGION --format='value(status.url)')
+
+section "DEPLOYMENT COMPLETE"
+echo "${GREEN_TEXT}${BOLD_TEXT}Your Rails application has been successfully deployed!"
+echo "Service URL: ${SERVICE_URL}${RESET_FORMAT}"
+echo ""
+echo "${CYAN_TEXT}${BOLD_TEXT}Visit the URL to see your Cat Photo Album application"
+echo "You can try uploading a photo to test the full functionality${RESET_FORMAT}"
 echo
 echo "${GREEN_TEXT}${BOLD_TEXT}╔════════════════════════════════════════════════════════╗${RESET_FORMAT}"
 echo "${GREEN_TEXT}${BOLD_TEXT}              Lab Completed Successfully!               ${RESET_FORMAT}"
