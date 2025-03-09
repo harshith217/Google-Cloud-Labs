@@ -1,5 +1,5 @@
 # 🚀 **Create ML Models with BigQuery ML: Challenge Lab || GSP341**  
-[![Open Lab](https://img.shields.io/badge/Open-Lab-pink?style=for-the-badge&logo=google-cloud&logoColor=white)](https://www.cloudskillsboost.google/focuses/20049?parent=catalog) 
+[![Open Lab](https://img.shields.io/badge/Open-Lab-brown?style=for-the-badge&logo=google-cloud&logoColor=white)](https://www.cloudskillsboost.google/focuses/20049?parent=catalog) 
 ---
 
 ## ⚠️ **Important Notice**  
