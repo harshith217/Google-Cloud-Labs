@@ -22,7 +22,7 @@ echo "${CYAN_TEXT}${BOLD_TEXT}╚═══════════════�
 echo
 
 # Instruction before getting user input
-echo "${YELLOW_TEXT}${BOLD_TEXT}Please USERNAME 2: ${RESET_FORMAT}"
+echo "${YELLOW_TEXT}${BOLD_TEXT}Enter USERNAME 2: ${RESET_FORMAT}"
 read -r USER_2
 
 # Step 1: Fetch taxonomy & plocy details
