@@ -115,11 +115,6 @@ execute_command "gcloud container clusters create $my_cluster \
 print_step "Configuring access to cluster for kubectl"
 execute_command "gcloud container clusters get-credentials $my_cluster --zone $my_zone"
 
-print_manual_step "Verify monitoring configuration in Google Cloud Console:"
-echo -e "  ${BOLD_TEXT}1. Navigate to Kubernetes Engine > Clusters"
-echo -e "  ${BOLD_TEXT}2. Click on 'standard-cluster-1'"
-echo -e "  ${BOLD_TEXT}3. Scroll down to 'Features' section to verify Logging and Cloud Monitoring settings"
-
 # Deploy a sample workload to the GKE cluster
 print_section "Deploying a sample workload to GKE cluster"
 
@@ -186,7 +181,7 @@ echo -e "  ${BOLD_TEXT}13. Click 'Next'"
 print_manual_step "Configure notifications and finish the alerting policy:"
 echo -e "  ${BOLD_TEXT}1. Click on dropdown next to 'Notification Channels', then 'Manage Notification Channels'"
 echo -e "  ${BOLD_TEXT}2. Scroll down and click 'ADD NEW' for Email"
-echo -e "  ${BOLD_TEXT}3. Enter your personal email and a display name"
+echo -e "  ${BOLD_TEXT}3. Enter your USERNAME and display name as arcadecrew"
 echo -e "  ${BOLD_TEXT}4. Click 'Save'"
 echo -e "  ${BOLD_TEXT}5. Return to the previous tab"
 echo -e "  ${BOLD_TEXT}6. Click 'Notification Channels' again, click refresh"
