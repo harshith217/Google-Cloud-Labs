@@ -1,5 +1,5 @@
 # 🚀 **Securing Google Cloud with CFT Scorecard || GSP698**  
-[![Open Lab](https://img.shields.io/badge/Open-Lab-yellow?style=for-the-badge&logo=google-cloud&logoColor=blue)](https://www.cloudskillsboost.google/focuses/10437?parent=catalog) 
+[![Open Lab](https://img.shields.io/badge/Open-Lab-yellow?style=for-the-badge&logo=google-cloud&logoColor=white)](https://www.cloudskillsboost.google/focuses/10437?parent=catalog) 
 ---
 
 ## ⚠️ **Important Notice**  
@@ -10,7 +10,7 @@ This guide is designed to enhance your learning experience during this lab. Plea
 ## 💻 **Execute in Cloud Shell**  
 Run the following commands in **Cloud Shell**:  
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/APIs%20Explorer%20Cloud%20Storage/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Securing%20Google%20Cloud%20with%20CFT%20Scorecard/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
