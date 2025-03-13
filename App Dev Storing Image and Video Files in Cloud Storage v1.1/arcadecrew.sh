@@ -158,6 +158,96 @@ module.exports = {
 EOL
 check_status "Updated cloudstorage.js file"
 
+echo -e "${CYAN_TEXT}${BOLD_TEXT}Installing Multer...${RESET_FORMAT}"
+
+# Create the corrected cloudstorage.js file with Multer
+cat > ~/training-data-analyst/courses/developingapps/nodejs/cloudstorage/start/server/gcp/cloudstorage.js << 'EOL'
+// Copyright 2017, Google, Inc.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+'use strict';
+
+const config = require('../config');
+
+// Import multer for handling file uploads
+const Multer = require('multer');
+
+// Configure multer for memory storage
+const multer = Multer({
+  storage: Multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  }
+});
+
+// Load the module for Cloud Storage
+const Storage = require('@google-cloud/storage');
+
+// Create the storage client
+const storage = Storage({
+  projectId: config.get('GCLOUD_PROJECT')
+});
+
+// Get the GCLOUD_BUCKET environment variable
+const GCLOUD_BUCKET = config.get('GCLOUD_BUCKET');
+
+// Get a reference to the Cloud Storage bucket
+const bucket = storage.bucket(GCLOUD_BUCKET);
+
+function sendUploadToGCS(req, res, next) {
+  if (!req.file) {
+    return next();
+  }
+
+  const oname = Date.now() + req.file.originalname;
+  // Get a reference to the new object
+  const file = bucket.file(oname);
+
+  // Create a stream to write the file into Cloud Storage
+  const stream = file.createWriteStream({
+    metadata: {
+      contentType: req.file.mimetype
+    }
+  });
+
+  // Attach event handler for error
+  stream.on('error', (err) => {
+    // If there's an error move to the next handler
+    next(err);
+  });
+
+  // Attach event handler for finish
+  stream.on('finish', () => {
+    // Make the object publicly accessible
+    file.makePublic().then(() => {
+      // Set a new property on the file for the public URL for the object
+      req.file.cloudStoragePublicUrl = `https://storage.googleapis.com/${GCLOUD_BUCKET}/${oname}`;
+      // Invoke the next middleware handler
+      next();
+    });
+  });
+
+  // End the stream to upload the file's data
+  stream.end(req.file.buffer);
+}
+
+// [START exports]
+module.exports = {
+  sendUploadToGCS,
+  multer // Export the configured multer middleware
+};
+// [END exports]
+EOL
+
 # Start the application
 print_message "\n🚀 Starting the application..." "${CYAN_TEXT}"
 print_message "\nThe application will be started. Complete these manual steps:" "${BOLD_TEXT}${YELLOW_TEXT}"
