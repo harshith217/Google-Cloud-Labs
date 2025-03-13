@@ -8,7 +8,6 @@ This guide is designed to enhance your learning experience during this lab. Plea
 ---
 
 ## Task 1: Single Value Visualization (Average Elevation)
-
 ```
 explore: +airports { 
     query: ArcadeCrew_Task1 {
@@ -18,8 +17,6 @@ explore: +airports {
 ```
 
 - **Explore** → **FAA** → **Airports**
-- Select **Average Elevation** under Measures
-- Click **Run**
 - Customize Visualization:
   - Select **Single Value**
   - Set **Value Format**: `0.00`
@@ -27,7 +24,6 @@ explore: +airports {
 - Save to **New Dashboard** → **"Airports"**
 
 ## Task 2: Bar Chart (Top 5 Facility Types by Elevation)
-
 ```
 explore: +airports {
     query: ArcadeCrew_Task2 {
@@ -38,7 +34,6 @@ explore: +airports {
 ```
 
 - **Explore** → **FAA** → **Airports**
-- Select **Facility Type (Dimension)**, **Average Elevation (Measure)**, **Count (Measure)**
 - Set **Row Limit**: `5` → Click **Run**
 - Customize Visualization:
   - Select **Bar Chart**
@@ -47,7 +42,6 @@ explore: +airports {
 - Save to **Existing Dashboard** → **"Airports"**
 
 ## Task 3: Line Chart (Flights Cancelled Per Week in 2004)
-
 ```
 explore: +flights {
     query: ArcadeCrew_Task3 {
@@ -59,11 +53,6 @@ explore: +flights {
 ```
 
 - **Explore** → **FAA** → **Flights**
-- Select **Cancelled Count (Measure)**
-- Under **Depart Date (Dimension)**:
-  - Select **Week**
-  - Apply Filter: **Year = 2004**
-- Click **Run**
 - Customize Visualization:
   - Select **Line Chart**
   - Set **Filled Point Style**
@@ -71,7 +60,6 @@ explore: +flights {
 - Save to **New Dashboard** → **"Airports and Flights"**
 
 ## Task 4: Line Chart (Flights Scheduled Per Week by Distance Tier in 2003)
-
 ```
 explore: +flights {
     query: ArcadeCrew_Task4 {
@@ -83,13 +71,6 @@ explore: +flights {
 ```
 
 - **Explore** → **FAA** → **Flights**
-- Select **Count (Measure)**
-- Under **Distance Tiered (Dimension)**:
-  - Select **Pivot**
-- Under **Depart Date (Dimension)**:
-  - Select **Week**
-  - Apply Filter: **Year = 2003**
-- Click **Run**
 - Customize Visualization:
   - Select **Stacked Line Chart**
   - Enable **Overlay Series Positioning**
