@@ -59,7 +59,7 @@ explore: +loan_details {
 
 3. **Create Visualization:**
    - Select `Single Value Visualization`.
-   - Apply conditional formatting to highlight values above $3B in red.
+   - Apply conditional formatting to highlight values above $`3,000,000,000` in red.
    - Title: `Total Amount of Outstanding Loans`.
 
 4. **Save to Dashboard:**
