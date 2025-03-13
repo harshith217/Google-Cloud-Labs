@@ -10,7 +10,7 @@ This guide is designed to enhance your learning experience during this lab. Plea
 ## 💻 **Execute in Cloud Shell**  
 Run the following commands in **Cloud Shell**:  
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/APIs%20Explorer%20Cloud%20Storage/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/App%20Dev%20Storing%20Image%20and%20Video%20Files%20in%20Cloud%20Storage%20v1.1/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
