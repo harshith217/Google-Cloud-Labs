@@ -7,7 +7,7 @@ This guide is designed to enhance your learning experience during this lab. Plea
 
 ---
 
-### TASK 1:-
+### TASK 1:
 ```
 explore: +airports { 
     query: ArcadeCrew_Task1 {
@@ -17,7 +17,7 @@ explore: +airports {
 ```
 
 
-### TASK 2:-
+### TASK 2:
 ```
 explore: +airports {
     query: ArcadeCrew_Task2 {
@@ -29,7 +29,7 @@ explore: +airports {
 
 
 
-### TASK 3:-
+### TASK 3:
 ```
 explore: +flights {
     query: ArcadeCrew_Task3 {
@@ -41,7 +41,7 @@ explore: +flights {
 ```
 
 
-### TASK 4:- 
+### TASK 4:
 ```
 explore: +flights {
     query: ArcadeCrew_Task4 {
