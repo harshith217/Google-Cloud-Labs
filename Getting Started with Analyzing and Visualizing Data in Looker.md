@@ -1,5 +1,5 @@
-# 🚀 **App Dev Storing Image and Video Files in Cloud Storage v1.1**  
-[![Open Lab](https://img.shields.io/badge/Open-Lab-brown?style=for-the-badge&logo=google-cloud&logoColor=blue)](https://www.cloudskillsboost.google/focuses/1075?parent=catalog) 
+# 🚀 **Getting Started with Analyzing and Visualizing Data in Looker**  
+[![Open Lab](https://img.shields.io/badge/Open-Lab-brown?style=for-the-badge&logo=google-cloud&logoColor=blue)](https://www.cloudskillsboost.google/focuses/25305?parent=catalog) 
 ---
 
 ## ⚠️ **Important Notice**  
