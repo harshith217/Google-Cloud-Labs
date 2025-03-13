@@ -7,7 +7,7 @@ This guide is designed to enhance your learning experience during this lab. Plea
 
 ---
 
-## Task 1: Single Value Visualization (Average Elevation)
+## Task 1: Single Value Visualization (`Average Elevation`)
 ```
 explore: +airports { 
     query: ArcadeCrew_Task1 {
@@ -23,7 +23,7 @@ explore: +airports {
   - Modify **Value Color** and **Title**
 - Save to **New Dashboard** → **"Airports"**
 
-## Task 2: Bar Chart (Top 5 Facility Types by Elevation)
+## Task 2: Bar Chart (`Top 5 Facility Types by Elevation`)
 ```
 explore: +airports {
     query: ArcadeCrew_Task2 {
@@ -41,7 +41,7 @@ explore: +airports {
   - Rename **Axes** and set **Value Format**: `0.00`
 - Save to **Existing Dashboard** → **"Airports"**
 
-## Task 3: Line Chart (Flights Cancelled Per Week in 2004)
+## Task 3: Line Chart (`Flights Cancelled Per Week in 2004`)
 ```
 explore: +flights {
     query: ArcadeCrew_Task3 {
@@ -59,7 +59,7 @@ explore: +flights {
   - Add **Reference Line**
 - Save to **New Dashboard** → **"Airports and Flights"**
 
-## Task 4: Line Chart (Flights Scheduled Per Week by Distance Tier in 2003)
+## Task 4: Line Chart (`Flights Scheduled Per Week by Distance Tier in 2003`)
 ```
 explore: +flights {
     query: ArcadeCrew_Task4 {
