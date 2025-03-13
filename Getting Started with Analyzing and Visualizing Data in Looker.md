@@ -23,7 +23,7 @@ explore: +airports {
   - Modify **Value Color** and **Title**
 - Save to **New Dashboard** → **"Airports"**
 
-## Task 2: Bar Chart (`Top 5 Facility Types by Elevation`)
+## Task 2: Bar Chart (`Average Elevation by Facility Type`)
 ```
 explore: +airports {
     query: ArcadeCrew_Task2 {
@@ -34,14 +34,14 @@ explore: +airports {
 ```
 
 - **Explore** → **FAA** → **Airports**
-- Set **Row Limit**: `5` → Click **Run**
+- Set **Row Limit**: `5`
 - Customize Visualization:
   - Select **Bar Chart**
   - Enable **Value Labels**
   - Rename **Axes** and set **Value Format**: `0.00`
 - Save to **Existing Dashboard** → **"Airports"**
 
-## Task 3: Line Chart (`Flights Cancelled Per Week in 2004`)
+## Task 3: Line Chart (`Number of Flights Cancelled Each Week in 2004`)
 ```
 explore: +flights {
     query: ArcadeCrew_Task3 {
@@ -59,7 +59,7 @@ explore: +flights {
   - Add **Reference Line**
 - Save to **New Dashboard** → **"Airports and Flights"**
 
-## Task 4: Line Chart (`Flights Scheduled Per Week by Distance Tier in 2003`)
+## Task 4: Line Chart (`Number of Flights by Distance Tier in 2003`)
 ```
 explore: +flights {
     query: ArcadeCrew_Task4 {
