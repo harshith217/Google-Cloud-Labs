@@ -10,7 +10,7 @@ This guide is designed to enhance your learning experience during this lab. Plea
 ## 💻 **Execute in Cloud Shell**  
 Run the following commands in **Cloud Shell**:  
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/APIs%20Explorer%20Cloud%20Storage/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Build%20a%20BI%20Dashboard%20Using%20Looker%20Studio%20and%20BigQuery/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
