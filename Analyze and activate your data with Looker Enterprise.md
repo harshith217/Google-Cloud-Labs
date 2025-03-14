@@ -60,6 +60,7 @@ explore: +loan_details {
 3. **Create Visualization:**
    - Select `Single Value Visualization`.
    - Apply conditional formatting to highlight values above $`3000000000` in red.
+   - Dashboard Name: `Loan Insights`
    - Title: `Total Amount of Outstanding Loans`.
 
 4. **Save to Dashboard:**
@@ -92,7 +93,7 @@ explore: +loan_details {
 
 2. **Create Visualization:**
    - Choose a `Bar Chart`.
-   - Limit results to the **top 10 states**.
+   - Row Limit **10**.
    - Title: `Total Count of Outstanding Loans`.
 
 3. **Save to Dashboard:**
@@ -109,7 +110,8 @@ explore: +loan_details {
 
 2. **Create Visualization:**
    - Use a `Table` visualization for easy sorting.
-   - Limit results to **top 10 customers by income**.
+   - Row Limit **10**
+   - Annual Income type: **Descending**
    - Title: `Top 10 Customers by Highest Income`.
 
 3. **Save to Dashboard:**
