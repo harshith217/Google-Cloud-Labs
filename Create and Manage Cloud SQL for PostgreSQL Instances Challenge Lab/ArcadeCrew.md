@@ -87,6 +87,12 @@ CREATE EXTENSION pglogical;
 
 </details>
 
+### Open below websites:
+
+- **[Online word replacer](https://codebeautify.org/word-replacer)**
+
+- **[Online Notepad](https://www.rapidtables.com/tools/notepad.html)**
+
 <details>
 <summary><b>📌 Grant required permissions</b></summary>
 
