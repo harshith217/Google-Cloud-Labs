@@ -215,10 +215,11 @@ When prompted for a password, enter:
 ```
 supersecret!
 ```
-
+```
 -- Connect to orders database (password: supersecret!)
 \c orders
-
+```
+```
 -- Insert test data to verify recovery later
 INSERT INTO distribution_centers VALUES(-80.1918, 25.7617, 'Miami FL', 11);
 \q
