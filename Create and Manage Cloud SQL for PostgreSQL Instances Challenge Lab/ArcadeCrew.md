@@ -209,9 +209,13 @@ GRANT ALL PRIVILEGES ON TABLE [TABLE_NAME] TO "[USER_NAME]";
 date --rfc-3339=seconds
 ```
 
-> ⚠️ **Important:** Copy and save this timestamp for later use in recovery
+* ⚠️ **Important:** Copy and save this timestamp for later use in recovery
 
-```sql
+When prompted for a password, enter:
+```
+supersecret!
+```
+
 -- Connect to orders database (password: supersecret!)
 \c orders
 
