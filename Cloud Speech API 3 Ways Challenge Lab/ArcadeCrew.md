@@ -1,4 +1,4 @@
-# 🎙️ Cloud Speech API: Hands-On Challenge Lab
+# 🎙️ Cloud Speech API 3 Ways: Challenge Lab || ARC132
 [![Lab Link](https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://www.cloudskillsboost.google/focuses/67215?parent=catalog)
 
 ---
