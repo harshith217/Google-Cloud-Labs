@@ -20,7 +20,7 @@ gcloud compute ssh linux-instance --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --
 Once connected to the VM, download and run the setup script:
 
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Cloud%20Speech%20API%203%20Ways%20Challenge%20Lab/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Google%20Cloud%20Speech-to-Text%20API%20Qwik%20Start/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
