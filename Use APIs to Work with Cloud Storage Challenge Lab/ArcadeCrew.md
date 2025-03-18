@@ -1,5 +1,5 @@
 # ✨ Use APIs to Work with Cloud Storage: Challenge Lab || ARC125
-[![Lab Link](https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://www.cloudskillsboost.google/focuses/65991?parent=catalog)
+[![Lab Link](https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-yellow?style=for-the-badge&logo=google&logoColor=white)](https://www.cloudskillsboost.google/focuses/65991?parent=catalog)
 
 ---
 
@@ -13,7 +13,7 @@
 * Run in Cloudshell:*
 
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Cloud%20Speech%20API%203%20Ways%20Challenge%20Lab/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Use%20APIs%20to%20Work%20with%20Cloud%20Storage%20Challenge%20Lab/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
