@@ -63,7 +63,7 @@ echo ""
 
 # Step 5: Download the image file
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Downloading the image file...${RESET_FORMAT}"
-curl -LO 
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Use%20APIs%20to%20Work%20with%20Cloud%20Storage%20Challenge%20Lab/world.jpeg
 
 # Instructions before Step 6
 echo ""
