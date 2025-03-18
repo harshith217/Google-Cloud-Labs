@@ -56,6 +56,9 @@ echo "${BLUE_TEXT}${BOLD_TEXT}                INITIATING EXECUTION...           
 echo "${BLUE_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
 echo ""
 
+export ZONE=$(gcloud compute instances list lab-vm --format 'csv[no-heading](zone)')
+gcloud compute ssh lab-vm --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet
+
 # User input for required variables
 read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter API Key: ${RESET_FORMAT}" API_KEY
 echo
@@ -94,111 +97,67 @@ task_complete "Task 1"
 section_header "TASK 2: Create synthetic speech from text using Text-to-Speech API"
 
 info_message "Activating virtual environment..."
+audio_uri="gs://cloud-samples-data/speech/corbeau_renard.flac"
+
+export PROJECT_ID=$(gcloud config get-value project)
+
 source venv/bin/activate
 check_success "Virtual environment activation"
 
 info_message "Creating synthesize-text.json file..."
-cat > synthesize-text.json << 'EOF'
+cat > synthesize-text.json <<EOF
+
 {
-    "input":{
-        "text":"Cloud Text-to-Speech API allows developers to include natural-sounding, synthetic human speech as playable audio in their applications. The Text-to-Speech API converts text or Speech Synthesis Markup Language (SSML) input into audio data like MP3 or LINEAR16 (the encoding used in WAV files)."
-    },
-    "voice":{
-        "languageCode":"en-gb",
-        "name":"en-GB-Standard-A",
-        "ssmlGender":"FEMALE"
-    },
-    "audioConfig":{
-        "audioEncoding":"MP3"
-    }
+'input':{
+   'text':'Cloud Text-to-Speech API allows developers to include
+      natural-sounding, synthetic human speech as playable audio in
+      their applications. The Text-to-Speech API converts text or
+      Speech Synthesis Markup Language (SSML) input into audio data
+      like MP3 or LINEAR16 (the encoding used in WAV files).'
+},
+'voice':{
+   'languageCode':'en-gb',
+   'name':'en-GB-Standard-A',
+   'ssmlGender':'FEMALE'
+},
+'audioConfig':{
+   'audioEncoding':'MP3'
 }
+}
+
 EOF
 check_success "Creating synthesize-text.json file"
 
 info_message "Calling the Text-to-Speech API to synthesize text..."
-curl -s -X POST \
-     -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-     -H "Content-Type: application/json; charset=utf-8" \
-     -d @synthesize-text.json \
-     "https://texttospeech.googleapis.com/v1/text:synthesize" > "${task_2_file_name}"
+curl -H "Authorization: Bearer "$(gcloud auth application-default print-access-token) \
+-H "Content-Type: application/json; charset=utf-8" \
+-d @synthesize-text.json "https://texttospeech.googleapis.com/v1/text:synthesize" \
+> $task_2_file_name
 check_success "Text-to-Speech API call"
-
-info_message "Creating tts_decode.py file..."
-cat > tts_decode.py << 'EOF'
-import argparse
-from base64 import decodebytes
-import json
-
-"""
-Usage:
-        python tts_decode.py --input "Filled in at lab start" \
-        --output "synthesize-text-audio.mp3"
-
-"""
-
-def decode_tts_output(input_file, output_file):
-    """ Decode output from Cloud Text-to-Speech.
-
-    input_file: the response from Cloud Text-to-Speech
-    output_file: the name of the audio file to create
-
-    """
-
-    with open(input_file) as input:
-        response = json.load(input)
-        audio_data = response['audioContent']
-
-        with open(output_file, "wb") as new_file:
-            new_file.write(decodebytes(audio_data.encode('utf-8')))
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description="Decode output from Cloud Text-to-Speech",
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--input',
-                       help='The response from the Text-to-Speech API.',
-                       required=True)
-    parser.add_argument('--output',
-                       help='The name of the audio file to create',
-                       required=True)
-
-    args = parser.parse_args()
-    decode_tts_output(args.input, args.output)
-EOF
-check_success "Creating tts_decode.py file"
-
-info_message "Decoding the audio file..."
-python tts_decode.py --input "${task_2_file_name}" --output "synthesize-text-audio.mp3"
-check_success "Decoding audio file"
-
-echo
-
-task_complete "Task 2"
 
 # ---------------------- TASK 3: Speech to text transcription ----------------------
 section_header "TASK 3: Perform speech to text transcription with the Cloud Speech API"
 
 info_message "Creating request file for French transcription..."
-cat > "${task_3_request_file}" << EOF
+cat > "$task_3_request_file" <<EOF
 {
-  "config": {
-    "encoding": "FLAC",
-    "languageCode": "fr-FR",
-    "audioChannelCount": 2
-  },
-  "audio": {
-    "uri": "gs://cloud-samples-data/speech/corbeau_renard.flac"
-  }
+"config": {
+"encoding": "FLAC",
+"sampleRateHertz": 44100,
+"languageCode": "fr-FR"
+},
+"audio": {
+"uri": "$audio_uri"
+}
 }
 EOF
 check_success "Creating request file"
 
 info_message "Calling the Speech-to-Text API for transcription..."
-curl -s -X POST \
-     -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-     -H "Content-Type: application/json; charset=utf-8" \
-     -d @"${task_3_request_file}" \
-     "https://speech.googleapis.com/v1/speech:recognize" > "${task_3_response_file}"
+curl -s -X POST -H "Content-Type: application/json" \
+--data-binary @"$task_3_request_file" \
+"https://speech.googleapis.com/v1/speech:recognize?key=${API_KEY}" \
+-o "$task_3_response_file"
 check_success "Speech-to-Text API call"
 
 info_message "Transcription result saved to ${task_3_response_file}"
@@ -208,15 +167,12 @@ task_complete "Task 3"
 section_header "TASK 4: Translate text with the Cloud Translation API"
 
 info_message "Translating the provided sentence to English..."
-encoded_text=$(echo -n "${task_4_sentence}" | jq -sRr @uri)
-curl -s -X POST \
-     -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-     -H "Content-Type: application/json; charset=utf-8" \
-     -d "{
-       'q': '${task_4_sentence}',
-       'target': 'en'
-     }" \
-     "https://translation.googleapis.com/language/translate/v2?key=${API_KEY}" > "${task_4_file}"
+eresponse=$(curl -s -X POST \
+-H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+-H "Content-Type: application/json; charset=utf-8" \
+-d "{\"q\": \"$task_4_sentence\"}" \
+"https://translation.googleapis.com/language/translate/v2?key=${API_KEY}&source=ja&target=en")
+echo "$response" > "$task_4_file"
 check_success "Text translation"
 
 info_message "Translation result saved to ${task_4_file}"
@@ -227,12 +183,11 @@ section_header "TASK 5: Detect a language with the Cloud Translation API"
 
 info_message "Detecting language of the provided sentence..."
 curl -s -X POST \
-     -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-     -H "Content-Type: application/json; charset=utf-8" \
-     -d "{
-       'q': '${task_5_sentence}'
-     }" \
-     "https://translation.googleapis.com/language/translate/v2/detect?key=${API_KEY}" > "${task_5_file}"
+-H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+-H "Content-Type: application/json; charset=utf-8" \
+-d "{\"q\": [\"$task_5_sentence\"]}" \
+"https://translation.googleapis.com/language/translate/v2/detect?key=${API_KEY}" \
+-o "$task_5_file"
 check_success "Language detection"
 
 info_message "Language detection result saved to ${task_5_file}"
