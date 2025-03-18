@@ -15,40 +15,6 @@ RESET_FORMAT=$'\033[0m'
 BOLD_TEXT=$'\033[1m'
 UNDERLINE_TEXT=$'\033[4m'
 
-# Function for displaying formatted section headers
-section_header() {
-    echo ""
-    echo "${BLUE_TEXT}${BOLD_TEXT}=================================================${RESET_FORMAT}"
-    echo "${BLUE_TEXT}${BOLD_TEXT} $1 ${RESET_FORMAT}"
-    echo "${BLUE_TEXT}${BOLD_TEXT}=================================================${RESET_FORMAT}"
-    echo ""
-}
-
-# Function for displaying task completion messages
-task_complete() {
-    echo "${GREEN_TEXT}${BOLD_TEXT}✓ $1 completed successfully!${RESET_FORMAT}"
-}
-
-# Function for displaying error messages
-error_message() {
-    echo "${RED_TEXT}${BOLD_TEXT}✗ ERROR: $1${RESET_FORMAT}"
-}
-
-# Function for displaying information messages
-info_message() {
-    echo "${CYAN_TEXT}${BOLD_TEXT}ℹ $1${RESET_FORMAT}"
-}
-
-# Function to check if a command succeeded
-check_success() {
-    if [ $? -eq 0 ]; then
-        task_complete "$1"
-    else
-        error_message "$1 failed!"
-        exit 1
-    fi
-}
-
 # Welcome message and introduction
 clear
 echo "${BLUE_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
@@ -84,24 +50,12 @@ export task_4_file
 export task_5_sentence
 export task_5_file
 
-# ---------------------- TASK 1: Create an API key ----------------------
-section_header "TASK 1: Create an API key"
-echo "${MAGENTA_TEXT}${BOLD_TEXT}You have already provided your API Key: ${API_KEY}${RESET_FORMAT}"
-echo "${MAGENTA_TEXT}${BOLD_TEXT}This key will be used for all API requests in this lab.${RESET_FORMAT}"
-task_complete "Task 1"
-
-# ---------------------- TASK 2: Create synthetic speech from text ----------------------
-section_header "TASK 2: Create synthetic speech from text using Text-to-Speech API"
-
-info_message "Activating virtual environment..."
 audio_uri="gs://cloud-samples-data/speech/corbeau_renard.flac"
 
 export PROJECT_ID=$(gcloud config get-value project)
 
 source venv/bin/activate
-check_success "Virtual environment activation"
 
-info_message "Creating synthesize-text.json file..."
 cat > synthesize-text.json <<EOF
 
 {
@@ -123,19 +77,12 @@ cat > synthesize-text.json <<EOF
 }
 
 EOF
-check_success "Creating synthesize-text.json file"
 
-info_message "Calling the Text-to-Speech API to synthesize text..."
 curl -H "Authorization: Bearer "$(gcloud auth application-default print-access-token) \
 -H "Content-Type: application/json; charset=utf-8" \
 -d @synthesize-text.json "https://texttospeech.googleapis.com/v1/text:synthesize" \
 > $task_2_file_name
-check_success "Text-to-Speech API call"
 
-# ---------------------- TASK 3: Speech to text transcription ----------------------
-section_header "TASK 3: Perform speech to text transcription with the Cloud Speech API"
-
-info_message "Creating request file for French transcription..."
 cat > "$task_3_request_file" <<EOF
 {
 "config": {
@@ -148,47 +95,25 @@ cat > "$task_3_request_file" <<EOF
 }
 }
 EOF
-check_success "Creating request file"
 
-info_message "Calling the Speech-to-Text API for transcription..."
 curl -s -X POST -H "Content-Type: application/json" \
 --data-binary @"$task_3_request_file" \
 "https://speech.googleapis.com/v1/speech:recognize?key=${API_KEY}" \
 -o "$task_3_response_file"
-check_success "Speech-to-Text API call"
 
-info_message "Transcription result saved to ${task_3_response_file}"
-task_complete "Task 3"
-
-# ---------------------- TASK 4: Translate text ----------------------
-section_header "TASK 4: Translate text with the Cloud Translation API"
-
-info_message "Translating the provided sentence to English..."
-eresponse=$(curl -s -X POST \
+response=$(curl -s -X POST \
 -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
 -H "Content-Type: application/json; charset=utf-8" \
 -d "{\"q\": \"$task_4_sentence\"}" \
 "https://translation.googleapis.com/language/translate/v2?key=${API_KEY}&source=ja&target=en")
 echo "$response" > "$task_4_file"
-check_success "Text translation"
 
-info_message "Translation result saved to ${task_4_file}"
-task_complete "Task 4"
-
-# ---------------------- TASK 5: Detect language ----------------------
-section_header "TASK 5: Detect a language with the Cloud Translation API"
-
-info_message "Detecting language of the provided sentence..."
 curl -s -X POST \
 -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
 -H "Content-Type: application/json; charset=utf-8" \
 -d "{\"q\": [\"$task_5_sentence\"]}" \
 "https://translation.googleapis.com/language/translate/v2/detect?key=${API_KEY}" \
 -o "$task_5_file"
-check_success "Language detection"
-
-info_message "Language detection result saved to ${task_5_file}"
-task_complete "Task 5"
 
 echo
 echo "${GREEN_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
