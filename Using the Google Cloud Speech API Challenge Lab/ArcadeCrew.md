@@ -1,5 +1,5 @@
 # ✨ Using the Google Cloud Speech API: Challenge Lab || ARC131
-[![Lab Link](https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://www.cloudskillsboost.google/games/5044/labs/32928)
+[![Lab Link](https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://www.cloudskillsboost.google/focuses/65993?parent=catalog)
 
 ---
 
