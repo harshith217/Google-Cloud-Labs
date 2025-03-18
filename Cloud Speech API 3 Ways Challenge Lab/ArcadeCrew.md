@@ -47,7 +47,7 @@ sudo chmod +x arcadecrew.sh
   </a>
   &nbsp;
   <a href="https://www.youtube.com/@Arcade61432?sub_confirmation=1">
-    <img src="https://img.shields.io/badge/Subscribe-Arcade%20%Crew-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube Channel">
+    <img src="https://img.shields.io/badge/Subscribe-Arcade%20Crew-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube Channel">
   </a>
 </div>
 
