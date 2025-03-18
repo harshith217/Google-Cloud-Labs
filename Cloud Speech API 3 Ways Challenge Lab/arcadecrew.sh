@@ -56,9 +56,6 @@ echo "${BLUE_TEXT}${BOLD_TEXT}                INITIATING EXECUTION...           
 echo "${BLUE_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
 echo ""
 
-export ZONE=$(gcloud compute instances list lab-vm --format 'csv[no-heading](zone)')
-gcloud compute ssh lab-vm --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet
-
 # User input for required variables
 read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter API Key: ${RESET_FORMAT}" API_KEY
 echo
