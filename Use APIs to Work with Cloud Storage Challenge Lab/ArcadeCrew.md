@@ -1,5 +1,5 @@
 # ✨ Use APIs to Work with Cloud Storage: Challenge Lab || ARC125
-[![Lab Link](https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-yellow?style=for-the-badge&logo=google&logoColor=white)](https://www.cloudskillsboost.google/focuses/65991?parent=catalog)
+[![Lab Link](https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://www.cloudskillsboost.google/focuses/65991?parent=catalog)
 
 ---
 
