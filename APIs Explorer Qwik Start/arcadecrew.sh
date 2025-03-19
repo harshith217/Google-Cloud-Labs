@@ -51,6 +51,3 @@ echo "${GREEN_TEXT}${BOLD_TEXT}              LAB COMPLETED SUCCESSFULLY!        
 echo "${GREEN_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
 echo ""
 echo -e "${RED_TEXT}${BOLD_TEXT}Subscribe our Channel:${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
-echo
-echo "${CYAN_TEXT} ${BOLD_TEXT}You can now access the image at: https://storage.googleapis.com/${BUCKET}-bucket/demo-image.jpg${RESET_FORMAT}"
-echo "${MAGENTA_TEXT} ${BOLD_TEXT}Thank you for using this script!${RESET_FORMAT}"
