@@ -13,7 +13,7 @@
 * Run in Cloudshell:*
 
 ```bash
-curl -LO .githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Cloud%20Monitoring%20Qwik%20Start/arcadecrew.sh
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Cloud%20Monitoring%20Qwik%20Start/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
