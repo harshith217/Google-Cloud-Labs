@@ -32,7 +32,7 @@ run_form_1() {
 
     gsutil mb -p $BUCKET gs://$Bucket_1
     gsutil retention set 30s gs://$Bucket_2
-    echo "subscribe to quicklab" > sample.txt
+    echo "Arcade Crew" > sample.txt
     gsutil cp sample.txt gs://$Bucket_3/
     echo "${GREEN_TEXT}${BOLD_TEXT}Form 1 execution completed successfully!${RESET_FORMAT}"
 }
