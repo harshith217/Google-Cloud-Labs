@@ -23,19 +23,6 @@ echo "${BLUE_TEXT}${BOLD_TEXT}         INITIATING EXECUTION...  ${RESET_FORMAT}"
 echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
 echo
 
-#!/bin/bash
-
-# Color and formatting codes
-YELLOW_TEXT=$'\033[0;33m'
-MAGENTA_TEXT=$'\033[0;35m'
-NO_COLOR=$'\033[0m'
-GREEN_TEXT=$'\033[0;32m'
-RED_TEXT=$'\033[0;31m'
-CYAN_TEXT=$'\033[0;36m'
-BOLD_TEXT=$'\033[1m'
-RESET_FORMAT=$'\033[0m'
-BLUE_TEXT=$'\033[0;34m'
-
 # Utility functions
 print_section() {
     echo ""
