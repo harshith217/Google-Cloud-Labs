@@ -11,26 +11,26 @@
 ## ⚙️ Lab Environment Setup
 
 ### Task 1: Explore Customer Churn Data
-1. **Navigate to Data**: Click the main menu, select "Telco Customer Churn" from Explore.
-2. **Calculate Churn Rate**: Add "Churn Rate" to the Data pane and run the query.
-3. **Check Churn Rate by Service Calls**: Add "Service Calls Group" dimension, sort values, and run the query.
+1. **Navigate to Data**: Click the main menu, select "**Telco Customer Churn**" from Explore.
+2. **Calculate Churn Rate**: Add "**Churn Rate**" to the Data pane and run the query.
+3. **Check Churn Rate by Service Calls**: Add "**Service Calls Group**" dimension, sort values, and run the query.
 
 ### Task 2: Create a Binary Classification ML Model
-1. **Open ML Accelerator**: From the main menu, navigate to "Browse", then "Applications", and select "Machine Learning Accelerator".
-2. **Create New Model**: Click "Create New Model".
-3. **Select Objective**: Choose "Classification" for predicting churn.
+1. **Open ML Accelerator**: From the main menu, navigate to "**Browse**", then "**Applications**", and select "**Machine Learning Accelerator**".
+2. **Create New Model**: Click "**Create New Model**".
+3. **Select Objective**: Choose "**Classification**" for predicting churn.
 4. **Select Input Data**: 
-   - Choose "Telco Customer Churn" Explore.
-   - Filter on "Dataframe" to "train".
-   - Select "Customer ID", "Churn", and relevant features.
+   - Choose "**Telco Customer Churn**" Explore.
+   - Filter on "**Dataframe**" to "**train**".
+   - Select "**Customer ID**", "**Churn**", and relevant features.
    - Run the query and continue.
 5. **Model Options**: 
    - Name the model using your Project ID (replace hyphens with underscores).
-   - Select the target field "Customer Churn".
+   - Select the target field "**Customer Churn**".
    - Generate Summary.
 6. **Advanced Settings**:
    - Adjust data split to 75% training and 25% testing.
-7. **Create Model**: Click "Create Model" and wait for it to finish training.
+7. **Create Model**: Click "**Create Model**" and wait for it to finish training.
 
 
 ---
