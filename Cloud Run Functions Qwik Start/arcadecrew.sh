@@ -71,7 +71,7 @@ function main {
   check_success "Project ID set to $PROJECT_ID"
 
   # Set Region 
-  print_instruction "Enter the region specified in the lab (e.g., us-central1):"
+  print_instruction "Enter REGION:"
   read REGION
   export REGION
   gcloud config set compute/region $REGION
@@ -223,7 +223,7 @@ EOL
   print_header "Task 4: Create a Cloud Audit Logs function"
 
   # Setup for Audit Logs - THIS REQUIRES MANUAL ACTION
-  print_manual_step "1. Go to IAM & Admin > Audit Logs in the console"
+  print_manual_step "1. Go to Audit Logs (https://console.cloud.google.com/iam-admin/audit)"
   print_manual_step "2. Find the Compute Engine API and click the checkbox next to it"
   print_manual_step "3. Check Admin Read, Data Read, and Data Write log types and click Save"
   print_instruction "Press Enter after completing the manual steps above..."
@@ -263,12 +263,12 @@ EOL
   print_instruction "Note: It may take up to 10 minutes for the trigger to be fully functional"
 
   # Create a VM - THIS REQUIRES MANUAL ACTION
-  print_manual_step "1. Go to Compute Engine > VM instances in the console"
+  print_manual_step "1. Go to VM instances (https://console.cloud.google.com/compute/instances)"
   print_manual_step "2. Click Create Instance, set the name to 'instance-1'"
   print_manual_step "3. Select the appropriate zone and leave other defaults"
   print_manual_step "4. Click Create and wait for the VM to be created"
   print_manual_step "5. After creation, check for the 'creator' label in Basic information"
-  print_instruction "Once VM is created, enter the zone where you created it (e.g., us-central1-a):"
+  print_instruction "Once VM is created, enter the zone where you created it:"
   read ZONE
 
   # Verify the label
@@ -317,7 +317,7 @@ EOL
   check_success "First revision deployed with orange background"
 
   # Deploy second revision - THIS REQUIRES MANUAL ACTION
-  print_manual_step "1. Go to Cloud Run functions page in the console"
+  print_manual_step "1. Go to Cloud Run functions (https://console.cloud.google.com/functions/run_redirect)"
   print_manual_step "2. Click the hello-world-colored function"
   print_manual_step "3. Click Edit & Deploy New Revision"
   print_manual_step "4. Scroll down to Variables & Secrets tab and update COLOR to yellow"
@@ -384,7 +384,7 @@ EOL
   check_success "Slow function tested"
 
   # Set minimum instances - THIS REQUIRES MANUAL ACTION
-  print_manual_step "1. Go to Cloud Run page in the console"
+  print_manual_step "1. Go to Cloud Run (https://console.cloud.google.com/run)"
   print_manual_step "2. Click the slow-function service"
   print_manual_step "3. Click Edit & Deploy New Revision"
   print_manual_step "4. Under Revision scaling, set Minimum number of instances to 1"
@@ -432,7 +432,7 @@ EOL
   check_success "Slow concurrent function deployed"
 
   # Set concurrency - THIS REQUIRES MANUAL ACTION
-  print_manual_step "1. Go to Cloud Run page in the console"
+  print_manual_step "1. Go to Cloud Run (https://console.cloud.google.com/run)"
   print_manual_step "2. Click the slow-concurrent-function service" 
   print_manual_step "3. Click Edit & Deploy New Revision"
   print_manual_step "4. Under Resources, set the CPU to 1"
@@ -450,9 +450,6 @@ EOL
   print_task "Testing slow concurrent function with concurrent requests..."
   hey -n 10 -c 10 $SLOW_CONCURRENT_URL
   check_success "Concurrent test completed with concurrency enabled"
-
-  print_header "🎉 Lab automation complete! 🎉"
-  print_instruction "Remember to verify each task in the lab to ensure progress is tracked correctly."
 }
 
 # Execute the main function
