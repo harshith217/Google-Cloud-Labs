@@ -1,15 +1,17 @@
-# 🌐 [Cloud Run Functions: Qwik Start | GSP1089](https://www.cloudskillsboost.google/focuses/49757?parent=catalog)  
----
-## 🎥 **Watch the Full Video Walkthrough**  
-[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432?sub_confirmation=1)  
+# ✨ Cloud Run Functions: Qwik Start || GSP1089
+[![Lab Link](https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://www.cloudskillsboost.google/focuses/49757?parent=catalog)
 
 ---
-## ⚠️ **Important Notice**  
-This guide is designed to enhance your learning experience during this lab. Please review each step carefully to fully understand the concepts. Ensure you adhere to **Qwiklabs** and **YouTube** policies while following this guide.  
+
+### ⚠️ Disclaimer  
+- **This script and guide are intended solely for educational purposes to help you better understand lab services and advance your career. Before using the script, please review it carefully to become familiar with Google Cloud services. Always ensure compliance with Qwiklabs’ terms of service and YouTube’s community guidelines. The aim is to enhance your learning experience—not to circumvent it.** 
 
 ---
-## 💻 **Execute in Cloud Shell**  
-Run the following commands in **Cloud Shell**:  
+
+## ⚙️ Lab Environment Setup
+
+* Run in Cloudshell:*
+  
 ```bash
 curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Cloud%20Run%20Functions%20Qwik%20Start/arcadecrew.sh
 
@@ -23,7 +25,20 @@ sudo chmod +x arcadecrew.sh
 
 ---
 
-## 🤝 **Join the Arcade Crew Community!**  
+<div align="center">
+  <p><strong>Visit Arcade Crew Community for more learning resources!</strong></p>
+  
+  <a href="https://chat.whatsapp.com/KkNEauOhBQXHdVcmqIlv9F">
+    <img src="https://img.shields.io/badge/Join_WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="Join WhatsApp">
+  </a>
+  &nbsp;
+  <a href="https://www.youtube.com/@Arcade61432?sub_confirmation=1">
+    <img src="https://img.shields.io/badge/Subscribe-Arcade%20Crew-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube Channel">
+  </a>
+</div>
 
-- **WhatsApp Group:** [Join Here](https://chat.whatsapp.com/KkNEauOhBQXHdVcmqIlv9F)  
-- **YouTube Channel:** [![Subscribe to Arcade Crew](https://img.shields.io/badge/YouTube-Arcade%20Crew-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432?sub_confirmation=1)  
+<br>
+
+> *Note: This guide is provided for educational purposes. Always follow Qwiklabs terms of service and YouTube's community guidelines.*
+
+---
