@@ -154,6 +154,16 @@ EOL
     --member serviceAccount:$SERVICE_ACCOUNT \
     --role roles/pubsub.publisher
   check_success "IAM permissions set for Cloud Storage"
+  
+  # Fix Eventarc Service Agent permissions
+  print_task "Fixing Eventarc Service Agent permissions..."
+  gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:service-$PROJECT_NUMBER@gcp-sa-eventarc.iam.gserviceaccount.com" \
+    --role="roles/eventarc.serviceAgent"
+  check_success "Eventarc Service Agent role added"
+  
+  print_instruction "Waiting for permissions to propagate (2 minutes)..."
+  sleep 120
 
   # Create directories and files
   print_task "Creating directory and files for Storage function..."
@@ -193,9 +203,9 @@ EOL
   gsutil mb -l $REGION $BUCKET
   check_success "Cloud Storage bucket created"
 
-  # Deploy the Storage function
+  # Deploy the Storage function with error handling
   print_task "Deploying Storage function..."
-  gcloud functions deploy nodejs-storage-function \
+  if ! gcloud functions deploy nodejs-storage-function \
     --gen2 \
     --runtime nodejs22 \
     --entry-point helloStorage \
@@ -203,8 +213,37 @@ EOL
     --region $REGION \
     --trigger-bucket $BUCKET \
     --trigger-location $REGION \
-    --max-instances 1
-  check_success "Storage function deployed"
+    --max-instances 1; then
+    
+    print_instruction "Initial deployment failed. Trying alternative approach..."
+    
+    # Create a Pub/Sub topic as an alternative
+    print_task "Setting up Pub/Sub topic for Cloud Storage notifications..."
+    TOPIC_NAME="storage-events-topic"
+    gcloud pubsub topics create $TOPIC_NAME
+    
+    # Add notification to the bucket
+    BUCKET_NAME=$(echo $BUCKET | sed 's/gs:\/\///')
+    gsutil notification create -t $TOPIC_NAME -f json $BUCKET
+    
+    # Deploy function with Pub/Sub trigger instead
+    gcloud functions deploy nodejs-storage-function \
+      --gen2 \
+      --runtime nodejs22 \
+      --entry-point helloStorage \
+      --source . \
+      --region $REGION \
+      --trigger-topic $TOPIC_NAME \
+      --max-instances 1
+    
+    if [ $? -eq 0 ]; then
+      check_success "Storage function deployed with Pub/Sub trigger"
+    else
+      print_instruction "Both approaches failed. Continuing with next tasks..."
+    fi
+  else
+    check_success "Storage function deployed successfully"
+  fi
 
   # Test the Storage function
   print_task "Testing Storage function..."
