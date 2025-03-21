@@ -15,65 +15,103 @@ RESET_FORMAT=$'\033[0m'
 BOLD_TEXT=$'\033[1m'
 UNDERLINE_TEXT=$'\033[4m'
 
-# Displaying start message
-echo
-echo "${CYAN_TEXT}${BOLD_TEXT}╔════════════════════════════════════════════════════════╗${RESET_FORMAT}"
-echo "${CYAN_TEXT}${BOLD_TEXT}                  Starting the process...                   ${RESET_FORMAT}"
-echo "${CYAN_TEXT}${BOLD_TEXT}╚════════════════════════════════════════════════════════╝${RESET_FORMAT}"
+clear
+
+# Welcome message
+echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
+echo "${BLUE_TEXT}${BOLD_TEXT}         INITIATING EXECUTION...  ${RESET_FORMAT}"
+echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
 echo
 
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Setting up Zone and Region ========================== ${RESET_FORMAT}"
-echo
-export ZONE=$(gcloud compute project-info describe \
---format="value(commonInstanceMetadata.items[google-compute-default-zone])")
-export REGION=$(echo "$ZONE" | cut -d '-' -f 1-2)
-gcloud config set compute/region $REGION
-export PROJECT_ID=$(gcloud config get-value project)
+# Function for error handling
+function error_exit {
+  echo "${RED_TEXT}${BOLD_TEXT}ERROR: $1${RESET_FORMAT}" >&2
+  exit 1
+}
 
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Getting and setting IAM Policy ========================== ${RESET_FORMAT}"
-echo
-gcloud projects get-iam-policy $DEVSHELL_PROJECT_ID > policy.yaml
+# Function to check command success
+function check_success {
+  if [ $? -eq 0 ]; then
+    echo "${GREEN_TEXT}${BOLD_TEXT}✓ Success: $1${RESET_FORMAT}"
+  else
+    error_exit "Failed: $1"
+  fi
+}
 
-cat <<EOF >> policy.yaml
-auditConfigs:
-- auditLogConfigs:
-  - logType: ADMIN_READ
-  - logType: DATA_READ
-  - logType: DATA_WRITE
-  service: compute.googleapis.com
-EOF
+# Function to print section headers
+function print_header {
+  echo "${BLUE_TEXT}${BOLD_TEXT}====================================================================================
+$1
+====================================================================================${RESET_FORMAT}"
+}
 
-gcloud projects set-iam-policy $DEVSHELL_PROJECT_ID policy.yaml
+# Function to print task information
+function print_task {
+  echo "${CYAN_TEXT}${BOLD_TEXT}$1${RESET_FORMAT}"
+}
 
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Enabling Required Services ========================== ${RESET_FORMAT}"
-echo
-gcloud services enable \
-  artifactregistry.googleapis.com \
-  cloudfunctions.googleapis.com \
-  cloudbuild.googleapis.com \
-  eventarc.googleapis.com \
-  run.googleapis.com \
-  logging.googleapis.com \
-  pubsub.googleapis.com
+# Function to print instructions
+function print_instruction {
+  echo "${YELLOW_TEXT}${BOLD_TEXT}$1${RESET_FORMAT}"
+}
 
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Creating and setting up hello-http directory and files ========================== ${RESET_FORMAT}"
-echo
-mkdir ~/hello-http && cd $_
-touch index.js && touch package.json
+# Function to print manual steps
+function print_manual_step {
+  echo "${MAGENTA_TEXT}${BOLD_TEXT}MANUAL STEP: $1${RESET_FORMAT}"
+}
 
-cat > index.js <<EOF_END
+# Main execution flow
+function main {
+  # Task 1: Enable APIs
+  print_header "Task 1: Enable APIs"
+
+  # Set Project ID
+  print_task "Setting Project ID variable..."
+  export PROJECT_ID=$(gcloud config get-value project)
+  check_success "Project ID set to $PROJECT_ID"
+
+  # Set Region 
+  print_instruction "Enter the region specified in the lab (e.g., us-central1):"
+  read REGION
+  export REGION
+  gcloud config set compute/region $REGION
+  check_success "Region set to $REGION"
+
+  # Enable necessary services
+  print_task "Enabling necessary Google Cloud services..."
+  gcloud services enable \
+    artifactregistry.googleapis.com \
+    cloudfunctions.googleapis.com \
+    cloudbuild.googleapis.com \
+    eventarc.googleapis.com \
+    run.googleapis.com \
+    logging.googleapis.com \
+    pubsub.googleapis.com
+  check_success "All necessary services enabled"
+
+  # Task 2: Create an HTTP function
+  print_header "Task 2: Create an HTTP function"
+
+  # Create directories and files
+  print_task "Creating directory and files for HTTP function..."
+  mkdir -p ~/hello-http && cd $_
+  touch index.js && touch package.json
+  check_success "Directory and files created"
+
+  # Create index.js
+  print_task "Creating index.js file..."
+  cat > index.js << 'EOL'
 const functions = require('@google-cloud/functions-framework');
 
 functions.http('helloWorld', (req, res) => {
   res.status(200).send('HTTP with Node.js in GCF 2nd gen!');
 });
-EOF_END
+EOL
+  check_success "index.js created"
 
-cat > package.json <<EOF_END
+  # Create package.json
+  print_task "Creating package.json file..."
+  cat > package.json << 'EOL'
 {
   "name": "nodejs-functions-gen2-codelab",
   "version": "0.0.1",
@@ -82,74 +120,62 @@ cat > package.json <<EOF_END
     "@google-cloud/functions-framework": "^2.0.0"
   }
 }
-EOF_END
+EOL
+  check_success "package.json created"
 
-deploy_function() {
+  # Deploy the HTTP function
+  print_task "Deploying HTTP function..."
   gcloud functions deploy nodejs-http-function \
     --gen2 \
-    --runtime nodejs18 \
+    --runtime nodejs22 \
     --entry-point helloWorld \
     --source . \
     --region $REGION \
     --trigger-http \
     --timeout 600s \
-    --max-instances 1 \
-    --quiet
-}
+    --max-instances 1
+  check_success "HTTP function deployed"
 
-SERVICE_NAME="nodejs-http-function"
+  # Test the HTTP function
+  print_task "Testing HTTP function..."
+  gcloud functions call nodejs-http-function \
+    --gen2 --region $REGION
+  check_success "HTTP function tested"
 
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Deploying and checking the service (nodejs-http-function) ========================== ${RESET_FORMAT}"
-echo
-# Loop until the Cloud Run service is created
-while true; do
-  # Run the deployment command
-  deploy_function
+  # Task 3: Create a Cloud Storage function
+  print_header "Task 3: Create a Cloud Storage function"
 
-  # Check if Cloud Run service is created
-  if gcloud run services describe $SERVICE_NAME --region $REGION &> /dev/null; then
-    echo "Cloud Run service is created. Exiting the loop."
-    break
-  else
-    echo "Waiting for Cloud Run service to be created..."
-    sleep 10
-  fi
-done
+  # Setup IAM permissions
+  print_task "Setting up IAM permissions for Cloud Storage..."
+  PROJECT_NUMBER=$(gcloud projects list --filter="project_id:$PROJECT_ID" --format='value(project_number)')
+  SERVICE_ACCOUNT=$(gsutil kms serviceaccount -p $PROJECT_NUMBER)
 
-echo "Running the next code..."
+  gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member serviceAccount:$SERVICE_ACCOUNT \
+    --role roles/pubsub.publisher
+  check_success "IAM permissions set for Cloud Storage"
 
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Getting Project Number and service account ========================== ${RESET_FORMAT}"
-echo
+  # Create directories and files
+  print_task "Creating directory and files for Storage function..."
+  mkdir -p ~/hello-storage && cd $_
+  touch index.js && touch package.json
+  check_success "Directory and files created"
 
-PROJECT_NUMBER=$(gcloud projects list --filter="project_id:$PROJECT_ID" --format='value(project_number)')
-SERVICE_ACCOUNT=$(gsutil kms serviceaccount -p $PROJECT_NUMBER)
-
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Adding IAM policy binding ========================== ${RESET_FORMAT}"
-echo
-
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-  --member serviceAccount:$SERVICE_ACCOUNT \
-  --role roles/pubsub.publisher
-  
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Creating and setting up hello-storage directory and files ========================== ${RESET_FORMAT}"
-echo
-mkdir ~/hello-storage && cd $_
-touch index.js && touch package.json
-
-cat > index.js <<EOF_END
+  # Create index.js
+  print_task "Creating index.js file..."
+  cat > index.js << 'EOL'
 const functions = require('@google-cloud/functions-framework');
 
 functions.cloudEvent('helloStorage', (cloudevent) => {
   console.log('Cloud Storage event with Node.js in GCF 2nd gen!');
   console.log(cloudevent);
 });
-EOF_END
+EOL
+  check_success "index.js created"
 
-cat > package.json <<EOF_END
+  # Create package.json
+  print_task "Creating package.json file..."
+  cat > package.json << 'EOL'
 {
   "name": "nodejs-functions-gen2-codelab",
   "version": "0.0.1",
@@ -158,140 +184,159 @@ cat > package.json <<EOF_END
     "@google-cloud/functions-framework": "^2.0.0"
   }
 }
-EOF_END
+EOL
+  check_success "package.json created"
 
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Creating bucket ========================== ${RESET_FORMAT}"
-echo
-BUCKET="gs://gcf-gen2-storage-$PROJECT_ID"
-gsutil mb -l $REGION $BUCKET
+  # Create a Cloud Storage bucket
+  print_task "Creating Cloud Storage bucket..."
+  BUCKET="gs://gcf-gen2-storage-$PROJECT_ID"
+  gsutil mb -l $REGION $BUCKET
+  check_success "Cloud Storage bucket created"
 
-deploy_function () {
-gcloud functions deploy nodejs-storage-function \
-  --gen2 \
-  --runtime nodejs18 \
-  --entry-point helloStorage \
-  --source . \
-  --region $REGION \
-  --trigger-bucket $BUCKET \
-  --trigger-location $REGION \
-  --max-instances 1 \
-  --quiet
-}
+  # Deploy the Storage function
+  print_task "Deploying Storage function..."
+  gcloud functions deploy nodejs-storage-function \
+    --gen2 \
+    --runtime nodejs22 \
+    --entry-point helloStorage \
+    --source . \
+    --region $REGION \
+    --trigger-bucket $BUCKET \
+    --trigger-location $REGION \
+    --max-instances 1
+  check_success "Storage function deployed"
 
-# Variables
-SERVICE_NAME="nodejs-storage-function"
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Deploying and checking the service (nodejs-storage-function) ========================== ${RESET_FORMAT}"
-echo
+  # Test the Storage function
+  print_task "Testing Storage function..."
+  echo "Hello World" > random.txt
+  gsutil cp random.txt $BUCKET/random.txt
+  check_success "File uploaded to bucket"
 
-# Loop until the Cloud Run service is created
-while true; do
-  # Run the deployment command
-  deploy_function
+  print_instruction "Waiting for logs to be generated (30 seconds)..."
+  sleep 30
 
-  # Check if Cloud Run service is created
-  if gcloud run services describe $SERVICE_NAME --region $REGION &> /dev/null; then
-    echo "Cloud Run service is created. Exiting the loop."
-    break
-  else
-    echo "Waiting for Cloud Run service to be created..."
-    sleep 10
-  fi
-done
+  print_task "Viewing logs for Storage function..."
+  gcloud functions logs read nodejs-storage-function \
+    --region $REGION --gen2 --limit=100 --format "value(log)"
 
-# Your next code to run after the Cloud Run service is created
-echo "Running the next code..."
-# Add your next code here
+  # Task 4: Create a Cloud Audit Logs function
+  print_header "Task 4: Create a Cloud Audit Logs function"
 
-### ``` If you facing error re-run the above command again and again... 
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Uploading file to bucket and read logs ========================== ${RESET_FORMAT}"
-echo
-echo "Hello World" > random.txt
-gsutil cp random.txt $BUCKET/random.txt
+  # Setup for Audit Logs - THIS REQUIRES MANUAL ACTION
+  print_manual_step "1. Go to IAM & Admin > Audit Logs in the console"
+  print_manual_step "2. Find the Compute Engine API and click the checkbox next to it"
+  print_manual_step "3. Check Admin Read, Data Read, and Data Write log types and click Save"
+  print_instruction "Press Enter after completing the manual steps above..."
+  read
 
-gcloud functions logs read nodejs-storage-function \
-  --region $REGION --gen2 --limit=100 --format "value(log)"
+  # Grant IAM roles
+  print_task "Granting IAM roles for Eventarc..."
+  gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member serviceAccount:$PROJECT_NUMBER-compute@developer.gserviceaccount.com \
+    --role roles/eventarc.eventReceiver
+  check_success "IAM roles granted for Eventarc"
 
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Adding IAM policy binding for eventarc ========================== ${RESET_FORMAT}"
-echo
+  # Clone the repository
+  print_task "Cloning the sample repository..."
+  cd ~
+  git clone https://github.com/GoogleCloudPlatform/eventarc-samples.git
+  check_success "Sample repository cloned"
 
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-  --member serviceAccount:$PROJECT_NUMBER-compute@developer.gserviceaccount.com \
-  --role roles/eventarc.eventReceiver
+  # Navigate to the app directory
+  print_task "Navigating to app directory..."
+  cd ~/eventarc-samples/gce-vm-labeler/gcf/nodejs
+  check_success "Navigated to app directory"
 
-cd ~
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Cloning eventarc-samples repo ========================== ${RESET_FORMAT}"
-echo
-git clone https://github.com/GoogleCloudPlatform/eventarc-samples.git
+  # Deploy the Audit Logs function
+  print_task "Deploying Audit Logs function..."
+  gcloud functions deploy gce-vm-labeler \
+    --gen2 \
+    --runtime nodejs22 \
+    --entry-point labelVmCreation \
+    --source . \
+    --region $REGION \
+    --trigger-event-filters="type=google.cloud.audit.log.v1.written,serviceName=compute.googleapis.com,methodName=beta.compute.instances.insert" \
+    --trigger-location $REGION \
+    --max-instances 1
+  check_success "Audit Logs function deployed"
 
-cd ~/eventarc-samples/gce-vm-labeler/gcf/nodejs
+  print_instruction "Note: It may take up to 10 minutes for the trigger to be fully functional"
 
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Deploying gce-vm-labeler function ========================== ${RESET_FORMAT}"
-echo
+  # Create a VM - THIS REQUIRES MANUAL ACTION
+  print_manual_step "1. Go to Compute Engine > VM instances in the console"
+  print_manual_step "2. Click Create Instance, set the name to 'instance-1'"
+  print_manual_step "3. Select the appropriate zone and leave other defaults"
+  print_manual_step "4. Click Create and wait for the VM to be created"
+  print_manual_step "5. After creation, check for the 'creator' label in Basic information"
+  print_instruction "Once VM is created, enter the zone where you created it (e.g., us-central1-a):"
+  read ZONE
 
-gcloud functions deploy gce-vm-labeler \
-  --gen2 \
-  --runtime nodejs18 \
-  --entry-point labelVmCreation \
-  --source . \
-  --region $REGION \
-  --trigger-event-filters="type=google.cloud.audit.log.v1.written,serviceName=compute.googleapis.com,methodName=beta.compute.instances.insert" \
-  --trigger-location $REGION \
-  --max-instances 1
+  # Verify the label
+  print_task "Verifying the creator label on the VM..."
+  gcloud compute instances describe instance-1 --zone $ZONE
 
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Creating a GCE instance ========================== ${RESET_FORMAT}"
-echo
+  # Delete the VM
+  print_task "Deleting the test VM..."
+  gcloud compute instances delete instance-1 --zone $ZONE --quiet
+  check_success "Test VM deleted"
 
-gcloud compute instances create instance-1 --zone=$ZONE
+  # Task 5: Deploy different revisions
+  print_header "Task 5: Deploy different revisions"
 
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Setting up hello-world-colored directory and files ========================== ${RESET_FORMAT}"
-echo
+  # Create directories and files
+  print_task "Creating directory and files for colored function..."
+  mkdir -p ~/hello-world-colored && cd $_
+  touch main.py
+  check_success "Directory and files created"
 
-mkdir ~/hello-world-colored && cd $_
-touch main.py
-
-cat > main.py <<EOF_END
+  # Create main.py
+  print_task "Creating main.py file..."
+  cat > main.py << 'EOL'
 import os
 
 color = os.environ.get('COLOR')
 
 def hello_world(request):
     return f'<body style="background-color:{color}"><h1>Hello World!</h1></body>'
-EOF_END
+EOL
+  check_success "main.py created"
 
-echo > requirements.txt 
+  # Deploy first revision
+  print_task "Deploying first revision with orange background..."
+  COLOR=orange
+  gcloud functions deploy hello-world-colored \
+    --gen2 \
+    --runtime python39 \
+    --entry-point hello_world \
+    --source . \
+    --region $REGION \
+    --trigger-http \
+    --allow-unauthenticated \
+    --update-env-vars COLOR=$COLOR \
+    --max-instances 1
+  check_success "First revision deployed with orange background"
 
-COLOR=yellow
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Deploying hello-world-colored function ========================== ${RESET_FORMAT}"
-echo
+  # Deploy second revision - THIS REQUIRES MANUAL ACTION
+  print_manual_step "1. Go to Cloud Run functions page in the console"
+  print_manual_step "2. Click the hello-world-colored function"
+  print_manual_step "3. Click Edit & Deploy New Revision"
+  print_manual_step "4. Scroll down to Variables & Secrets tab and update COLOR to yellow"
+  print_manual_step "5. Click Deploy"
+  print_instruction "Press Enter after completing the manual steps above..."
+  read
 
-gcloud functions deploy hello-world-colored \
-  --gen2 \
-  --runtime python39 \
-  --entry-point hello_world \
-  --source . \
-  --region $REGION \
-  --trigger-http \
-  --allow-unauthenticated \
-  --update-env-vars COLOR=$COLOR \
-  --max-instances 1 \
-  --quiet
+  # Task 6: Set up minimum instances
+  print_header "Task 6: Set up minimum instances"
 
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Setting up min-instances directory and files ========================== ${RESET_FORMAT}"
-echo
-mkdir ~/min-instances && cd $_
-touch main.go
+  # Create directories and files
+  print_task "Creating directory and files for min-instances function..."
+  mkdir -p ~/min-instances && cd $_
+  touch main.go && touch go.mod
+  check_success "Directory and files created"
 
-cat > main.go <<EOF_END
+  # Create main.go
+  print_task "Creating main.go file..."
+  cat > main.go << 'EOL'
 package p
 
 import (
@@ -307,122 +352,117 @@ func init() {
 func HelloWorld(w http.ResponseWriter, r *http.Request) {
         fmt.Fprint(w, "Slow HTTP Go in GCF 2nd gen!")
 }
-EOF_END
+EOL
+  check_success "main.go created"
 
-echo "module example.com/mod" > go.mod
+  # Create go.mod
+  print_task "Creating go.mod file..."
+  cat > go.mod << 'EOL'
+module example.com/mod
 
+go 1.21
+EOL
+  check_success "go.mod created"
+
+  # Deploy the function
+  print_task "Deploying slow function without minimum instances..."
+  gcloud functions deploy slow-function \
+    --gen2 \
+    --runtime go121 \
+    --entry-point HelloWorld \
+    --source . \
+    --region $REGION \
+    --trigger-http \
+    --allow-unauthenticated \
+    --max-instances 4
+  check_success "Slow function deployed without minimum instances"
+
+  # Test the function
+  print_task "Testing slow function (expect ~10 second delay on first call)..."
+  time gcloud functions call slow-function \
+    --gen2 --region $REGION
+  check_success "Slow function tested"
+
+  # Set minimum instances - THIS REQUIRES MANUAL ACTION
+  print_manual_step "1. Go to Cloud Run page in the console"
+  print_manual_step "2. Click the slow-function service"
+  print_manual_step "3. Click Edit & Deploy New Revision"
+  print_manual_step "4. Under Revision scaling, set Minimum number of instances to 1"
+  print_manual_step "5. Leave Maximum number of instances at 4"
+  print_manual_step "6. Click Deploy"
+  print_instruction "Press Enter after completing the manual steps above..."
+  read
+
+  # Test the function again
+  print_task "Testing slow function again (should be faster)..."
+  time gcloud functions call slow-function \
+    --gen2 --region $REGION
+  check_success "Slow function tested with minimum instances"
+
+  # Task 7: Create a function with concurrency
+  print_header "Task 7: Create a function with concurrency"
+
+  # Get the URL of the slow function
+  print_task "Getting URL of the slow function..."
+  SLOW_URL=$(gcloud functions describe slow-function --region $REGION --gen2 --format="value(serviceConfig.uri)")
+  check_success "Got URL: $SLOW_URL"
+
+  # Test without concurrency
+  print_task "Testing slow function with concurrent requests..."
+  hey -n 10 -c 10 $SLOW_URL
+  check_success "Concurrent test completed"
+
+  # Delete the slow function
+  print_task "Deleting slow function..."
+  gcloud run services delete slow-function --region $REGION --quiet
+  check_success "Slow function deleted"
+
+  # Deploy new function for concurrency test
+  print_task "Deploying slow function with minimum instances..."
+  gcloud functions deploy slow-concurrent-function \
+    --gen2 \
+    --runtime go121 \
+    --entry-point HelloWorld \
+    --source . \
+    --region $REGION \
+    --trigger-http \
+    --allow-unauthenticated \
+    --min-instances 1 \
+    --max-instances 4
+  check_success "Slow concurrent function deployed"
+
+  # Set concurrency - THIS REQUIRES MANUAL ACTION
+  print_manual_step "1. Go to Cloud Run page in the console"
+  print_manual_step "2. Click the slow-concurrent-function service" 
+  print_manual_step "3. Click Edit & Deploy New Revision"
+  print_manual_step "4. Under Resources, set the CPU to 1"
+  print_manual_step "5. Under Requests, set Maximum concurrent requests per instance to 100"
+  print_manual_step "6. Click Deploy"
+  print_instruction "Press Enter after completing the manual steps above..."
+  read
+
+  # Get the URL of the slow concurrent function
+  print_task "Getting URL of the slow concurrent function..."
+  SLOW_CONCURRENT_URL=$(gcloud functions describe slow-concurrent-function --region $REGION --gen2 --format="value(serviceConfig.uri)")
+  check_success "Got URL: $SLOW_CONCURRENT_URL"
+
+  # Test with concurrency
+  print_task "Testing slow concurrent function with concurrent requests..."
+  hey -n 10 -c 10 $SLOW_CONCURRENT_URL
+  check_success "Concurrent test completed with concurrency enabled"
+
+  print_header "🎉 Lab automation complete! 🎉"
+  print_instruction "Remember to verify each task in the lab to ensure progress is tracked correctly."
+}
+
+# Execute the main function
+main
+
+# Completion Message
 echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Deploying slow-function ========================== ${RESET_FORMAT}"
-echo
-
-gcloud functions deploy slow-function \
-  --gen2 \
-  --runtime go116 \
-  --entry-point HelloWorld \
-  --source . \
-  --region $REGION \
-  --trigger-http \
-  --allow-unauthenticated \
-  --max-instances 4 \
-  --quiet
-
-# Transform DEVSHELL_PROJECT_ID and REGION
-export spcl_project=$(echo "$DEVSHELL_PROJECT_ID" | sed 's/-/--/g; s/$/__/g')
-export my_region=$(echo "$REGION" | sed 's/-/--/g; s/$/__/g')
-
-# Build the final string
-export full_path="$REGION-docker.pkg.dev/$DEVSHELL_PROJECT_ID/gcf-artifacts/$spcl_project$my_region"
-
-# Append the static part
-export full_path="${full_path}slow--function:version_1"
-
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Deploying slow-function in Cloud Run ========================== ${RESET_FORMAT}"
-echo
-
-gcloud run deploy slow-function \
---image=$full_path \
---min-instances=1 \
---max-instances=4 \
---region=$REGION \
---project=$DEVSHELL_PROJECT_ID
-
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Please check the score till Task 6, then Proceed ========================== ${RESET_FORMAT}"
-echo
-
-read -p "${YELLOW_TEXT}${BOLD_TEXT}Have you checked progress till task 6? (Y/N): ${RESET_FORMAT}" response
-if [[ "$response" != "Y" && "$response" != "y" ]]; then
-  echo "Please complete task 6 before proceeding."
-fi
-
-echo
-
-export ZONE=$(gcloud compute project-info describe \
---format="value(commonInstanceMetadata.items[google-compute-default-zone])")
-export REGION=$(echo "$ZONE" | cut -d '-' -f 1-2)
-
-cd min-instances/
-
-SLOW_URL=$(gcloud functions describe slow-function --region $REGION --gen2 --format="value(serviceConfig.uri)")
-
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Testing slow-function ========================== ${RESET_FORMAT}"
-echo
-
-hey -n 10 -c 10 $SLOW_URL
-
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Deleting slow-function from Cloud Run ========================== ${RESET_FORMAT}"
-echo
-
-gcloud run services delete slow-function --region $REGION --quiet
-
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Deploying slow-concurrent-function ========================== ${RESET_FORMAT}"
-echo
-
-gcloud functions deploy slow-concurrent-function \
-  --gen2 \
-  --runtime go116 \
-  --entry-point HelloWorld \
-  --source . \
-  --region $REGION \
-  --trigger-http \
-  --allow-unauthenticated \
-  --min-instances 1 \
-  --max-instances 4 \
-  --quiet
-
-# Transform DEVSHELL_PROJECT_ID and REGION
-export spcl_project=$(echo "$DEVSHELL_PROJECT_ID" | sed 's/-/--/g; s/$/__/g')
-export my_region=$(echo "$REGION" | sed 's/-/--/g; s/$/__/g')
-
-# Build the final string
-export full_path="$REGION-docker.pkg.dev/$DEVSHELL_PROJECT_ID/gcf-artifacts/$spcl_project$my_region"
-
-# Append the static part
-export full_path="${full_path}slow--concurrent--function:version_1"
-
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Deploying slow-concurrent-function in Cloud Run ========================== ${RESET_FORMAT}"
-echo
-gcloud run deploy slow-concurrent-function \
---image=$full_path \
---concurrency=100 \
---cpu=1 \
---max-instances=4 \
---region=$REGION \
---project=$DEVSHELL_PROJECT_ID \
- && gcloud run services update-traffic slow-concurrent-function --to-latest --region=$REGION
-
-echo "${YELLOW_TEXT}${BOLD_TEXT}Click here: "${RESET_FORMAT}""${BLUE_TEXT}${BOLD_TEXT}"https://console.cloud.google.com/run/deploy/$REGION/slow-concurrent-function?project=$DEVSHELL_PROJECT_ID""${RESET_FORMAT}"
-
-echo
-
-# echo "${GREEN_TEXT}${BOLD_TEXT}╔════════════════════════════════════════════════════════╗${RESET_FORMAT}"
-# echo "${GREEN_TEXT}${BOLD_TEXT}              Lab Completed Successfully!               ${RESET_FORMAT}"
-# echo "${GREEN_TEXT}${BOLD_TEXT}╚════════════════════════════════════════════════════════╝${RESET_FORMAT}"
-# echo
-echo -e "${RED_TEXT}${BOLD_TEXT}Subscribe our Channel:${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
+echo "${GREEN_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
+echo "${GREEN_TEXT}${BOLD_TEXT}              LAB COMPLETED SUCCESSFULLY!              ${RESET_FORMAT}"
+echo "${GREEN_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
+echo ""
+echo -e "${RED_TEXT}${BOLD_TEXT}Subscribe my Channel:${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
 echo
