@@ -26,7 +26,6 @@ echo
 # Function for error handling
 function error_exit {
   echo "${RED_TEXT}${BOLD_TEXT}ERROR: $1${RESET_FORMAT}" >&2
-  exit 1
 }
 
 # Function to check command success
