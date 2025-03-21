@@ -22,7 +22,24 @@
 4. **Select Input Data**: 
    - Choose "**Telco Customer Churn**" Explore.
    - Filter on "**Dataframe**" to "**train**".
-   - Select "**Customer ID**", "**Churn**", and relevant features.
+   - Select "**Customer ID**", "**Churn**", and relevant features mentioned below.
+| **Dimensions** | **Measures** |
+|---------------|-------------|
+| Account Duration Months | Total Day Calls |
+| International Plan (Yes/No) | Total Day Charge |
+| State | Total Day Minutes |
+| Voice Mail Plan (Yes/No) | Total Eve Calls |
+| | Total Eve Charge |
+| | Total Eve Minutes |
+| | Total Intl Calls |
+| | Total Intl Charge |
+| | Total Intl Minutes |
+| | Total Night Calls |
+| | Total Night Charge |
+| | Total Night Minutes |
+| | Total Service Calls |
+| | Total Vmail Messages |
+
    - Run the query and continue.
 5. **Model Options**: 
    - Name the model using your Project ID (replace hyphens with underscores).
