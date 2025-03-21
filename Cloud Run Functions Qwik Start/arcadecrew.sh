@@ -325,19 +325,25 @@ EOL
   print_task "Creating directory and files for colored function..."
   mkdir -p ~/hello-world-colored && cd $_
   touch main.py
+  touch requirements.txt  # Create the requirements.txt file
   check_success "Directory and files created"
 
   # Create main.py
   print_task "Creating main.py file..."
   cat > main.py << 'EOL'
-import os
+  import os
 
-color = os.environ.get('COLOR')
+  color = os.environ.get('COLOR')
 
-def hello_world(request):
-    return f'<body style="background-color:{color}"><h1>Hello World!</h1></body>'
-EOL
+  def hello_world(request):
+      return f'<body style="background-color:{color}"><h1>Hello World!</h1></body>'
+  EOL
   check_success "main.py created"
+
+  # Create requirements.txt (empty is fine for this simple function)
+  print_task "Creating requirements.txt file..."
+  touch requirements.txt
+  check_success "requirements.txt created"
 
   # Deploy first revision
   print_task "Deploying first revision with orange background..."
