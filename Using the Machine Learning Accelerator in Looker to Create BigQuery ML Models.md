@@ -23,6 +23,7 @@
    - Choose "**Telco Customer Churn**" Explore.
    - Filter on "**Dataframe**" to "**train**".
    - Select "**Customer ID**", "**Churn**", and relevant features mentioned below.
+
 | **Dimensions** | **Measures** |
 |---------------|-------------|
 | Account Duration Months | Total Day Calls |
