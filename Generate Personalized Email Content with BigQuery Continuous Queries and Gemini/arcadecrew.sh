@@ -23,7 +23,6 @@ echo "${BLUE_TEXT}${BOLD_TEXT}         INITIATING EXECUTION...  ${RESET_FORMAT}"
 echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
 echo
 
-
 # Error handling function
 function error_exit {
     echo "${RED_TEXT}${BOLD_TEXT}ERROR: $1${RESET_FORMAT}" >&2
@@ -55,6 +54,7 @@ if [ -z "$PROJECT_ID" ]; then
     error_exit "Project ID not found. Make sure you're authenticated."
 fi
 
+info_message "Starting lab automation for project: $PROJECT_ID"
 info_message "Current date and time: $(date)"
 
 # Set region (using default region from the lab)
@@ -77,7 +77,7 @@ success_message "BigQuery connection created successfully"
 
 # Get the BigQuery connection service account
 info_message "Getting BigQuery connection service account..."
-BQ_SA=$(bq show --connection $PROJECT_ID.$REGION.continuous-queries-connection | grep "serviceAccountId" | cut -d: -f2- | tr -d ' "')
+BQ_SA=$(bq show --connection $PROJECT_ID.$REGION.continuous-queries-connection | grep "serviceAccountId" | sed -n 's/.*serviceAccountId:\([^}]*\).*/\1/p')
 
 if [ -z "$BQ_SA" ]; then
     error_exit "Failed to get BigQuery service account"
@@ -103,6 +103,16 @@ bq query --nouse_legacy_sql \
 success_message "Created BigQuery ML remote model successfully"
 
 echo "${CYAN_TEXT}${BOLD_TEXT}========== TASK 2: Grant a custom service account access to BigQuery and Pub/Sub resources ==========${RESET_FORMAT}"
+
+# Check if custom service account exists first
+info_message "Checking if custom service account exists: ${CUSTOM_SA}"
+if gcloud iam service-accounts describe ${CUSTOM_SA} &>/dev/null; then
+    info_message "Custom service account exists, proceeding with permissions"
+else
+    warning_message "Custom service account ${CUSTOM_SA} does not exist, creating it..."
+    gcloud iam service-accounts create bq-continuous-query-sa \
+        --display-name="BigQuery Continuous Query Service Account" || error_exit "Failed to create service account"
+fi
 
 # Grant BigQuery Connection User role to custom service account
 info_message "Granting BigQuery Connection User role to custom service account ($CUSTOM_SA)..."
@@ -139,7 +149,9 @@ echo "${CYAN_TEXT}${BOLD_TEXT}========== TASK 3: Create and configure an Applica
 info_message "Enabling APIs for Application Integration..."
 gcloud services enable integrations.googleapis.com || warning_message "Failed to enable integrations API, it may already be enabled"
 gcloud services enable connectors.googleapis.com || warning_message "Failed to enable connectors API, it may already be enabled"
-gcloud services enable connectors-api.googleapis.com || warning_message "Failed to enable connectors-api API, it may already be enabled"
+# Remove or make optional the problematic API
+# gcloud services enable connectors-api.googleapis.com || warning_message "Failed to enable connectors-api API, it may already be enabled"
+info_message "Note: connectors-api.googleapis.com may not be needed or has been consolidated with other APIs"
 
 manual_step "Application Integration requires manual configuration through the Console UI:"
 manual_step "1. Go to Application Integration in the Google Cloud Console"
@@ -159,9 +171,6 @@ manual_step "   - Subject: Don't forget the items in your cart"
 manual_step "   - Body Format: HTML"
 manual_step "   - Body: customer_message variable"
 manual_step "9. Publish the integration"
-
-echo "${CYAN_TEXT}${BOLD_TEXT}PRESS ENTER AFTER COMPLETING THE STEPS...${RESET_FORMAT}"
-read
 
 echo "${CYAN_TEXT}${BOLD_TEXT}========== TASK 4: Create a continuous query in BigQuery that generates email text with Gemini ==========${RESET_FORMAT}"
 
@@ -233,9 +242,6 @@ manual_step "7. Click 'Save' to exit settings"
 manual_step "8. Click 'Run' to start the continuous query"
 manual_step "9. Wait until you see 'Job running continuously' at the top of the query window"
 
-echo "${CYAN_TEXT}${BOLD_TEXT}PRESS ENTER AFTER COMPLETING THE STEPS...${RESET_FORMAT}"
-read
-
 rm $QUERY_FILE
 
 echo "${CYAN_TEXT}${BOLD_TEXT}========== TASK 5: Add data to the abandoned carts table to test the continuous query ==========${RESET_FORMAT}"
@@ -252,8 +258,6 @@ bq query --nouse_legacy_sql \
 
 success_message "Inserted test data into abandoned_carts table successfully"
 success_message "The workflow should now process this data and send an email"
-
-echo
 
 # Completion Message
 echo
