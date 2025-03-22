@@ -82,6 +82,8 @@ info_message "Getting BigQuery connection service account..."
 BQ_CONNECTION_INFO=$(bq show --connection $PROJECT_ID.$REGION.continuous-queries-connection)
 echo "DEBUG: Raw connection info: $BQ_CONNECTION_INFO"
 
+info_message "CLICK HERE: https://console.cloud.google.com/bigquery"
+
 # taking bigquery service account from the user
 info_message "Enter BigQuery Service Account:"
 read -r BQ_SA
