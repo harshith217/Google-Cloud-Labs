@@ -54,11 +54,12 @@ if [ -z "$PROJECT_ID" ]; then
     error_exit "Project ID not found. Make sure you're authenticated."
 fi
 
-info_message "Starting lab automation for project: $PROJECT_ID"
 info_message "Current date and time: $(date)"
 
-# Set region (using default region from the lab)
-REGION="us-central1"
+# taking region as input
+info_message "Enter REGION:"
+read -r REGION
+
 info_message "Using region: $REGION"
 
 # Define custom service account
@@ -77,13 +78,15 @@ success_message "BigQuery connection created successfully"
 
 # Get the BigQuery connection service account
 info_message "Getting BigQuery connection service account..."
-BQ_SA=$(bq show --connection $PROJECT_ID.$REGION.continuous-queries-connection | grep "serviceAccountId" | sed -n 's/.*serviceAccountId:\([^}]*\).*/\1/p')
+# First, save the raw output to a variable for debugging
+BQ_CONNECTION_INFO=$(bq show --connection $PROJECT_ID.$REGION.continuous-queries-connection)
+echo "DEBUG: Raw connection info: $BQ_CONNECTION_INFO"
 
-if [ -z "$BQ_SA" ]; then
-    error_exit "Failed to get BigQuery service account"
-fi
+# taking bigquery service account from the user
+info_message "Enter BigQuery Service Account:"
+read -r BQ_SA
 
-success_message "Retrieved BigQuery service account: $BQ_SA"
+echo "DEBUG: BigQuery Service Account: $BQ_SA"
 
 # Grant Vertex AI User role to the BigQuery service account
 info_message "Granting Vertex AI User role to BigQuery service account..."
@@ -93,55 +96,83 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 
 success_message "Granted Vertex AI User role to BigQuery service account"
 
+# Check and create dataset in the correct location
+info_message "Checking for existing continuous_queries dataset..."
+DATASET_INFO=$(bq show --format=json $PROJECT_ID:continuous_queries 2>/dev/null || echo '{"location": ""}')
+DATASET_LOCATION=$(echo $DATASET_INFO | grep -o '"location": "[^"]*"' | cut -d'"' -f4)
+
+if [ "$DATASET_LOCATION" == "" ]; then
+    info_message "Creating BigQuery dataset 'continuous_queries' in $REGION..."
+    bq --location=$REGION mk --dataset \
+        --description="Dataset for continuous queries" \
+        "${PROJECT_ID}:continuous_queries" || error_exit "Failed to create dataset"
+elif [ "$DATASET_LOCATION" != "$REGION" ]; then
+    warning_message "Dataset exists but in location $DATASET_LOCATION instead of $REGION"
+    warning_message "This may cause issues. Consider creating a new dataset with correct location"
+    info_message "Attempting to create dataset with correct location suffix..."
+    bq --location=$REGION mk --dataset \
+        --description="Dataset for continuous queries (correct region)" \
+        "${PROJECT_ID}:continuous_queries_${REGION}" || warning_message "Could not create region-specific dataset"
+    
+    # Update subsequent references to use this new dataset
+    info_message "Updating references to use region-specific dataset..."
+    DATASET_NAME="continuous_queries_${REGION}"
+else
+    info_message "Dataset 'continuous_queries' already exists in correct location: $REGION"
+    DATASET_NAME="continuous_queries"
+fi
+
 # Create BigQuery ML remote model
 info_message "Creating BigQuery ML remote model (gemini_1_5_pro)..."
-bq query --nouse_legacy_sql \
-    "CREATE MODEL IF NOT EXISTS \`${PROJECT_ID}.continuous_queries.gemini_1_5_pro\`
-    REMOTE WITH CONNECTION \`${REGION}.continuous-queries-connection\`
-    OPTIONS(endpoint = 'gemini-1.5-pro');" || error_exit "Failed to create BigQuery ML model"
+# Set default dataset name if not defined
+DATASET_NAME=${DATASET_NAME:-continuous_queries}
+
+# Create SQL in a variable with escaped backticks
+SQL="CREATE MODEL \`${PROJECT_ID}.${DATASET_NAME}.gemini_1_5_pro\`
+REMOTE WITH CONNECTION \`${REGION}.continuous-queries-connection\`
+OPTIONS(endpoint = 'gemini-1.5-pro');"
+
+# Execute the query
+echo "$SQL" | bq query --nouse_legacy_sql || {
+  warning_message "Failed to create BigQuery ML remote model, trying alternative syntax"
+  
+  # Alternative approach without backticks
+  SQL="CREATE MODEL ${PROJECT_ID}.${DATASET_NAME}.gemini_1_5_pro
+  REMOTE WITH CONNECTION ${REGION}.continuous-queries-connection
+  OPTIONS(endpoint = 'gemini-1.5-pro');"
+  
+  echo "$SQL" | bq query --nouse_legacy_sql || error_exit "Failed to create BigQuery ML model"
+}
 
 success_message "Created BigQuery ML remote model successfully"
 
 echo "${CYAN_TEXT}${BOLD_TEXT}========== TASK 2: Grant a custom service account access to BigQuery and Pub/Sub resources ==========${RESET_FORMAT}"
 
-# Check if custom service account exists first
-info_message "Checking if custom service account exists: ${CUSTOM_SA}"
-if gcloud iam service-accounts describe ${CUSTOM_SA} &>/dev/null; then
-    info_message "Custom service account exists, proceeding with permissions"
-else
-    warning_message "Custom service account ${CUSTOM_SA} does not exist, creating it..."
-    gcloud iam service-accounts create bq-continuous-query-sa \
-        --display-name="BigQuery Continuous Query Service Account" || error_exit "Failed to create service account"
-fi
+manual_step "FOLLOW VIDEO STEPS TO COMPLETE BELOW TASKS"
+manual_step "1. Go to BigQuery Studio (https://console.cloud.google.com/bigquery)"
+manual_step "2. Under External connections, click $REGION.continuous-queries-connection"
+manual_step "3. Click Share."
+manual_step "4. Click Add principal."
+manual_step "5. Enter the service account: $CUSTOM_SA"
+manual_step "6. Role: BigQuery > BigQuery Connection User"
+manual_step "7. Click Save > Close."
+manual_step "8. In BigQuery, click on the dataset: continuous_queries."
+manual_step "9. Click Sharing > Permissions."
+manual_step "10. Click Add principal."
+manual_step "11. Enter the service account: $CUSTOM_SA"
+manual_step "12. Role: BigQuery > BigQuery Data Editor"
+manual_step "13. Click Save > Close."
+manual_step "14. Go to Pub/Sub (https://console.cloud.google.com/cloudpubsub)"
+manual_step "15. On the topic row for recapture_customer, click More Actions (⋮) > View permissions."
+manual_step "16. Click Add principal."
+manual_step "17. Enter the service account: $CUSTOM_SA"
+manual_step "18. Role 1: Pub/Sub > Pub/Sub Viewer"
+manual_step "19. Role 2: Pub/Sub > Pub/Sub Publisher"
+manual_step "21. Click Save > Close."
 
-# Grant BigQuery Connection User role to custom service account
-info_message "Granting BigQuery Connection User role to custom service account ($CUSTOM_SA)..."
-gcloud iam service-accounts add-iam-policy-binding $BQ_SA \
-    --member="serviceAccount:${CUSTOM_SA}" \
-    --role="roles/bigquery.connectionUser" || error_exit "Failed to grant BigQuery Connection User role"
+echo
 
-success_message "Granted BigQuery Connection User role to custom service account"
 
-# Grant BigQuery Data Editor role to custom service account for the dataset
-info_message "Granting BigQuery Data Editor role to custom service account for the dataset..."
-bq add-iam-policy-binding \
-    --member="serviceAccount:${CUSTOM_SA}" \
-    --role="roles/bigquery.dataEditor" \
-    continuous_queries || error_exit "Failed to grant BigQuery Data Editor role"
-
-success_message "Granted BigQuery Data Editor role to custom service account for dataset"
-
-# Grant Pub/Sub Viewer and Publisher roles to custom service account
-info_message "Granting Pub/Sub Viewer and Publisher roles to custom service account..."
-gcloud pubsub topics add-iam-policy-binding recapture_customer \
-    --member="serviceAccount:${CUSTOM_SA}" \
-    --role="roles/pubsub.viewer" || error_exit "Failed to grant Pub/Sub Viewer role"
-
-gcloud pubsub topics add-iam-policy-binding recapture_customer \
-    --member="serviceAccount:${CUSTOM_SA}" \
-    --role="roles/pubsub.publisher" || error_exit "Failed to grant Pub/Sub Publisher role"
-
-success_message "Granted Pub/Sub Viewer and Publisher roles to custom service account"
 
 echo "${CYAN_TEXT}${BOLD_TEXT}========== TASK 3: Create and configure an Application Integration trigger ==========${RESET_FORMAT}"
 
@@ -153,8 +184,8 @@ gcloud services enable connectors.googleapis.com || warning_message "Failed to e
 # gcloud services enable connectors-api.googleapis.com || warning_message "Failed to enable connectors-api API, it may already be enabled"
 info_message "Note: connectors-api.googleapis.com may not be needed or has been consolidated with other APIs"
 
-manual_step "Application Integration requires manual configuration through the Console UI:"
-manual_step "1. Go to Application Integration in the Google Cloud Console"
+manual_step "FOLLOW VIDEO STEPS TO COMPLETE BELOW TASKS"
+manual_step "1. Go to Application Integration (https://console.cloud.google.com/integrations)"
 manual_step "2. Select region '$REGION'"
 manual_step "3. Click 'Quick setup' to enable necessary APIs"
 manual_step "4. Create an integration named 'abandoned-shopping-carts-integration'"
@@ -171,6 +202,11 @@ manual_step "   - Subject: Don't forget the items in your cart"
 manual_step "   - Body Format: HTML"
 manual_step "   - Body: customer_message variable"
 manual_step "9. Publish the integration"
+
+echo
+echo "${CYAN_TEXT}${BOLD_TEXT}PRESS ENTER TO CONTINUE AFTER COMPLETING ABOVE STEPS...${RESET_FORMAT}"
+read -r -p ""
+echo
 
 echo "${CYAN_TEXT}${BOLD_TEXT}========== TASK 4: Create a continuous query in BigQuery that generates email text with Gemini ==========${RESET_FORMAT}"
 
@@ -230,8 +266,8 @@ AS (SELECT
      TRUE AS flatten_json_output)))
 EOF
 
-manual_step "The continuous query requires manual setup through the BigQuery UI:"
-manual_step "1. Go to BigQuery Studio in Google Cloud Console"
+manual_step "FOLLOW VIDEO STEPS TO COMPLETE BELOW TASKS"
+manual_step "1. Go to BigQuery Studio (https://console.cloud.google.com/bigquery)"
 manual_step "2. Create a new query and paste the following query:"
 manual_step "$(cat $QUERY_FILE)"
 manual_step "3. Click the gear icon and select 'Continuous query'"
@@ -241,6 +277,11 @@ manual_step "6. Under 'Continuous query', select the service account: $CUSTOM_SA
 manual_step "7. Click 'Save' to exit settings"
 manual_step "8. Click 'Run' to start the continuous query"
 manual_step "9. Wait until you see 'Job running continuously' at the top of the query window"
+
+echo
+echo "${CYAN_TEXT}${BOLD_TEXT}PRESS ENTER TO CONTINUE AFTER COMPLETING ABOVE STEPS...${RESET_FORMAT}"
+read -r -p ""
+echo
 
 rm $QUERY_FILE
 
