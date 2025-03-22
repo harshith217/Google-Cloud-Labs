@@ -124,7 +124,7 @@ else
     DATASET_NAME="continuous_queries"
 fi
 
-sleep 60
+sleep 30
 
 # Create BigQuery ML remote model
 info_message "Creating BigQuery ML remote model (gemini_1_5_pro)..."
@@ -175,8 +175,9 @@ manual_step "19. Role 2: Pub/Sub > Pub/Sub Publisher"
 manual_step "21. Click Save > Close."
 
 echo
-
-
+echo "${CYAN_TEXT}${BOLD_TEXT}PRESS ENTER TO CONTINUE AFTER COMPLETING ABOVE STEPS...${RESET_FORMAT}"
+read -r -p ""
+echo
 
 echo "${CYAN_TEXT}${BOLD_TEXT}========== TASK 3: Create and configure an Application Integration trigger ==========${RESET_FORMAT}"
 
