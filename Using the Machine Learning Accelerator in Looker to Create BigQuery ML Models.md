@@ -10,46 +10,60 @@
 
 ## ⚙️ Lab Environment Setup
 
-### Task 1: Explore Customer Churn Data
-1. **Navigate to Data**: Click the main menu, select "**Telco Customer Churn**" from Explore.
-2. **Calculate Churn Rate**: Add "**Churn Rate**" to the Data pane and run the query.
-3. **Check Churn Rate by Service Calls**: Add "**Service Calls Group**" dimension, sort values, and run the query.
+### ⚡ Task 1 Shortcuts: Explore Customer Churn Data
+1. After opening **Looker → Explore → Telco Customer Churn**, select **Churn Rate**, hit **Run**.
+   - **Answer:** 14.1% (just pick it for speed).
+2. Select **Service Calls Group** dimension → Click **Run**.
+   - **Answer:** 85.7% (select this fast).
+3. **Click Check My Progress NOW** → ✅ Task 1 done.
 
-### Task 2: Create a Binary Classification ML Model
-1. **Open ML Accelerator**: From the main menu, navigate to "**Browse**", then "**Applications**", and select "**Machine Learning Accelerator**".
-2. **Create New Model**: Click "**Create New Model**".
-3. **Select Objective**: Choose "**Classification**" for predicting churn.
-4. **Select Input Data**: 
-   - Choose "**Telco Customer Churn**" Explore.
-   - Filter on "**Dataframe**" to "**train**".
-   - Select "**Customer ID**", "**Churn**", and relevant features mentioned below.
+---
 
-| **Dimensions** | **Measures** |
-|---------------|-------------|
-| Account Duration Months | Total Day Calls |
-| International Plan (Yes/No) | Total Day Charge |
-| State | Total Day Minutes |
-| Voice Mail Plan (Yes/No) | Total Eve Calls |
-| | Total Eve Charge |
-| | Total Eve Minutes |
-| | Total Intl Calls |
-| | Total Intl Charge |
-| | Total Intl Minutes |
-| | Total Night Calls |
-| | Total Night Charge |
-| | Total Night Minutes |
-| | Total Service Calls |
-| | Total Vmail Messages |
+### ⚡ Task 2 Shortcut: Create Classification Model
+#### 2.1 Go to Machine Learning Accelerator:
+- Browse → **Applications → ML Accelerator**.
+- Click **Create New Model**.
 
-   - Run the query and continue.
-5. **Model Options**: 
-   - Name the model using your Project ID (replace hyphens with underscores).
-   - Select the target field "**Customer Churn**".
-   - Generate Summary.
-6. **Advanced Settings**:
-   - Adjust data split to 75% training and 25% testing.
-7. **Create Model**: Click "**Create Model**" and wait for it to finish training.
+#### 2.2 Objective:
+- **Select Classification** → Click **Continue**.
 
+#### 2.3 Source:
+- Select **Telco Customer Churn Explore**.
+- Apply filter: **Dataframe → train**.
+- Select **Customer ID**, **Churn**, and all features below.
+
+| **Dimensions**                  | **Measures**               |
+|----------------------------------|----------------------------|
+| **Account Duration Months**      | **Total Day Calls**        |
+| **International Plan** (Yes/No)  | **Total Day Charge**       |
+| **State**                        | **Total Day Minutes**      |
+| **Voice Mail Plan** (Yes/No)     | **Total Eve Calls**        |
+|                                  | **Total Eve Charge**       |
+|                                  | **Total Eve Minutes**      |
+|                                  | **Total Intl Calls**       |
+|                                  | **Total Intl Charge**      |
+|                                  | **Total Intl Minutes**     |
+|                                  | **Total Night Calls**      |
+|                                  | **Total Night Charge**     |
+|                                  | **Total Night Minutes**    |
+|                                  | **Total Service Calls**    |
+|                                  | **Total Vmail Messages**   |
+
+
+- Click **Run** → Wait for results → Click **Continue**.
+
+#### 2.4 Model Options:
+- Model Name = Your **Project ID** with `_` instead of `-`.
+   - Eg: `qwiklabs_gcp_04_4cbc90f385aa`
+- Target Field = **Customer Churn (Yes/No)**.
+- Click **Generate Summary** → Wait for results.
+
+#### ⚙️ Quick Advanced Settings:
+- Click **Settings** → Set:
+   - **Data split method**: RANDOM
+   - **Fraction size**: 0.25
+- Click **Save**.
+- Click **Create Model** → Starts training (30–35 min).
 
 ---
 
