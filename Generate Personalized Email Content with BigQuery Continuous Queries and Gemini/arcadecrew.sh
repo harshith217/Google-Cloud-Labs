@@ -55,7 +55,6 @@ if [ -z "$PROJECT_ID" ]; then
     error_exit "Project ID not found. Make sure you're authenticated."
 fi
 
-info_message "Starting lab automation for project: $PROJECT_ID"
 info_message "Current date and time: $(date)"
 
 # Set region (using default region from the lab)
@@ -161,6 +160,9 @@ manual_step "   - Body Format: HTML"
 manual_step "   - Body: customer_message variable"
 manual_step "9. Publish the integration"
 
+echo "${CYAN_TEXT}${BOLD_TEXT}PRESS ENTER AFTER COMPLETING THE STEPS...${RESET_FORMAT}"
+read
+
 echo "${CYAN_TEXT}${BOLD_TEXT}========== TASK 4: Create a continuous query in BigQuery that generates email text with Gemini ==========${RESET_FORMAT}"
 
 # Create BigQuery Enterprise reservation
@@ -230,6 +232,9 @@ manual_step "6. Under 'Continuous query', select the service account: $CUSTOM_SA
 manual_step "7. Click 'Save' to exit settings"
 manual_step "8. Click 'Run' to start the continuous query"
 manual_step "9. Wait until you see 'Job running continuously' at the top of the query window"
+
+echo "${CYAN_TEXT}${BOLD_TEXT}PRESS ENTER AFTER COMPLETING THE STEPS...${RESET_FORMAT}"
+read
 
 rm $QUERY_FILE
 
