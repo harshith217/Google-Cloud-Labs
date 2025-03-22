@@ -124,7 +124,7 @@ else
     DATASET_NAME="continuous_queries"
 fi
 
-sleep 30
+sleep 60
 
 # Create BigQuery ML remote model
 info_message "Creating BigQuery ML remote model (gemini_1_5_pro)..."
