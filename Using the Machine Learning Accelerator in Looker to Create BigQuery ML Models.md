@@ -12,9 +12,9 @@
 
 ### ⚡ Task 1 Shortcuts: Explore Customer Churn Data
 1. After opening **Looker → Explore → Telco Customer Churn**, select **Churn Rate**, hit **Run**.
-   - **Answer:** 14.1% (just pick it for speed).
+   - **Answer:** 14.1%.
 2. Select **Service Calls Group** dimension → Click **Run**.
-   - **Answer:** 85.7% (select this fast).
+   - **Answer:** 85.7%.
 3. **Click Check My Progress NOW** → ✅ Task 1 done.
 
 ---
@@ -54,7 +54,6 @@
 
 #### 2.4 Model Options:
 - Model Name = Your **Project ID** with `_` instead of `-`.
-   - Eg: `qwiklabs_gcp_04_4cbc90f385aa`
 - Target Field = **Customer Churn (Yes/No)**.
 - Click **Generate Summary** → Wait for results.
 
