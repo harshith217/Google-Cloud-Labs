@@ -16,8 +16,7 @@
 
 ## ⚙️ Lab Environment Setup
 
-<details>
-<summary><h3>⚙️ Lab Environment Setup</h3></summary>
+<details open>
 
 <div style="padding: 15px; margin: 10px 0;">
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
@@ -54,7 +53,7 @@ sudo chmod +x arcadecrew.sh
 
 ---
 
-<details open>
+<details>
 <summary><h3>📝 Task 2: Create a Log-Based Metric</h3></summary>
 
 <div style="padding: 15px; margin: 10px 0;">
