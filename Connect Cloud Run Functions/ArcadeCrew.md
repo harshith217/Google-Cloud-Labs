@@ -13,7 +13,7 @@
 * **Run in Cloudshell:**
 
 ```bash
-curl -LO 
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Connect%20Cloud%20Run%20Functions/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
