@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Bright Foreground Colors
+# Color codes for better readability
 BLACK_TEXT=$'\033[0;90m'
 RED_TEXT=$'\033[0;91m'
 GREEN_TEXT=$'\033[0;92m'
@@ -22,157 +22,150 @@ echo "${CYAN_TEXT}${BOLD_TEXT}                  Starting the process...         
 echo "${CYAN_TEXT}${BOLD_TEXT}╚════════════════════════════════════════════════════════╝${RESET_FORMAT}"
 echo
 
-echo
-read -p "${YELLOW_TEXT}${BOLD_TEXT} Enter REGION: ${RESET_FORMAT}" REGION
-echo "${GREEN_TEXT}${BOLD_TEXT} You Entered : $REGION ${RESET_FORMAT}"
+# Function for logging with timestamps
+log() {
+  echo -e "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
+}
 
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Enabling the Cloud Run API... Please Wait... ========================== ${RESET_FORMAT}"
-echo
+# Function to retry commands with exponential backoff
+retry_command() {
+  local cmd=$1
+  local description=$2
+  local retries=0
+  local wait_time=$RETRY_WAIT_INITIAL
+  local result=0
 
-gcloud services enable run.googleapis.com
+  while [ $retries -lt $MAX_RETRIES ]; do
+    log "${YELLOW_TEXT}Attempting: $description (Attempt $((retries+1))/${MAX_RETRIES})${RESET_FORMAT}"
+    
+    # Execute the command
+    eval "$cmd"
+    result=$?
+    
+    if [ $result -eq 0 ]; then
+      log "${GREEN_TEXT}Success: $description${RESET_FORMAT}"
+      return 0
+    else
+      retries=$((retries+1))
+      if [ $retries -lt $MAX_RETRIES ]; then
+        log "${YELLOW_TEXT}Failed. Retrying in $wait_time seconds...${RESET_FORMAT}"
+        sleep $wait_time
+        wait_time=$((wait_time*2)) # Exponential backoff
+      else
+        log "${RED_TEXT}Failed after $MAX_RETRIES attempts: $description${RESET_FORMAT}"
+        return 1
+      fi
+    fi
+  done
+  
+  return 1
+}
 
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Cloud Run API enabled. Waiting 10 seconds... ========================== ${RESET_FORMAT}"
-echo
-sleep 10
+# Check if gcloud is installed
+if ! command -v gcloud &>/dev/null; then
+  log "${RED_TEXT}Error: gcloud CLI is not installed. Please install it before running this script.${RESET_FORMAT}"
 
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Creating and Navigating to 'arcadecrew' Directory... ========================== ${RESET_FORMAT}"
-echo
-mkdir arcadecrew && cd arcadecrew
+fi
 
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Creating 'index.js' file... ========================== ${RESET_FORMAT}"
-echo
+# Set variables
+FUNCTION_NAME="gcfunction"
+MAX_RETRIES=5
+RETRY_WAIT_INITIAL=3
+TEST_DATA='{"message":"Hello World!"}'
+# Ask for region with default value
+echo -n "${CYAN_TEXT}Enter REGION: ${RESET_FORMAT}"
+read user_region
+REGION=${user_region:-us-central1}
+echo "${GREEN_TEXT}Using region: $REGION${RESET_FORMAT}"
 
-cat > index.js <<EOF_END
+# Ensure required APIs are enabled
+log "Enabling required APIs..."
+retry_command "gcloud services enable cloudfunctions.googleapis.com cloudrun.googleapis.com cloudbuild.googleapis.com" "Enabling required APIs"
+
+# Task 1: Create the function
+log "${BLUE_TEXT}${BOLD_TEXT}Task 1: Creating the Cloud Run function${RESET_FORMAT}"
+
+# Create a temporary directory for the function code
+TEMP_DIR=$(mktemp -d)
+log "Created temporary directory: $TEMP_DIR"
+
+# Create index.js with the default helloHttp implementation
+cat > $TEMP_DIR/index.js << 'EOF'
 /**
  * Responds to any HTTP request.
  *
  * @param {!express:Request} req HTTP request context.
  * @param {!express:Response} res HTTP response context.
  */
-exports.GCFunction = (req, res) => {
-    let message = req.query.message || req.body.message || 'Subscribe to Arcade Crew';
-    res.status(200).send(message);
-  };
-  
-EOF_END
+exports.helloHttp = (req, res) => {
+  let message = req.query.message || req.body.message || 'Hello World!';
+  res.status(200).send(message);
+};
+EOF
 
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Creating 'package.json' file... ========================== ${RESET_FORMAT}"
-echo
-cat > package.json <<EOF_END
+# Create package.json
+cat > $TEMP_DIR/package.json << 'EOF'
 {
-    "name": "sample-http",
-    "version": "0.0.1"
+  "name": "gcfunction",
+  "version": "1.0.0",
+  "description": "Cloud Functions sample",
+  "main": "index.js",
+  "engines": {
+    "node": ">=10.0.0"
   }
-  
-EOF_END
+}
+EOF
 
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Creating a Cloud Storage bucket... Please wait ========================== ${RESET_FORMAT}"
-echo
+# Task 2: Deploy the function
+log "${BLUE_TEXT}${BOLD_TEXT}Task 2: Deploying the Cloud Run function${RESET_FORMAT}"
+retry_command "gcloud functions deploy $FUNCTION_NAME \
+  --gen2 \
+  --region=$REGION \
+  --runtime=nodejs16 \
+  --source=$TEMP_DIR \
+  --entry-point=helloHttp \
+  --trigger-http \
+  --allow-unauthenticated \
+  --max-instances=5" "Deploying Cloud Run function"
 
-gsutil mb -p $DEVSHELL_PROJECT_ID gs://$DEVSHELL_PROJECT_ID
+if [ $? -ne 0 ]; then
+  log "${RED_TEXT}Failed to deploy function after multiple attempts. Exiting.${RESET_FORMAT}"
 
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Bucket created. Waiting 30 seconds... ========================== ${RESET_FORMAT}"
-echo
-sleep 30
-
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Getting Project Number... ========================== ${RESET_FORMAT}"
-echo
-
-export PROJECT_NUMBER=$(gcloud projects describe $DEVSHELL_PROJECT_ID --format="json(projectNumber)" --quiet | jq -r '.projectNumber')
-
-# Set the service account email
-SERVICE_ACCOUNT="service-$PROJECT_NUMBER@gcf-admin-robot.iam.gserviceaccount.com"
-
-# Get the current IAM policy
-IAM_POLICY=$(gcloud projects get-iam-policy $DEVSHELL_PROJECT_ID --format=json)
-
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Checking IAM Bindings... ========================== ${RESET_FORMAT}"
-echo
-
-# Check if the binding exists
-if [[ "$IAM_POLICY" == *"$SERVICE_ACCOUNT"* && "$IAM_POLICY" == *"roles/artifactregistry.reader"* ]]; then
-  echo "IAM binding exists for service account: $SERVICE_ACCOUNT with role roles/artifactregistry.reader"
-else
-  echo "IAM binding does not exist for service account: $SERVICE_ACCOUNT with role roles/artifactregistry.reader"
-  
-  # Create the IAM binding
-  gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID \
-    --member=serviceAccount:$SERVICE_ACCOUNT \
-    --role=roles/artifactregistry.reader
-
-  echo "IAM binding created for service account: $SERVICE_ACCOUNT with role roles/artifactregistry.reader"
 fi
 
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Deploying the Cloud Function (GCFunction)... Please Wait... ========================== ${RESET_FORMAT}"
-echo
-gcloud functions deploy GCFunction \
-  --region=$REGION \
-  --gen2 \
-  --trigger-http \
-  --runtime=nodejs20 \
-  --allow-unauthenticated \
-  --max-instances=5
+# Wait for the function to be fully deployed
+log "Waiting for function to be fully deployed..."
+sleep 10
 
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Calling the Cloud Function (GCFunction)... ========================== ${RESET_FORMAT}"
-echo
+# Task 3: Test the function
+log "${BLUE_TEXT}${BOLD_TEXT}Task 3: Testing the function${RESET_FORMAT}"
+# Get the URL of the deployed function
+FUNCTION_URL=$(gcloud functions describe $FUNCTION_NAME --gen2 --region=$REGION --format='value(serviceConfig.uri)' 2>/dev/null)
 
-DATA=$(printf 'Subscribe to Arcade Crew' | base64) && gcloud functions call GCFunction --region=$REGION --data '{"data":"'$DATA'"}'
-
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Waiting for 50 seconds... ========================== ${RESET_FORMAT}"
-echo
-
-sleep 50
-
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Waiting for 30 seconds... ========================== ${RESET_FORMAT}"
-echo
-sleep 30
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Re-getting Project Number... ========================== ${RESET_FORMAT}"
-echo
-export PROJECT_NUMBER=$(gcloud projects describe $DEVSHELL_PROJECT_ID --format="json(projectNumber)" --quiet | jq -r '.projectNumber')
-
-# Set the service account email
-SERVICE_ACCOUNT="service-$PROJECT_NUMBER@gcf-admin-robot.iam.gserviceaccount.com"
-
-# Get the current IAM policy
-IAM_POLICY=$(gcloud projects get-iam-policy $DEVSHELL_PROJECT_ID --format=json)
-
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Re-checking IAM Bindings... ========================== ${RESET_FORMAT}"
-echo
-
-# Check if the binding exists
-if [[ "$IAM_POLICY" == *"$SERVICE_ACCOUNT"* && "$IAM_POLICY" == *"roles/artifactregistry.reader"* ]]; then
-  echo "IAM binding exists for service account: $SERVICE_ACCOUNT with role roles/artifactregistry.reader"
+if [ -z "$FUNCTION_URL" ]; then
+  log "${RED_TEXT}Failed to get function URL. Cannot test the function.${RESET_FORMAT}"
 else
-  echo "IAM binding does not exist for service account: $SERVICE_ACCOUNT with role roles/artifactregistry.reader"
+  log "Function URL: $FUNCTION_URL"
   
-  # Create the IAM binding
-  gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID \
-    --member=serviceAccount:$SERVICE_ACCOUNT \
-    --role=roles/artifactregistry.reader
-
-  echo "IAM binding created for service account: $SERVICE_ACCOUNT with role roles/artifactregistry.reader"
+  # Test the function using curl
+  retry_command "curl -X POST $FUNCTION_URL -H 'Content-Type: application/json' -d '$TEST_DATA'" "Testing function with HTTP request"
+  
+  if [ $? -eq 0 ]; then
+    log "${GREEN_TEXT}Function test completed successfully${RESET_FORMAT}"
+  else
+    log "${RED_TEXT}Function test failed after multiple attempts${RESET_FORMAT}"
+  fi
 fi
 
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Re-deploying the Cloud Function (GCFunction)... Please Wait... ========================== ${RESET_FORMAT}"
+# Task 4: View logs
+log "${BLUE_TEXT}${BOLD_TEXT}Task 4: Retrieving function logs${RESET_FORMAT}"
+retry_command "gcloud logging read 'resource.type=cloud_function AND resource.labels.function_name=$FUNCTION_NAME' --limit=10" "Retrieving function logs"
+
+# Clean up
+log "Cleaning up temporary files..."
+rm -rf $TEMP_DIR
+
 echo
-
-gcloud functions deploy GCFunction \
-  --region=$REGION \
-  --gen2 \
-  --trigger-http \
-  --runtime=nodejs20 \
-  --allow-unauthenticated \
-  --max-instances=5
-
-echo "${GREEN_TEXT}${BOLD_TEXT} ========================== Re-calling the Cloud Function (GCFunction)... ========================== ${RESET_FORMAT}"
-echo
-
-DATA=$(printf 'Subscribe to Arcade Crew' | base64) && gcloud functions call GCFunction --region=$REGION --data '{"data":"'$DATA'"}'
-echo
-
 echo "${GREEN_TEXT}${BOLD_TEXT}╔════════════════════════════════════════════════════════╗${RESET_FORMAT}"
 echo "${GREEN_TEXT}${BOLD_TEXT}              Lab Completed Successfully!               ${RESET_FORMAT}"
 echo "${GREEN_TEXT}${BOLD_TEXT}╚════════════════════════════════════════════════════════╝${RESET_FORMAT}"
