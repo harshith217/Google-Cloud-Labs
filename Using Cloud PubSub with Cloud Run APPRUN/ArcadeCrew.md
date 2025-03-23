@@ -1,5 +1,5 @@
 # ✨ Using Cloud PubSub with Cloud Run APPRUN
-[![Lab Link](https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://www.cloudskillsboost.google/course_templates/371/labs/495879)
+[![Lab Link](https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://www.cloudskillsboost.google/paths/19/course_templates/559/labs/496755)
 
 ---
 
