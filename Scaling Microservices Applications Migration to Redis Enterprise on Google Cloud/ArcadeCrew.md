@@ -13,7 +13,7 @@
 * **Run in Cloudshell:**
 
 ```bash
-curl -LO 
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Scaling%20Microservices%20Applications%20Migration%20to%20Redis%20Enterprise%20on%20Google%20Cloud/arcadecrew.sh
 
 sudo chmod +x arcadecrew.sh
 
