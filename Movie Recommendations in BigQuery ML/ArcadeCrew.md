@@ -10,8 +10,6 @@
 
 ## ⚙️ Lab Environment Setup
 
-**Open Console from** [here](https://console.cloud.google.com/)
-
 * Run in Cloudshell:*
 
 ```bash
