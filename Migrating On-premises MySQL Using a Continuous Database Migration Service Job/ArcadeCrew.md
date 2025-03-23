@@ -16,8 +16,6 @@
 
 ## ⚙️ Lab Environment Setup
 
-<details>
-
 <div style="padding: 15px; margin: 10px 0;">
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
@@ -27,8 +25,6 @@ sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
 </div>
-
-</details>
 
 ---
 
