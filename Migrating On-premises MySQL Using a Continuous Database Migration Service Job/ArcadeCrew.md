@@ -24,6 +24,13 @@ curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
+* **Go To Database Migration > Connection profiles** [here](https://console.cloud.google.com/dbmigration/connection-profiles)
+
+* **Go To Database Migration > Migration jobs** [here](https://console.cloud.google.com/dbmigration/migrations)
+
+* **Go To Databases > SQL** [here](https://console.cloud.google.com/sql)
+
+* **Go To Compute Engine > VM instances** [here](https://console.cloud.google.com/compute/instances)
 </div>
 
 ---
