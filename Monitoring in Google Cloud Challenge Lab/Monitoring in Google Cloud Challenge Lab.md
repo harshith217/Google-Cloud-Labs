@@ -16,7 +16,7 @@
 
 ## ⚙️ Lab Environment Setup
 
-<details open>
+<details>
 <summary><h3>⚙️ Lab Environment Setup</h3></summary>
 
 <div style="padding: 15px; margin: 10px 0;">
@@ -33,7 +33,7 @@ sudo chmod +x arcadecrew.sh
 
 ---
 
-<details open>
+<details>
 <summary><h3>📊 Task 1: Set Up Monitoring Dashboards</h3></summary>
 
 <div style="padding: 15px; margin: 10px 0;">
