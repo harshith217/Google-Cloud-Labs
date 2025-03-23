@@ -17,13 +17,7 @@
 ## ⚙️ Lab Environment Setup
 
 <div style="padding: 15px; margin: 10px 0;">
-<p><strong>☁️ Run in Cloud Shell:</strong></p>
 
-```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Migrating%20On-premises%20MySQL%20Using%20a%20Continuous%20Database%20Migration%20Service%20Job/arcadecrew.sh
-sudo chmod +x arcadecrew.sh
-./arcadecrew.sh
-```
 * **Go To Database Migration > Connection profiles** [here](https://console.cloud.google.com/dbmigration/connection-profiles)
 
 * **Go To Database Migration > Migration jobs** [here](https://console.cloud.google.com/dbmigration/migrations)
