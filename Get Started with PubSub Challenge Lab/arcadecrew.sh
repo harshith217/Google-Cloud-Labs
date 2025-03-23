@@ -24,7 +24,6 @@ run_form_1() {
     # Function to display error messages
     error_message() {
         echo "${BRIGHT_RED_TEXT}${BOLD_TEXT}ERROR: $1${RESET_FORMAT}"
-        exit 1
     }
 
 # Function to display success messages
@@ -136,39 +135,51 @@ run_form_2() {
 
     mkdir arcadecrew && cd $_
 
-    cat >index.js <<'EOF_END'
-        /**
-        * Triggered from a message on a Cloud Pub/Sub topic.
-        *
-        * @param {!Object} event Event payload.
-        * @param {!Object} context Metadata for the event.
-        */
-        exports.helloPubSub = (event, context) => {
-        const message = event.data
-            ? Buffer.from(event.data, 'base64').toString()
-            : 'Hello, World';
-        console.log(message);
-        };
-EOF_END
+    # Set environment variables
+    PROJECT_ID=$(gcloud config get-value project)
+    BUCKET_NAME="$PROJECT_ID-bucket"
+    FUNCTION_NAME="gcf-pubsub"
+    TOPIC_NAME="gcf-topic"
+    ENTRY_POINT="pubSubFunction"
 
-    cat >package.json <<'EOF_END'
-        {
-        "name": "sample-pubsub",
-        "version": "0.0.1",
-        "dependencies": {
-            "@google-cloud/pubsub": "^0.18.0"
-        }
-        }
-EOF_END
+    # Enable required services
+    gcloud services enable cloudfunctions.googleapis.com pubsub.googleapis.com run.googleapis.com
 
-    deploy_function() {
-        gcloud functions deploy gcf-pubsub \
-            --trigger-topic=gcf-topic \
-            --runtime=nodejs20 \
-            --no-gen2 \
-            --entry-point=helloPubSub \
-            --source=. \
-            --region=$REGION
+    # Create a Cloud Storage bucket (if not already created)
+    gsutil mb -l $REGION gs://$BUCKET_NAME/
+
+    # Create a directory for the function
+    mkdir cloud-function && cd cloud-function
+
+    # Create index.js file (Cloud Function code)
+    cat > index.js <<EOF
+    exports.pubSubFunction = (message, context) => {
+        const pubsubMessage = message.data
+            ? Buffer.from(message.data, 'base64').toString()
+            : '{}';
+        console.log(\`Received message: \${pubsubMessage}\`);
+    };
+    EOF
+
+    # Create package.json file
+    cat > package.json <<EOF
+    {
+      "name": "gcf-pubsub",
+      "version": "1.0.0",
+      "dependencies": {}
+    }
+    EOF
+
+    # Deploy the Cloud Function
+    gcloud functions deploy $FUNCTION_NAME \
+        --runtime=nodejs20 \
+        --trigger-topic=$TOPIC_NAME \
+        --entry-point=$ENTRY_POINT \
+        --region=$REGION \
+        --memory=256Mi \
+        --gen2 
+
+    echo "Cloud Function deployed successfully!"
     }
 
     deploy_success=false
@@ -179,7 +190,7 @@ EOF_END
             deploy_success=true
         else
             echo "${BRIGHT_YELLOW_TEXT}${BOLD_TEXT}Waiting for Cloud Function to be deployed...${RESET_FORMAT}"
-            echo "${BRIGHT_CYAN_TEXT}${BOLD_TEXT}Meanwhile, make sure to subscribe to Arcade Crew: https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
+            echo "${BRIGHT_CYAN_TEXT}${BOLD_TEXT}Meanwhile, consider subscribing to Arcade Crew: https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
             sleep 20
         fi
     done
