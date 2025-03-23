@@ -221,7 +221,7 @@ echo ""
 
 if [ -z "$JOB_STATUS" ]; then
     manual_step "Could not automatically verify the migration job status. Please check the Google Cloud Console."
-    manual_step "Go to Database Migration > Migration jobs and check if 'vm-to-cloudsql' has been created."
+    manual_step "Go to Migration jobs (https://console.cloud.google.com/dbmigration/migrations) and check if 'vm-to-cloudsql' has been created."
     manual_step "Press Enter when ready to continue..."
     read
 else
@@ -247,7 +247,7 @@ JOB_STATUS=$(gcloud database-migration migration-jobs describe vm-to-cloudsql --
 
 if [ -z "$JOB_STATUS" ]; then
     manual_step "Could not automatically retrieve migration job status. Please check the Google Cloud Console."
-    manual_step "Go to Database Migration > Migration jobs and click on 'vm-to-cloudsql' to see details."
+    manual_step "Go to Migration jobs (https://console.cloud.google.com/dbmigration/migrations) and click on 'vm-to-cloudsql' to see details."
 else
     info_message "Current migration job status: $JOB_STATUS"
     
@@ -269,7 +269,7 @@ echo "${BLUE_TEXT}${BOLD_TEXT}TASK 5: Confirm data in Cloud SQL${RESET_FORMAT}"
 echo ""
 
 info_message "The following steps require manual verification of the data in Cloud SQL."
-manual_step "1. Open the Google Cloud Console and navigate to Databases > SQL."
+manual_step "1. Open the Google Cloud Console and navigate to Databases > SQL (https://console.cloud.google.com/sql)"
 manual_step "2. Click on the instance 'mysql-cloudsql'."
 manual_step "3. Click on 'Databases' in the left menu and verify that 'customers_data' and 'sales_data' databases exist."
 manual_step "4. Click on 'Open Cloud Shell' and run the following commands:"
@@ -289,7 +289,7 @@ echo "${BLUE_TEXT}${BOLD_TEXT}TASK 6: Test continuous migration${RESET_FORMAT}"
 echo ""
 
 info_message "This task requires adding data to the source MySQL instance and verifying it appears in Cloud SQL."
-manual_step "1. In the Google Cloud Console, navigate to Compute Engine > VM instances."
+manual_step "1. In the Google Cloud Console, navigate to Compute Engine > VM instances (https://console.cloud.google.com/compute/instances)"
 manual_step "2. Connect to 'dms-mysql-training-vm-v2' via SSH."
 manual_step "3. Run the following commands to add data to the source MySQL:"
 manual_step "   mysql -u admin -p"
