@@ -46,8 +46,6 @@ sudo chmod +x arcadecrew.sh
    | 📈 Line Chart | CPU Load (1m) | VM Resource Metric |
    | 📉 Line Chart | Requests | Apache Web Server metrics |
 
-3. Name your dashboard appropriately (**`arcadecrew`**) and save it
-
 </div>
 </details>
 
