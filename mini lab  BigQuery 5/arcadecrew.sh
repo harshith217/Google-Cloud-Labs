@@ -100,6 +100,21 @@ display_step "Verifying table schema"
 bq show --schema "${DATASET_NAME}.${TABLE_NAME}" > current_schema.json || handle_error "Schema verification failed"
 display_success "Table schema verified successfully"
 
+# Create male_customers table from customers table
+display_step "Creating male_customers table from customers table"
+bq query --use_legacy_sql=false \
+  --destination_table="${DATASET_NAME}.male_customers" \
+  --replace=true \
+  'SELECT * FROM `'"${PROJECT_ID}"'.'"${DATASET_NAME}"'.'"${TABLE_NAME}"'` WHERE Gender = "Male"' || handle_error "Failed to create male_customers table"
+display_success "male_customers table created successfully"
+
+# Export male_customers table to GCS
+display_step "Exporting male_customers table to GCS bucket"
+bq extract --destination_format=CSV \
+  "${DATASET_NAME}.male_customers" \
+  "gs://${BUCKET_NAME}/exported_male_customers.csv" || handle_error "Failed to export male_customers table"
+display_success "male_customers table exported to gs://${BUCKET_NAME}/exported_male_customers.csv"
+
 # Completion Message
 echo
 
