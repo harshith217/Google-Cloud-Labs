@@ -105,7 +105,9 @@ display_step "Creating male_customers table from customers table"
 bq query --use_legacy_sql=false \
   --destination_table="${DATASET_NAME}.male_customers" \
   --replace=true \
-  'SELECT * FROM `'"${PROJECT_ID}"'.'"${DATASET_NAME}"'.'"${TABLE_NAME}"'` WHERE Gender = "Male"' || handle_error "Failed to create male_customers table"
+  'SELECT * 
+   FROM `'"${PROJECT_ID}"'.'"${DATASET_NAME}"'.'"${TABLE_NAME}"'` 
+   WHERE UPPER(Gender) = "MALE"' || handle_error "Failed to create male_customers table"
 display_success "male_customers table created successfully"
 
 # Export male_customers table to GCS
