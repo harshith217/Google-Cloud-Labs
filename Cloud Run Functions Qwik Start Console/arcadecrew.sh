@@ -69,78 +69,21 @@ fi
 
 # Set variables
 FUNCTION_NAME="gcfunction"
-MAX_RETRIES=5
-RETRY_WAIT_INITIAL=3
+# MAX_RETRIES=5
+# RETRY_WAIT_INITIAL=3
 TEST_DATA='{"message":"Hello World!"}'
 # Ask for region with default value
-echo -n "${CYAN_TEXT}Enter REGION: ${RESET_FORMAT}"
-read user_region
-REGION=${user_region:-us-central1}
-echo "${GREEN_TEXT}Using region: $REGION${RESET_FORMAT}"
-
-# Ensure required APIs are enabled
-log "Enabling required APIs..."
-retry_command "gcloud services enable cloudfunctions.googleapis.com cloudrun.googleapis.com cloudbuild.googleapis.com" "Enabling required APIs"
-
-# Task 1: Create the function
-log "${BLUE_TEXT}${BOLD_TEXT}Task 1: Creating the Cloud Run function${RESET_FORMAT}"
-
-# Create a temporary directory for the function code
-TEMP_DIR=$(mktemp -d)
-log "Created temporary directory: $TEMP_DIR"
-
-# Create index.js with the default helloHttp implementation
-cat > $TEMP_DIR/index.js << 'EOF'
-/**
- * Responds to any HTTP request.
- *
- * @param {!express:Request} req HTTP request context.
- * @param {!express:Response} res HTTP response context.
- */
-exports.helloHttp = (req, res) => {
-  let message = req.query.message || req.body.message || 'Hello World!';
-  res.status(200).send(message);
-};
-EOF
-
-# Create package.json
-cat > $TEMP_DIR/package.json << 'EOF'
-{
-  "name": "gcfunction",
-  "version": "1.0.0",
-  "description": "Cloud Functions sample",
-  "main": "index.js",
-  "engines": {
-    "node": ">=10.0.0"
-  }
-}
-EOF
-
-# Task 2: Deploy the function
-log "${BLUE_TEXT}${BOLD_TEXT}Task 2: Deploying the Cloud Run function${RESET_FORMAT}"
-retry_command "gcloud functions deploy $FUNCTION_NAME \
-  --gen2 \
-  --region=$REGION \
-  --runtime=nodejs16 \
-  --source=$TEMP_DIR \
-  --entry-point=helloHttp \
-  --trigger-http \
-  --allow-unauthenticated \
-  --max-instances=5" "Deploying Cloud Run function"
-
-if [ $? -ne 0 ]; then
-  log "${RED_TEXT}Failed to deploy function after multiple attempts. Exiting.${RESET_FORMAT}"
-
-fi
-
-# Wait for the function to be fully deployed
-log "Waiting for function to be fully deployed..."
-sleep 10
+# echo -n "${CYAN_TEXT}Enter REGION: ${RESET_FORMAT}"
+# read user_region
+# REGION=${user_region:-us-central1}
+# echo "${GREEN_TEXT}Using region: $REGION${RESET_FORMAT}"
 
 # Task 3: Test the function
 log "${BLUE_TEXT}${BOLD_TEXT}Task 3: Testing the function${RESET_FORMAT}"
-# Get the URL of the deployed function
-FUNCTION_URL=$(gcloud functions describe $FUNCTION_NAME --gen2 --region=$REGION --format='value(serviceConfig.uri)' 2>/dev/null)
+# Ask user for function URL
+echo -n "${CYAN_TEXT}Enter Function URL: ${RESET_FORMAT}"
+read user_function_url
+FUNCTION_URL=${user_function_url}
 
 if [ -z "$FUNCTION_URL" ]; then
   log "${RED_TEXT}Failed to get function URL. Cannot test the function.${RESET_FORMAT}"
