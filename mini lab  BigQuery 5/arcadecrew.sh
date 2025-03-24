@@ -78,11 +78,11 @@ if bq show "${DATASET_NAME}.${TABLE_NAME}" &>/dev/null; then
     # Create a temporary table with the desired schema
     bq load --autodetect --replace=true --source_format=CSV "${DATASET_NAME}.${TEMP_TABLE}" "${CSV_FILE}" || handle_error "Failed to create temporary table"
     
-    # Extract schema from the temporary table
-    bq show --format=prettyjson "${DATASET_NAME}.${TEMP_TABLE}" | jq -c '.schema.fields' > schema.json || handle_error "Failed to extract schema"
+    # Extract schema directly using bq's schema output format
+    bq show --schema "${DATASET_NAME}.${TEMP_TABLE}" > schema.json || handle_error "Failed to extract schema"
     
-    # Update the original table with the schema
-    bq update "${DATASET_NAME}.${TABLE_NAME}" schema.json || handle_error "Failed to update table schema"
+    # Update the original table with the schema (using the right format)
+    bq update --schema "$(cat schema.json)" "${DATASET_NAME}.${TABLE_NAME}" || handle_error "Failed to update table schema"
     
     # Clean up the temporary table
     bq rm -f "${DATASET_NAME}.${TEMP_TABLE}" || echo "Note: Could not remove temporary table ${TEMP_TABLE}"
