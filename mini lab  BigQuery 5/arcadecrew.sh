@@ -100,15 +100,57 @@ display_step "Verifying table schema"
 bq show --schema "${DATASET_NAME}.${TABLE_NAME}" > current_schema.json || handle_error "Schema verification failed"
 display_success "Table schema verified successfully"
 
-# Create male_customers table from customers table
-display_step "Creating male_customers table from customers table"
+display_step "TASK 2: Creating ${MALE_TABLE_NAME} table with only male customers"
+
+# First, let's check the schema of the customers table to find the right column names
+echo "${MAGENTA_TEXT}Examining schema of ${TABLE_NAME} to identify columns...${RESET_FORMAT}"
+bq show --schema "${DATASET_NAME}.${TABLE_NAME}" > table_schema.json || handle_error "Failed to retrieve table schema"
+
+# Check if gender column exists and identify the customer ID column
+# This is a simplistic approach - in a real environment you might need more sophisticated parsing
+GENDER_EXISTS=$(grep -i '"name": "gender"' table_schema.json)
+CUSTOMER_ID_COL=$(grep -i '"name": "customer_id"' table_schema.json)
+
+if [ -z "$GENDER_EXISTS" ]; then
+    handle_error "Gender column not found in schema. Please verify column naming."
+fi
+
+# If customer_id isn't found, try to find an 'id' column instead
+if [ -z "$CUSTOMER_ID_COL" ]; then
+    CUSTOMER_ID_COL=$(grep -i '"name": "id"' table_schema.json)
+    if [ -z "$CUSTOMER_ID_COL" ]; then
+        # Try to identify any column that might be an ID
+        CUSTOMER_ID_COL=$(grep -i '"name": ".*id.*"' table_schema.json | head -1)
+        if [ -z "$CUSTOMER_ID_COL" ]; then
+            handle_error "Could not identify a customer ID column in schema"
+        else
+            # Extract the column name from the grep result
+            CUSTOMER_ID_NAME=$(echo "$CUSTOMER_ID_COL" | sed -n 's/.*"name": "\([^"]*\)".*/\1/p')
+            echo "${YELLOW_TEXT}${BOLD_TEXT}Assuming ${CUSTOMER_ID_NAME} is the customer ID column${RESET_FORMAT}"
+        fi
+    else
+        CUSTOMER_ID_NAME="id"
+    fi
+else
+    CUSTOMER_ID_NAME="customer_id"
+fi
+
+echo "${MAGENTA_TEXT}Creating male_customers table...${RESET_FORMAT}"
+
+# Check if the male_customers table already exists and drop it if it does
+if bq show "${DATASET_NAME}.${MALE_TABLE_NAME}" &>/dev/null; then
+    echo "${YELLOW_TEXT}${BOLD_TEXT}Table ${MALE_TABLE_NAME} already exists. Dropping it...${RESET_FORMAT}"
+    bq rm -f -t "${DATASET_NAME}.${MALE_TABLE_NAME}" || handle_error "Failed to drop existing male_customers table"
+fi
+
+# Create the male_customers table using SQL
 bq query --use_legacy_sql=false \
-  --destination_table="${DATASET_NAME}.male_customers" \
-  --replace=true \
-  'SELECT * 
-   FROM `'"${PROJECT_ID}"'.'"${DATASET_NAME}"'.'"${TABLE_NAME}"'` 
-   WHERE UPPER(Gender) = "MALE"' || handle_error "Failed to create male_customers table"
-display_success "male_customers table created successfully"
+    "CREATE TABLE ${DATASET_NAME}.${MALE_TABLE_NAME} AS 
+     SELECT ${CUSTOMER_ID_NAME}, gender 
+     FROM ${DATASET_NAME}.${TABLE_NAME} 
+     WHERE LOWER(gender) = 'male'" || handle_error "Failed to create male_customers table"
+
+display_success "TASK 2 COMPLETED: Successfully created ${MALE_TABLE_NAME} table with only male customers"
 
 # Export male_customers table to GCS
 display_step "Exporting male_customers table to GCS bucket"
