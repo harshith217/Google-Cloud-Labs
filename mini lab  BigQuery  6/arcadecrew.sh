@@ -91,9 +91,9 @@ bq mk \
   --project_id=$PROJECT_ID \
   --target_dataset=$DATASET_NAME \
   --display_name="Monthly Backup for $SOURCE_TABLE" \
-  --params="{\"query\":\"SELECT * FROM \`$PROJECT_ID.$DATASET_NAME.$SOURCE_TABLE\`\", \"destination_table_name_template\":\"$BACKUP_TABLE\", \"write_disposition\":\"WRITE_TRUNCATE\"}" \
+  --params="{\"query\":\"$QUERY\", \"destination_table_name_template\":\"\", \"write_disposition\":\"WRITE_APPEND\"}" \
   --data_source=scheduled_query \
-  --schedule="0 0 1 * *" \
+  --schedule="1st day of month 00:00" \
   --location=$LOCATION
 
 # If we're here, the automated approach worked!
