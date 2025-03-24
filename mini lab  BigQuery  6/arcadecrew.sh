@@ -23,34 +23,82 @@ echo "${BLUE_TEXT}${BOLD_TEXT}         INITIATING EXECUTION...  ${RESET_FORMAT}"
 echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
 echo
 
-echo "${YELLOW_TEXT}${BOLD_TEXT}Authenticating with Google Cloud...${RESET_FORMAT}"
-gcloud auth list
+# Error handling function
+function error_exit {
+    echo "${RED_TEXT}${BOLD_TEXT}ERROR: $1${RESET_FORMAT}" >&2
+}
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Cloning Google Cloud training repository...${RESET_FORMAT}"
-git clone https://github.com/GoogleCloudPlatform/training-data-analyst
+# Function to display section headers
+function display_section {
+    echo ""
+    echo "${BLUE_TEXT}${BOLD_TEXT}$1${RESET_FORMAT}"
+    echo "${BLUE_TEXT}${BOLD_TEXT}$(printf '=%.0s' {1..50})${RESET_FORMAT}"
+}
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Navigating to the required directory...${RESET_FORMAT}"
-cd training-data-analyst/blogs
+# Function to check command success
+function check_success {
+    if [ $? -eq 0 ]; then
+        echo "${GREEN_TEXT}${BOLD_TEXT}✓ SUCCESS: $1${RESET_FORMAT}"
+    else
+        error_exit "$2"
+    fi
+}
 
-PROJECT_ID=`gcloud config get-value project`
-BUCKET=${PROJECT_ID}-bucket
+display_section "BigQuery Monthly Backup Automation"
 
-echo "${GREEN_TEXT}${BOLD_TEXT}Creating a Cloud Storage bucket: gs://${BUCKET}${RESET_FORMAT}"
-gsutil mb -c multi_regional gs://${BUCKET}
+# Get project ID
+PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
+check_success "Retrieved project ID: $PROJECT_ID" "Failed to get project ID"
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Copying files to Cloud Storage...${RESET_FORMAT}"
-gsutil -m cp -r endpointslambda gs://${BUCKET}
+display_section "Determining Dataset and Table Names"
 
-echo "${YELLOW_TEXT}${BOLD_TEXT}Setting public-read permissions for the bucket...${RESET_FORMAT}"
-gsutil -m acl set -R -a public-read gs://${BUCKET}
+# List datasets to identify the correct one
+echo "${YELLOW_TEXT}${BOLD_TEXT}Listing available BigQuery datasets in project...${RESET_FORMAT}"
+bq ls --project_id=$PROJECT_ID
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}PLEASE CHECK YOUR PROGRESS TILL TASK 6${RESET_FORMAT}"
-echo
+echo ""
+echo "${YELLOW_TEXT}${BOLD_TEXT}IMPORTANT: You need to identify the dataset name from the list above.${RESET_FORMAT}"
+echo "${YELLOW_TEXT}${BOLD_TEXT}Enter the dataset name:${RESET_FORMAT}"
+read DATASET_NAME
 
-echo "${RED_TEXT}${BOLD_TEXT}After checking your progress, press ENTER to continue...${RESET_FORMAT}"
-read -n 1 -s -r -p ""
+echo "${YELLOW_TEXT}${BOLD_TEXT}Listing tables in dataset $DATASET_NAME...${RESET_FORMAT}"
+bq ls --project_id=$PROJECT_ID "$DATASET_NAME"
 
-PROJECT_ID=`gcloud config get-value project` && BUCKET=${PROJECT_ID}-bucket && gsutil rm -rf gs://${BUCKET}/* && gsutil rb gs://${BUCKET}
+echo ""
+echo "${YELLOW_TEXT}${BOLD_TEXT}IMPORTANT: Identify the source and backup table names from the lab instructions.${RESET_FORMAT}"
+echo "${YELLOW_TEXT}${BOLD_TEXT}Enter the source table name (Table1):${RESET_FORMAT}"
+read SOURCE_TABLE
+echo "${YELLOW_TEXT}${BOLD_TEXT}Enter the backup table name (Table2):${RESET_FORMAT}"
+read BACKUP_TABLE
+
+display_section "Creating Monthly Scheduled Query for Backup"
+
+# Enable the BigQuery Data Transfer Service if it's not already enabled
+echo "${CYAN_TEXT}${BOLD_TEXT}Enabling BigQuery Data Transfer Service...${RESET_FORMAT}"
+gcloud services enable bigquerydatatransfer.googleapis.com
+check_success "Enabled BigQuery Data Transfer Service" "Failed to enable BigQuery Data Transfer Service"
+
+# Set region/location for the BigQuery Data Transfer Service
+LOCATION="us" # Default location, may need adjustment based on your project
+
+# Create the scheduled query using bq command
+echo "${CYAN_TEXT}${BOLD_TEXT}Creating scheduled query to backup data monthly...${RESET_FORMAT}"
+bq mk \
+  --transfer_config \
+  --project_id=$PROJECT_ID \
+  --target_dataset=$DATASET_NAME \
+  --display_name="Monthly Backup for $SOURCE_TABLE" \
+  --params="{\"query\":\"SELECT * FROM \`$PROJECT_ID.$DATASET_NAME.$SOURCE_TABLE\`\", \"destination_table_name_template\":\"$BACKUP_TABLE\", \"write_disposition\":\"WRITE_TRUNCATE\"}" \
+  --data_source=scheduled_query \
+  --schedule="every 30 days" \
+  --location=$LOCATION
+
+# If we're here, the automated approach worked!
+check_success "Created scheduled query for monthly backup" "Failed to create scheduled query"
+
+display_section "Verification"
+echo "${CYAN_TEXT}${BOLD_TEXT}Listing scheduled queries in project...${RESET_FORMAT}"
+bq ls --project_id=$PROJECT_ID --transfer_config --transfer_location=$LOCATION
 
 # Completion Message
 echo

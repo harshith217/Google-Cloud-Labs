@@ -1,6 +1,6 @@
-# ✨ Using gsutil to Perform Operations on Buckets and Objects || GSP130
+# ✨ mini lab : BigQuery : 6
 
-[![Lab Link](https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://www.cloudskillsboost.google/focuses/7530?parent=catalog)
+[![Lab Link](https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://www.youtube.com/@Arcade61432)
 
 ---
 
@@ -20,7 +20,7 @@
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/mini%20lab%20%20BigQuery%20%206/arcadecrew.sh
+curl -LO 
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
