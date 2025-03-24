@@ -100,6 +100,7 @@ display_step "Verifying table schema"
 bq show --schema "${DATASET_NAME}.${TABLE_NAME}" > current_schema.json || handle_error "Schema verification failed"
 display_success "Table schema verified successfully"
 
+MALE_TABLE_NAME="male_customers"
 display_step "TASK 2: Creating ${MALE_TABLE_NAME} table with only male customers"
 
 # First, let's check the schema of the customers table to find the right column names
