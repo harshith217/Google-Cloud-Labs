@@ -72,14 +72,20 @@ display_step "Loading schema from ${CSV_FILE} into ${TABLE_NAME} table"
 if bq show "${DATASET_NAME}.${TABLE_NAME}" &>/dev/null; then
     echo "${YELLOW_TEXT}${BOLD_TEXT}Table already exists. Loading schema from CSV...${RESET_FORMAT}"
     
-    # Create a full table definition and extract just the schema part for update
-    bq mkdef --autodetect --source_format=CSV "${CSV_FILE}" > table_def.json || handle_error "Failed to create table definition"
+    # Option 1: Use a temp table approach
+    TEMP_TABLE="${TABLE_NAME}_temp_$(date +%s)"
     
-    # Extract just the schema array from the table definition
-    jq '.schema.fields' table_def.json > schema.json || handle_error "Failed to extract schema"
+    # Create a temporary table with the desired schema
+    bq load --autodetect --replace=true --source_format=CSV "${DATASET_NAME}.${TEMP_TABLE}" "${CSV_FILE}" || handle_error "Failed to create temporary table"
     
-    # Update the table with the extracted schema
-    bq update --schema schema.json "${DATASET_NAME}.${TABLE_NAME}" || handle_error "Failed to update table schema"
+    # Extract schema from the temporary table
+    bq show --format=prettyjson "${DATASET_NAME}.${TEMP_TABLE}" | jq -c '.schema.fields' > schema.json || handle_error "Failed to extract schema"
+    
+    # Update the original table with the schema
+    bq update "${DATASET_NAME}.${TABLE_NAME}" schema.json || handle_error "Failed to update table schema"
+    
+    # Clean up the temporary table
+    bq rm -f "${DATASET_NAME}.${TEMP_TABLE}" || echo "Note: Could not remove temporary table ${TEMP_TABLE}"
 else
     echo "${YELLOW_TEXT}${BOLD_TEXT}Table does not exist. Creating new table with schema from CSV...${RESET_FORMAT}"
     
