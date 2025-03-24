@@ -23,7 +23,7 @@
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
 ```bash
-curl -LO 
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Cloud%20Run%20Functions%20Qwik%20Start%20Console/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
