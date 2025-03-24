@@ -70,27 +70,27 @@ display_step "Loading schema from ${CSV_FILE} into ${TABLE_NAME} table"
 
 # Check if table exists and load schema
 if bq show "${DATASET_NAME}.${TABLE_NAME}" &>/dev/null; then
-    echo "${YELLOW_TEXT}${BOLD_TEXT}Table already exists. Loading schema from CSV...${RESET_FORMAT}"
+    echo "${YELLOW_TEXT}${BOLD_TEXT}Table already exists. Updating with schema from CSV...${RESET_FORMAT}"
     
-    # Option 1: Use a temp table approach
-    TEMP_TABLE="${TABLE_NAME}_temp_$(date +%s)"
+    # Create a backup of the current table if needed
+    echo "${YELLOW_TEXT}Creating backup of current table...${RESET_FORMAT}"
+    BACKUP_TABLE="${TABLE_NAME}_backup_$(date +%s)"
+    bq cp -f "${DATASET_NAME}.${TABLE_NAME}" "${DATASET_NAME}.${BACKUP_TABLE}" || echo "Note: Could not create backup table"
     
-    # Create a temporary table with the desired schema
-    bq load --autodetect --replace=true --source_format=CSV "${DATASET_NAME}.${TEMP_TABLE}" "${CSV_FILE}" || handle_error "Failed to create temporary table"
+    # Drop the existing table
+    echo "${YELLOW_TEXT}Dropping existing table to recreate with new schema...${RESET_FORMAT}"
+    bq rm -f "${DATASET_NAME}.${TABLE_NAME}" || handle_error "Failed to drop existing table"
     
-    # Extract schema directly using bq's schema output format
-    bq show --schema "${DATASET_NAME}.${TEMP_TABLE}" > schema.json || handle_error "Failed to extract schema"
+    # Recreate the table with the new schema
+    echo "${YELLOW_TEXT}Creating new table with updated schema...${RESET_FORMAT}"
+    bq load --autodetect --source_format=CSV "${DATASET_NAME}.${TABLE_NAME}" "${CSV_FILE}" || handle_error "Failed to create table with updated schema"
     
-    # Update the original table with the schema (using the right format)
-    bq update --schema "$(cat schema.json)" "${DATASET_NAME}.${TABLE_NAME}" || handle_error "Failed to update table schema"
-    
-    # Clean up the temporary table
-    bq rm -f "${DATASET_NAME}.${TEMP_TABLE}" || echo "Note: Could not remove temporary table ${TEMP_TABLE}"
+    echo "${YELLOW_TEXT}Table recreated successfully with the updated schema${RESET_FORMAT}"
 else
     echo "${YELLOW_TEXT}${BOLD_TEXT}Table does not exist. Creating new table with schema from CSV...${RESET_FORMAT}"
     
-    # Create table with schema from CSV but no data
-    bq load --autodetect --source_format=CSV --schema_only "${DATASET_NAME}.${TABLE_NAME}" "${CSV_FILE}" || handle_error "Failed to create table with schema from CSV"
+    # Create table with schema from CSV
+    bq load --autodetect --source_format=CSV "${DATASET_NAME}.${TABLE_NAME}" "${CSV_FILE}" || handle_error "Failed to create table with schema from CSV"
 fi
 
 display_success "Schema loaded successfully from ${CSV_FILE} into ${TABLE_NAME} table"
