@@ -18,7 +18,7 @@
 
 * First Follow Video then ONLY complete below steps.
 
-* Go To Cloud Run from [here](https://console.cloud.google.com/run?referrer=search&cloudshell=true&project=qwiklabs-gcp-03-889de527df14)
+* Go To Cloud Run from [here](https://console.cloud.google.com/run)
   
 <div style="padding: 15px; margin: 10px 0;">
 
