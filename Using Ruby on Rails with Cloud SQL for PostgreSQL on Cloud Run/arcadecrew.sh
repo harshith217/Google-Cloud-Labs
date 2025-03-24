@@ -248,12 +248,48 @@ step "Enabling Cloud Run Admin API..."
 gcloud services enable run.googleapis.com
 check_status "Cloud Run Admin API enabled" "Failed to enable Cloud Run Admin API"
 
-# Build and deploy using Cloud Build
+# Build and deploy using Cloud Build with automatic retry on timeout
 step "Building and deploying application with Cloud Build (this may take several minutes)..."
-gcloud builds submit --config cloudbuild.yaml \
+
+# Initialize variables for retry mechanism
+MAX_ATTEMPTS=10
+ATTEMPT=1
+TIMEOUT=1200  # Initial timeout in seconds (20 minutes)
+
+while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+  echo "${YELLOW_TEXT}${BOLD_TEXT}Cloud Build attempt $ATTEMPT with timeout ${TIMEOUT}s${RESET_FORMAT}"
+  
+  # Run the Cloud Build command
+  gcloud builds submit --config cloudbuild.yaml \
     --substitutions _SERVICE_NAME=$APP_NAME,_INSTANCE_NAME=$INSTANCE_NAME,_REGION=$REGION,_SECRET_NAME=rails_secret \
-    --timeout=20m
-check_status "Cloud Build completed successfully" "Cloud Build failed - try increasing timeout with --timeout=30m"
+    --timeout=${TIMEOUT}s
+  
+  BUILD_STATUS=$?
+  
+  # Check if build was successful
+  if [ $BUILD_STATUS -eq 0 ]; then
+    success "Cloud Build completed successfully on attempt $ATTEMPT"
+    break
+  else
+    warning "Cloud Build failed on attempt $ATTEMPT with timeout ${TIMEOUT}s"
+    
+    # Increase timeout for next attempt
+    if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+      # Increase timeout by 50%
+      TIMEOUT=$(( TIMEOUT * 3 / 2 ))
+      
+      echo "${YELLOW_TEXT}${BOLD_TEXT}Increasing timeout to ${TIMEOUT}s and retrying...${RESET_FORMAT}"
+      ATTEMPT=$((ATTEMPT+1))
+    else
+      error "Cloud Build failed after $MAX_ATTEMPTS attempts. Please try manually with increased timeout."
+    fi
+  fi
+done
+
+# Final check to ensure we don't continue if all attempts failed
+if [ $ATTEMPT -gt $MAX_ATTEMPTS ]; then
+  error "Cloud Build failed after all retry attempts"
+fi
 
 # Deploy to Cloud Run
 step "Deploying application to Cloud Run..."
