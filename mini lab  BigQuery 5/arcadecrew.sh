@@ -72,15 +72,18 @@ display_step "Loading schema from ${CSV_FILE} into ${TABLE_NAME} table"
 if bq show "${DATASET_NAME}.${TABLE_NAME}" &>/dev/null; then
     echo "${YELLOW_TEXT}${BOLD_TEXT}Table already exists. Loading schema from CSV...${RESET_FORMAT}"
     
-    # Create a schema file from CSV
-    bq mkdef --autodetect --source_format=CSV "${CSV_FILE}" > schema.json || handle_error "Failed to create schema file"
+    # Create a full table definition and extract just the schema part for update
+    bq mkdef --autodetect --source_format=CSV "${CSV_FILE}" > table_def.json || handle_error "Failed to create table definition"
     
-    # Update the table with the schema
+    # Extract just the schema array from the table definition
+    jq '.schema.fields' table_def.json > schema.json || handle_error "Failed to extract schema"
+    
+    # Update the table with the extracted schema
     bq update --schema schema.json "${DATASET_NAME}.${TABLE_NAME}" || handle_error "Failed to update table schema"
 else
     echo "${YELLOW_TEXT}${BOLD_TEXT}Table does not exist. Creating new table with schema from CSV...${RESET_FORMAT}"
     
-    # Create table with schema from CSV but no data (using --schema_only flag)
+    # Create table with schema from CSV but no data
     bq load --autodetect --source_format=CSV --schema_only "${DATASET_NAME}.${TABLE_NAME}" "${CSV_FILE}" || handle_error "Failed to create table with schema from CSV"
 fi
 
