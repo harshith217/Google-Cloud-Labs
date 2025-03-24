@@ -44,7 +44,6 @@ function check_success {
     fi
 }
 
-display_section "BigQuery Monthly Backup Automation"
 
 # Get project ID
 PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
@@ -57,7 +56,6 @@ echo "${YELLOW_TEXT}${BOLD_TEXT}Listing available BigQuery datasets in project..
 bq ls --project_id=$PROJECT_ID
 
 echo ""
-echo "${YELLOW_TEXT}${BOLD_TEXT}IMPORTANT: You need to identify the dataset name from the list above.${RESET_FORMAT}"
 echo "${YELLOW_TEXT}${BOLD_TEXT}Enter the dataset name:${RESET_FORMAT}"
 read DATASET_NAME
 
@@ -65,18 +63,23 @@ echo "${YELLOW_TEXT}${BOLD_TEXT}Listing tables in dataset $DATASET_NAME...${RESE
 bq ls --project_id=$PROJECT_ID "$DATASET_NAME"
 
 echo ""
-echo "${YELLOW_TEXT}${BOLD_TEXT}IMPORTANT: Identify the source and backup table names from the lab instructions.${RESET_FORMAT}"
 echo "${YELLOW_TEXT}${BOLD_TEXT}Enter the source table name (Table1):${RESET_FORMAT}"
 read SOURCE_TABLE
+echo
 echo "${YELLOW_TEXT}${BOLD_TEXT}Enter the backup table name (Table2):${RESET_FORMAT}"
 read BACKUP_TABLE
+
 
 display_section "Creating Monthly Scheduled Query for Backup"
 
 # Enable the BigQuery Data Transfer Service if it's not already enabled
 echo "${CYAN_TEXT}${BOLD_TEXT}Enabling BigQuery Data Transfer Service...${RESET_FORMAT}"
-gcloud services enable bigquerydatatransfer.googleapis.com
-check_success "Enabled BigQuery Data Transfer Service" "Failed to enable BigQuery Data Transfer Service"
+if gcloud services enable bigquerydatatransfer.googleapis.com; then
+  echo "${GREEN_TEXT}${BOLD_TEXT}✓ SUCCESS: Enabled BigQuery Data Transfer Service${RESET_FORMAT}"
+else
+  echo "${YELLOW_TEXT}${BOLD_TEXT}⚠ WARNING: Could not enable BigQuery Data Transfer Service. It may already be enabled or you may not have permission.${RESET_FORMAT}"
+  echo "${YELLOW_TEXT}${BOLD_TEXT}Continuing with the script...${RESET_FORMAT}"
+fi
 
 # Set region/location for the BigQuery Data Transfer Service
 LOCATION="us" # Default location, may need adjustment based on your project
@@ -90,7 +93,7 @@ bq mk \
   --display_name="Monthly Backup for $SOURCE_TABLE" \
   --params="{\"query\":\"SELECT * FROM \`$PROJECT_ID.$DATASET_NAME.$SOURCE_TABLE\`\", \"destination_table_name_template\":\"$BACKUP_TABLE\", \"write_disposition\":\"WRITE_TRUNCATE\"}" \
   --data_source=scheduled_query \
-  --schedule="every 30 days" \
+  --schedule="first of month 00:00" \
   --location=$LOCATION
 
 # If we're here, the automated approach worked!
