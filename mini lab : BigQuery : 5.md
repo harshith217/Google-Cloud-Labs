@@ -17,7 +17,7 @@
 ## ⚙️ Lab Environment Setup
 
 <div style="padding: 15px; margin: 10px 0;">
-<p><strong>☁️ Run in Cloud Shell:</strong></p>
+<p><strong>☁️ Run in Terminal:</strong></p>
 
 ```bash
 PROJECT_ID=$(gcloud config get-value project)
