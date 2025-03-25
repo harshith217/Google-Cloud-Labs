@@ -16,8 +16,6 @@
 
 ## ⚙️ Lab Environment Setup
 
-<details>
-
 <div style="padding: 15px; margin: 10px 0;">
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
@@ -31,9 +29,6 @@ bq query --use_legacy_sql=false 'CREATE OR REPLACE TABLE customer_details.male_c
 bq extract --destination_format=CSV customer_details.male_customers gs://${PROJECT_ID}-bucket/exported_male_customers.csv
 ```
 </div>
-
-</details>
-
 ---
 
 ## 🎉 **Congratulations! Lab Completed Successfully!** 🏆  
