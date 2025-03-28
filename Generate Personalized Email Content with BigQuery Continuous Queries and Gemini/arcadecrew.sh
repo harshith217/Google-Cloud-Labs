@@ -127,23 +127,23 @@ fi
 sleep 60
 
 # Create BigQuery ML remote model
-info_message "Creating BigQuery ML remote model (gemini_1_5_pro)..."
+info_message "Creating BigQuery ML remote model (gemini_2_0_flash)..."
 # Set default dataset name if not defined
 DATASET_NAME=${DATASET_NAME:-continuous_queries}
 
 # Create SQL in a variable with escaped backticks
-SQL="CREATE MODEL \`${PROJECT_ID}.${DATASET_NAME}.gemini_1_5_pro\`
+SQL="CREATE MODEL \`${PROJECT_ID}.${DATASET_NAME}.gemini_2_0_flash\`
 REMOTE WITH CONNECTION \`${REGION}.continuous-queries-connection\`
-OPTIONS(endpoint = 'gemini-1.5-pro');"
+OPTIONS(endpoint = 'gemini-2.0-flash-001');"
 
 # Execute the query
 echo "$SQL" | bq query --nouse_legacy_sql || {
   warning_message "Failed to create BigQuery ML remote model, trying alternative syntax"
   
   # Alternative approach without backticks
-  SQL="CREATE MODEL ${PROJECT_ID}.${DATASET_NAME}.gemini_1_5_pro
+  SQL="CREATE MODEL ${PROJECT_ID}.${DATASET_NAME}.gemini_2_0_flash
   REMOTE WITH CONNECTION ${REGION}.continuous-queries-connection
-  OPTIONS(endpoint = 'gemini-1.5-pro');"
+  OPTIONS(endpoint = 'gemini-2.0-flash-001');"
   
   echo "$SQL" | bq query --nouse_legacy_sql || error_exit "Failed to create BigQuery ML model"
 }
@@ -254,7 +254,7 @@ AS (SELECT
      STRUCT(
        customer_name AS customer_name,
        customer_email AS customer_email, REGEXP_REPLACE(REGEXP_EXTRACT(ml_generate_text_llm_result,r"(?im)\<html\>(?s:.)*\<\/html\>"), r"(?i)\[your name\]", "Your friends at AI Megastore") AS customer_message)),
- FROM ML.GENERATE_TEXT( MODEL \`${PROJECT_ID}.continuous_queries.gemini_1_5_pro\`,
+ FROM ML.GENERATE_TEXT( MODEL \`${PROJECT_ID}.continuous_queries.gemini_2_0_flash\`,
      (SELECT
        customer_name,
        customer_email,
