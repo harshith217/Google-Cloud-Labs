@@ -47,7 +47,6 @@ LATEST_DEBIAN_12_IMAGE=$(gcloud compute images list --project=debian-cloud --fil
 
 if [ -z "$LATEST_DEBIAN_12_IMAGE" ]; then
   echo "${RED_TEXT}${BOLD_TEXT}Error: Could not find latest Debian 12 image. Exiting.${RESET_FORMAT}"
-  exit 1
 fi
 echo "${CYAN_TEXT}Using Image: $LATEST_DEBIAN_12_IMAGE${RESET_FORMAT}"
 
@@ -70,7 +69,6 @@ gcloud compute instances create lamp-1-vm \
 # Check if VM creation was successful
 if [ $? -ne 0 ]; then
     echo "${RED_TEXT}${BOLD_TEXT}Error: Failed to create VM instance. Exiting.${RESET_FORMAT}"
-    exit 1
 fi
 # --- End Step 2 ---
 
@@ -140,7 +138,6 @@ gcloud compute scp ./install_lamp_agent.sh lamp-1-vm:/tmp --project=$DEVSHELL_PR
 if [ $? -ne 0 ]; then
     echo "${RED_TEXT}${BOLD_TEXT}Error: Failed to copy script via SCP. Check SSH connectivity manually.${RESET_FORMAT}"
     echo "${RED_TEXT}Try: gcloud compute ssh lamp-1-vm --zone $ZONE --project $DEVSHELL_PROJECT_ID${RESET_FORMAT}"
-    exit 1
 fi
 
 # Execute the script on the VM
@@ -149,7 +146,6 @@ gcloud compute ssh lamp-1-vm --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet
 
 if [ $? -ne 0 ]; then
     echo "${RED_TEXT}${BOLD_TEXT}Error: Failed to execute script via SSH.${RESET_FORMAT}"
-    exit 1
 fi
 
 # Clean up local script file
@@ -253,7 +249,6 @@ rm email-channel.json # Clean up
 
 if [ -z "$email_channel_id" ]; then
     echo "${RED_TEXT}${BOLD_TEXT}Error: Could not create or find email notification channel. Exiting.${RESET_FORMAT}"
-    exit 1
 fi
 
 echo
