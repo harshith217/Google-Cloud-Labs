@@ -17,9 +17,6 @@ curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
-
-* Create **Uptime Check** named `Lamp Uptime Check` from [here](https://console.cloud.google.com/monitoring/uptime/create?)
-
 ---
 
 ## 🎉 **Congratulations! Lab Completed Successfully!** 🏆  
