@@ -25,7 +25,7 @@ sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
 
-### Run in Notebook Terminal
+<p><strong>* Run in NoteBook Terminal:</strong></p>
 
 ```
 gsutil cp gs://spls/gsp758/notebook/measuring-accuracy.ipynb .
