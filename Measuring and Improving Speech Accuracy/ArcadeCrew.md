@@ -24,6 +24,14 @@ curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
+
+### Run in Notebook Terminal
+
+```
+gsutil cp gs://spls/gsp758/notebook/measuring-accuracy.ipynb .
+gsutil cp gs://spls/gsp758/notebook/speech_adaptation.ipynb .
+gsutil cp gs://spls/gsp758/notebook/simple_wer_v2.py .
+```
 </div>
 
 ---
