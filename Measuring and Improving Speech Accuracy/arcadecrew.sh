@@ -53,7 +53,7 @@ echo "${GREEN_TEXT}${BOLD_TEXT}Notebook instance created successfully!${RESET_FO
 # Get the current project ID
 PROJECT_ID=$(gcloud config get-value project)
 echo "${YELLOW_TEXT}${BOLD_TEXT}You can access your notebook at the following URL:${RESET_FORMAT}"
-echo "${WHITE_TEXT}${BOLD_TEXT}https://console.cloud.google.com/vertex-ai/workbench/user-managed/instances/$NOTEBOOK_NAME?project=$PROJECT_ID&region=$ZONE${RESET_FORMAT}"
+echo "${BLUE_TEXT}${BOLD_TEXT}https://console.cloud.google.com/vertex-ai/workbench/user-managed?project=$DEVSHELL_PROJECT_ID ${RESET_FORMAT}"
 
 # Completion message
 echo
