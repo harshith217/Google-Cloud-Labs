@@ -438,25 +438,37 @@ EOL
 
     # 1. Create the topic linked to the PRE-CREATED schema
     log_info "Creating Pub/Sub topic: ${BOLD_TEXT}$TOPIC_NAME_TASK2${RESET_FORMAT} using schema ${BOLD_TEXT}$PRE_CREATED_SCHEMA_NAME_TASK2${RESET_FORMAT}"
-    # Ensure the pre-created schema exists (lab's responsibility)
-    local CREATE_TOPIC_CMD="gcloud pubsub topics create $TOPIC_NAME_TASK2 --schema=$PRE_CREATED_SCHEMA_NAME_TASK2 --project=$PROJECT_ID"
-    local DELETE_TOPIC_CMD="gcloud pubsub topics delete $TOPIC_NAME_TASK2 --project=$PROJECT_ID --quiet"
-    # Use the retry/delay values defined locally in this function
-    if ! delete_and_retry_command "$CREATE_TOPIC_CMD" "$DELETE_TOPIC_CMD" "Create Pub/Sub Topic '$TOPIC_NAME_TASK2' with Schema"; then
-         log_error "Failed to create Pub/Sub topic $TOPIC_NAME_TASK2. Ensure pre-created schema '$PRE_CREATED_SCHEMA_NAME_TASK2' exists."
-         cleanup_form2_files
-         return 1
-    fi
+    gcloud pubsub topics create temp-topic \
+        --message-encoding=JSON \
+        --message-storage-policy-allowed-regions=$REGION \
+        --schema=projects/$DEVSHELL_PROJECT_ID/schemas/temperature-schema
 
-    # Verify Topic Creation
-    log_info "Verifying Pub/Sub topic ${BOLD_TEXT}$TOPIC_NAME_TASK2${RESET_FORMAT}..."
-    # Check description which should include schema info
-    # Use the retry/delay values defined locally in this function
-    if ! retry_command "gcloud pubsub topics describe $TOPIC_NAME_TASK2 --project=$PROJECT_ID" "Verify Pub/Sub Topic '$TOPIC_NAME_TASK2'"; then
-        log_error "Failed to verify Pub/Sub topic $TOPIC_NAME_TASK2."
-        cleanup_form2_files
-        return 1
-    fi
+    mkdir arcadecrew && cd $_
+
+    cat >index.js <<'EOF_END'
+        /**
+        * Triggered from a message on a Cloud Pub/Sub topic.
+        *
+        * @param {!Object} event Event payload.
+        * @param {!Object} context Metadata for the event.
+        */
+        exports.helloPubSub = (event, context) => {
+        const message = event.data
+            ? Buffer.from(event.data, 'base64').toString()
+            : 'Hello, World';
+        console.log(message);
+        };
+EOF_END
+
+    cat >package.json <<'EOF_END'
+        {
+        "name": "sample-pubsub",
+        "version": "0.0.1",
+        "dependencies": {
+            "@google-cloud/pubsub": "^0.18.0"
+        }
+        }
+EOF_END
 
     log_success "${BOLD_TEXT}Task 2 Completed Successfully.${RESET_FORMAT}"
     # -----------------------------------------
