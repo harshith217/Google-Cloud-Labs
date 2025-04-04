@@ -1,20 +1,20 @@
-# 🌐 [Get Started with Pub/Sub: Challenge Lab | ARC113](https://www.cloudskillsboost.google/focuses/105165?parent=catalog)  
+# ✨ Get Started with Pub/Sub: Challenge Lab || ARC113
+
+[![Lab Link](https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://www.cloudskillsboost.google/focuses/105165?parent=catalog)
 
 ---
 
-## 🎥 **Watch the Full Video Walkthrough**  
+## ⚠️ Disclaimer
 
-[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432?sub_confirmation=1)  
+<div style="padding: 15px; margin-bottom: 20px;">
+<p><strong>Educational Purpose Only:</strong> This script and guide are intended solely for educational purposes to help you understand Google Cloud monitoring services and advance your cloud skills. Before using, please review it carefully to become familiar with the services involved.</p>
 
----
-
-## ⚠️ **Important Notice**  
-
-This guide is designed to enhance your learning experience during this lab. Please review each step carefully to fully understand the concepts. Ensure you adhere to **Qwiklabs** and **YouTube** policies while following this guide.  
+<p><strong>Terms Compliance:</strong> Always ensure compliance with Qwiklabs' terms of service and YouTube's community guidelines. The aim is to enhance your learning experience—not to circumvent it.</p>
+</div>
 
 ---
 
-## 🚀 **Lab Instructions**  
+## ⚙️ Lab Environment Setup
 
 **Note:** This lab has three variations (forms). First, identify which form you have by checking the task names and matching them with the descriptions below. Once identified, paste the corresponding code into Cloud Shell and enter your form number.
 
@@ -41,25 +41,46 @@ This guide is designed to enhance your learning experience during this lab. Plea
 
 ---
 
-## 💻 **Execute in Cloud Shell**  
 
-Run the following commands in **Cloud Shell**:  
+<div style="padding: 15px; margin: 10px 0;">
+<p><strong>☁️ Run in Cloud Shell:</strong></p>
 
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Get%20Started%20with%20PubSub%20Challenge%20Lab/arcadecrew.sh
-
+curl -LO 
 sudo chmod +x arcadecrew.sh
-
 ./arcadecrew.sh
-```  
+```
+</div>
 
 ---
 
 ## 🎉 **Congratulations! Lab Completed Successfully!** 🏆  
 
+<div align="center" style="padding: 5px;">
+  <h3>📱 Join the Arcade Crew Community</h3>
+  
+  <a href="https://chat.whatsapp.com/KkNEauOhBQXHdVcmqIlv9F">
+    <img src="https://img.shields.io/badge/Join_WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="Join WhatsApp">
+  </a>
+  &nbsp;
+  <a href="https://www.youtube.com/@Arcade61432?sub_confirmation=1">
+    <img src="https://img.shields.io/badge/Subscribe-Arcade%20Crew-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube Channel">
+  </a>
+  &nbsp;
+  <a href="https://www.linkedin.com/in/gourav61432/">
+    <img src="https://img.shields.io/badge/LINKEDIN-Gourav%20Sen-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
+</a>
+
+
+</div>
+
 ---
 
-## 🤝 **Join the Arcade Crew Community!**  
-
-- **WhatsApp Group:** [Join Here](https://chat.whatsapp.com/KkNEauOhBQXHdVcmqIlv9F)  
-- **YouTube Channel:** [![Subscribe to Arcade Crew](https://img.shields.io/badge/YouTube-Arcade%20Crew-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432?sub_confirmation=1)  
+<div align="center">
+  <p style="font-size: 12px; color: #586069;">
+    <em>This guide is provided for educational purposes. Always follow Qwiklabs terms of service and YouTube's community guidelines.</em>
+  </p>
+  <p style="font-size: 12px; color: #586069;">
+    <em>Last updated: March 2025</em>
+  </p>
+</div>
