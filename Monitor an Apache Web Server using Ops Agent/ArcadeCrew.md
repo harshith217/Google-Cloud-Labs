@@ -16,37 +16,11 @@
 
 ## ⚙️ Lab Environment Setup
 
-**Note:** This lab has three variations (forms). First, identify which form you have by checking the task names and matching them with the descriptions below. Once identified, paste the corresponding code into Cloud Shell and enter your form number.
-
----
-
-### **Form 1:**  
-- **Task 1:** Set up Cloud Pub/Sub.  
-- **Task 2:** Create a Cloud Scheduler job.  
-- **Task 3:** Verify the results in Cloud Pub/Sub.  
-
----
-
-### **Form 2:**  
-- **Task 1:** Create a Pub/Sub schema.  
-- **Task 2:** Create a Pub/Sub topic using the schema.  
-- **Task 3:** Create a trigger Cloud Function with the Pub/Sub topic.  
-
----
-
-### **Form 3:**  
-- **Task 1:** Publish a message to the topic.  
-- **Task 2:** View the message.  
-- **Task 3:** Create a Pub/Sub Snapshot for the Pub/Sub topic.  
-
----
-
-
 <div style="padding: 15px; margin: 10px 0;">
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
 ```bash
-curl -LO 
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Monitor%20an%20Apache%20Web%20Server%20using%20Ops%20Agent/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
