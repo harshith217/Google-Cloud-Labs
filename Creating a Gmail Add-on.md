@@ -17,7 +17,6 @@
 ## ⚙️ Lab Environment Setup
 
 <div style="padding: 15px; margin: 10px 0;">
-<details>
 * Code.gs
 ```bash
 /**
@@ -141,7 +140,6 @@ function getLabelArray(labelsObjects){
   return labels;
 }
 ```
-</details>
 
 * appsscript.json
 ```
