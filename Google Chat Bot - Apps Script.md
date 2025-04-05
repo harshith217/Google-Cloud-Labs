@@ -418,16 +418,25 @@
 
 ---
 
-## 🎉 Congratulations! Lab Completed Successfully! 🏆
+## 🎉 **Congratulations! Lab Completed Successfully!** 🏆  
 
 <div align="center" style="padding: 5px;">
-  <h3><a href="https://thecloudterminal.com" > <img src="https://img.shields.io/badge/WEB-The_Cloud_Terminal-blue?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Website"> </a> </h3>
-  <a href="https://www.linkedin.com/company/thecloudterminal" > <img src="https://img.shields.io/badge/LINKEDIN-The_Cloud_Terminal-blue?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"> </a>
-  <a href="https://www.youtube.com/@TheCloudTerminal"> <img src="https://img.shields.io/badge/YOUTUBE-The_Cloud_Terminal-red?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube"> </a>
-  <a href="https://discord.com/invite/mRVFTxE9F3"> <img src="https://img.shields.io/badge/DISCORD-The_Cloud_Terminal-7289DA?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"> </a>
-  <a href="https://whatsapp.com/channel/0029Va7hSsx7d9GPipMFp93p"> <img src="https://img.shields.io/badge/WHATSAPP-The_Cloud_Terminal-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="WhatsApp"> </a>
-</div>
+  <h3>📱 Join the Arcade Crew Community</h3>
+  
+  <a href="https://chat.whatsapp.com/KkNEauOhBQXHdVcmqIlv9F">
+    <img src="https://img.shields.io/badge/Join_WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="Join WhatsApp">
+  </a>
+  &nbsp;
+  <a href="https://www.youtube.com/@Arcade61432?sub_confirmation=1">
+    <img src="https://img.shields.io/badge/Subscribe-Arcade%20Crew-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube Channel">
+  </a>
+  &nbsp;
+  <a href="https://www.linkedin.com/in/gourav61432/">
+    <img src="https://img.shields.io/badge/LINKEDIN-Gourav%20Sen-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
+</a>
 
+
+</div>
 
 ---
 
@@ -436,7 +445,6 @@
     <em>This guide is provided for educational purposes. Always follow Qwiklabs terms of service and YouTube's community guidelines.</em>
   </p>
   <p style="font-size: 12px; color: #586069;">
-    <em>Happy Learning!</em> <br>
-    <em>Last updated: March 2024</em> <!-- Adjusted date to be realistic -->
+    <em>Last updated: April 2025</em>
   </p>
 </div>
