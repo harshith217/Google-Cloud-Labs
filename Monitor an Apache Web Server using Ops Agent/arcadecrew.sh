@@ -1,45 +1,30 @@
-#!/bin/bash
-
-# Define color variables
-BLACK_TEXT=$'\033[0;90m'
-RED_TEXT=$'\033[0;91m'
-GREEN_TEXT=$'\033[0;92m'
-YELLOW_TEXT=$'\033[0;93m'
-BLUE_TEXT=$'\033[0;94m'
-MAGENTA_TEXT=$'\033[0;95m'
-CYAN_TEXT=$'\033[0;96m'
-WHITE_TEXT=$'\033[0;97m'
-
+# Define color codes for output formatting
+YELLOW_COLOR=$'\033[0;33m'
 NO_COLOR=$'\033[0m'
-RESET_FORMAT=$'\033[0m'
-BOLD_TEXT=$'\033[1m'
-UNDERLINE_TEXT=$'\033[4m'
+BACKGROUND_RED=`tput setab 1`
+GREEN_TEXT=`tput setab 2`
+RED_TEXT=`tput setaf 1`
 
-clear
+BOLD_TEXT=`tput bold`
+RESET_FORMAT=`tput sgr0`
 
-# Welcome message
-echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
-echo "${BLUE_TEXT}${BOLD_TEXT}         INITIATING EXECUTION...  ${RESET_FORMAT}"
-echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
-echo
+echo "${BACKGROUND_RED}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
 
-# Instruction for entering the zone
-echo "${YELLOW_TEXT}${BOLD_TEXT}Enter the Zone:${RESET_FORMAT}"
-read ZONE
+# Prompt user to enter the desired compute zone
+read -p "${YELLOW_COLOR}${BOLD_TEXT}Enter ZONE:${RESET_FORMAT}" ZONE
 
-# Informing about VM creation
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Creating a VM instance named 'quickstart-vm' in the specified zone...${RESET_FORMAT}"
-gcloud compute instances create quickstart-vm --zone=$ZONE --machine-type=e2-small --tags=http-server,https-server --create-disk=auto-delete=yes,boot=yes,device-name=quickstart-vm,image=projects/debian-cloud/global/images/debian-11-bullseye-v20241009,mode=rw,size=10,type=pd-balanced
+gcloud auth list
 
-# Informing about firewall rules
-echo "${CYAN_TEXT}${BOLD_TEXT}Setting up firewall rules to allow HTTP and HTTPS traffic...${RESET_FORMAT}"
-gcloud compute firewall-rules create allow-http-from-internet --target-tags=http-server --allow tcp:80 --source-ranges 0.0.0.0/0 --description="Allow HTTP from the internet"
+export PROJECT_ID=$(gcloud config get-value project)
 
-gcloud compute firewall-rules create allow-https-from-internet --target-tags=https-server --allow tcp:443 --source-ranges 0.0.0.0/0 --description="Allow HTTPS from the internet"
+export PROJECT_ID=$DEVSHELL_PROJECT_ID
 
-# Informing about script preparation
-echo "${GREEN_TEXT}${BOLD_TEXT}Preparing the disk setup script for Apache and Ops Agent installation...${RESET_FORMAT}"
-cat > prepare_disk.sh <<'EOF_END'
+# Set the zone based on user input
+gcloud config set compute/zone $ZONE
+
+gcloud compute instances create quickstart-vm --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --machine-type=e2-small --image-family=debian-11 --image-project=debian-cloud --tags=http-server,https-server && gcloud compute firewall-rules create default-allow-http --target-tags=http-server --allow tcp:80 --description="Allow HTTP traffic" && gcloud compute firewall-rules create default-allow-https --target-tags=https-server --allow tcp:443 --description="Allow HTTPS traffic"
+
+cat > cp_disk.sh <<'EOF_CP'
 
 sudo apt-get update && sudo apt-get install apache2 php7.0 -y
 
@@ -81,38 +66,29 @@ EOF
 sudo service google-cloud-ops-agent restart
 sleep 60
 
-EOF_END
+EOF_CP
 
-# Informing about file transfer
-echo "${CYAN_TEXT}${BOLD_TEXT}Transferring the setup script to the VM instance...${RESET_FORMAT}"
-gcloud compute scp prepare_disk.sh quickstart-vm:/tmp --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet
+gcloud compute scp cp_disk.sh quickstart-vm:/tmp --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet
 
-# Informing about script execution
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Executing the setup script on the VM instance...${RESET_FORMAT}"
-gcloud compute ssh quickstart-vm --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet --command="bash /tmp/prepare_disk.sh"
+gcloud compute ssh quickstart-vm --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet --command="bash /tmp/cp_disk.sh"
 
-# Informing about email channel creation
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating an email notification channel...${RESET_FORMAT}"
-cat > email-channel.json <<EOF_END
+cat > cp-channel.json <<EOF_CP
 {
-  "type": "email",
-  "displayName": "ArcadeCrew",
-  "description": "Subscribe",
+  "type": "pubsub",
+  "displayName": "arcadecrew",
+  "description": "subscribe to arcadecrew",
   "labels": {
-    "email_address": "$USER_EMAIL"
+    "topic": "projects/$DEVSHELL_PROJECT_ID/topics/notificationTopic"
   }
 }
-EOF_END
+EOF_CP
 
-gcloud beta monitoring channels create --channel-content-from-file="email-channel.json"
+gcloud beta monitoring channels create --channel-content-from-file=cp-channel.json
 
-# Get the channel ID
-email_channel_info=$(gcloud beta monitoring channels list)
-email_channel_id=$(echo "$email_channel_info" | grep -oP 'name: \K[^ ]+' | head -n 1)
+email_channel=$(gcloud beta monitoring channels list)
+channel_id=$(echo "$email_channel" | grep -oP 'name: \K[^ ]+' | head -n 1)
 
-# Informing about alert policy creation
-echo "${YELLOW_TEXT}${BOLD_TEXT}Creating an alert policy for Apache traffic monitoring...${RESET_FORMAT}"
-cat > vm-alert-policy.json <<EOF_END
+cat > stopped-vm-alert-policy.json <<EOF_CP
 {
   "displayName": "Apache traffic above threshold",
   "userLabels": {},
@@ -138,28 +114,21 @@ cat > vm-alert-policy.json <<EOF_END
     }
   ],
   "alertStrategy": {
-    "autoClose": "1800s",
-    "notificationPrompts": [
-      "OPENED"
-    ]
+    "autoClose": "1800s"
   },
   "combiner": "OR",
   "enabled": true,
   "notificationChannels": [
-    "$email_channel_id"
+    "$channel_id"
   ],
   "severity": "SEVERITY_UNSPECIFIED"
 }
-EOF_END
+EOF_CP
 
-# Create the alert policy
-gcloud alpha monitoring policies create --policy-from-file=vm-alert-policy.json
+gcloud alpha monitoring policies create --policy-from-file=stopped-vm-alert-policy.json
 
-# Completion Message
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
-echo "${GREEN_TEXT}${BOLD_TEXT}              LAB COMPLETED SUCCESSFULLY!              ${RESET_FORMAT}"
-echo "${GREEN_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
-echo ""
-echo -e "${RED_TEXT}${BOLD_TEXT}Subscribe my Channel (Arcade Crew):${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
-echo
+
+
+# Completion message
+echo -e "${RED_TEXT}${BOLD_TEXT}Lab Completed Successfully!${RESET_FORMAT}"
+echo -e "${GREEN_TEXT}${BOLD_TEXT}Check out our Channel: \e]8;;https://www.youtube.com/@Arcade61432\e\\https://www.youtube.com/@Arcade61432\e]8;;\e\\${RESET_FORMAT}"
