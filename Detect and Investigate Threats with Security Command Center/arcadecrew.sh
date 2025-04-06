@@ -106,26 +106,27 @@ sleep 30
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Step 13: Connecting to Compute Instance...${RESET_FORMAT}"
 echo "${CYAN_TEXT}Establishing an SSH connection to the Compute Engine instance and executing commands.${RESET_FORMAT}"
 gcloud compute ssh instance-1 --zone=$ZONE --tunnel-through-iap --project "$DEVSHELL_PROJECT_ID" --quiet --command "gcloud projects get-iam-policy \$(gcloud config get project) && curl etd-malware-trigger.goog"
-
+echo
+echo
 echo "${GREEN_TEXT}${BOLD_TEXT}Please check progress of  ${YELLOW_TEXT}TASK 1 & TASK 2${RESET_FORMAT} before proceeding.${RESET_FORMAT}"
 echo
 # Function to prompt user to check their progress
 function check_progress {
     while true; do
         echo
-        echo -n "${BOLD_TEXT}${YELLOW_TEXT}Have you checked your progress for ${YELLOW_TEXT}TASK 1 & TASK 2${RESET_FORMAT}? (Y/N): ${RESET_FORMAT}"
+        echo -n "${YELLOW_TEXT}${BOLD_TEXT}Have you checked your progress for ${YELLOW_TEXT}TASK 1 & TASK 2${RESET_FORMAT}? (Y/N): ${RESET_FORMAT}"
         read -r user_input
         if [[ "$user_input" == "Y" || "$user_input" == "y" ]]; then
             echo
-            echo "${BOLD_TEXT}${GREEN_TEXT}Great! Moving on to the next steps...${RESET_FORMAT}"
+            echo "${GREEN_TEXT}${BOLD_TEXT}Great! Moving on to the next steps...${RESET_FORMAT}"
             echo
             break
         elif [[ "$user_input" == "N" || "$user_input" == "n" ]]; then
             echo
-            echo "${BOLD_TEXT}${RED_TEXT}Please review your progress for ${YELLOW_TEXT}TASK 1 & TASK 2${RESET_FORMAT} and then press Y to continue.${RESET_FORMAT}"
+            echo "${RED_TEXT}${BOLD_TEXT}Please review your progress for ${YELLOW_TEXT}TASK 1 & TASK 2${RESET_FORMAT} and then press Y to continue.${RESET_FORMAT}"
         else
             echo
-            echo "${BOLD_TEXT}${MAGENTA_TEXT}Invalid input. Please type Y or N.${RESET_FORMAT}"
+            echo "${MAGENTA_TEXT}${BOLD_TEXT}Invalid input. Please type Y or N.${RESET_FORMAT}"
         fi
     done
 }
