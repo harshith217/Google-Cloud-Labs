@@ -1,16 +1,17 @@
-# ✨ Monitor an Apache Web Server using Ops Agent || GSP1108
-
-[![Lab Link](https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://www.cloudskillsboost.google/focuses/56596?parent=catalog)
+# ✨ Monitor an Apache Web Server using Ops Agent || GSP1108 ✨
+<div align="center">
+<a href="https://www.cloudskillsboost.google/focuses/56596?parent=catalog" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+    <img src="https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white&labelColor=34A853" alt="Open Lab" style="height: 35px; border-radius: 5px;">
+  </a>
+</div>
 
 ---
 
-## ⚠️ Disclaimer
+## ⚠️ Disclaimer ⚠️
 
-<div style="padding: 15px; margin-bottom: 20px;">
-<p><strong>Educational Purpose Only:</strong> This script and guide are intended solely for educational purposes to help you understand Google Cloud monitoring services and advance your cloud skills. Before using, please review it carefully to become familiar with the services involved.</p>
-
-<p><strong>Terms Compliance:</strong> Always ensure compliance with Qwiklabs' terms of service and YouTube's community guidelines. The aim is to enhance your learning experience—not to circumvent it.</p>
-</div>
+> **Educational Purpose Only:** This script and guide are intended *solely for educational purposes* to help you understand Google Cloud monitoring services and advance your cloud skills. Before using, please review it carefully to become familiar with the services involved.
+>
+> **Terms Compliance:** Always ensure compliance with Qwiklabs' terms of service and YouTube's community guidelines. The aim is to enhance your learning experience—*not* to circumvent it.
 
 ---
 
@@ -20,7 +21,7 @@
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
 ```bash
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Monitor%20an%20Apache%20Web%20Server%20using%20Ops%20Agent/arcadecrew.sh
+curl -LO 
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
@@ -55,6 +56,6 @@ sudo chmod +x arcadecrew.sh
     <em>This guide is provided for educational purposes. Always follow Qwiklabs terms of service and YouTube's community guidelines.</em>
   </p>
   <p style="font-size: 12px; color: #586069;">
-    <em>Last updated: March 2025</em>
+    <em>Last updated: April 2025</em>
   </p>
 </div>
