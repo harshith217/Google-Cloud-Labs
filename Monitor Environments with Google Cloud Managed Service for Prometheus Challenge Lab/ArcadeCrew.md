@@ -25,7 +25,6 @@ curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
-* Reserve **Static External IP** address name **`static-ip`**
 </div>
 
 ---
