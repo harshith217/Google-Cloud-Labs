@@ -95,7 +95,7 @@ gcloud compute instances create instance-1 \
 
 # Step 11: Create DNS Policy
 echo "${CYAN_TEXT}${BOLD_TEXT}Step 11: Creating DNS Policy...${RESET_FORMAT}"
-gcloud dns --project=$DEVSHELL_PROJECT_ID policies create dns-test-policy --description="quickgcplab" --networks="default" --private-alternative-name-servers="" --no-enable-inbound-forwarding --enable-logging
+gcloud dns --project=$DEVSHELL_PROJECT_ID policies create dns-test-policy --description="arcadecrew" --networks="default" --private-alternative-name-servers="" --no-enable-inbound-forwarding --enable-logging
 
 # Step 12: Wait for 30 seconds
 echo "${YELLOW_TEXT}${BOLD_TEXT}Step 12: Waiting for DNS Policy to take effect...${RESET_FORMAT}"
