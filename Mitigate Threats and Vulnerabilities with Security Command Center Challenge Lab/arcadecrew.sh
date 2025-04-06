@@ -112,7 +112,7 @@ gsutil mb -p $DEVSHELL_PROJECT_ID -c STANDARD -l $REGION -b on gs://scc-export-b
 
 gsutil uniformbucketlevelaccess set off gs://scc-export-bucket-$DEVSHELL_PROJECT_ID
 
-curl -LO findings.jsonl
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Mitigate%20Threats%20and%20Vulnerabilities%20with%20Security%20Command%20Center%20Challenge%20Lab/findings.jsonl
 
 gsutil cp findings.jsonl gs://scc-export-bucket-$DEVSHELL_PROJECT_ID
 
