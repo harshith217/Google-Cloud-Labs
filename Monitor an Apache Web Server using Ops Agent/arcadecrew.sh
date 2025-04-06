@@ -1,29 +1,52 @@
-# Define color codes for output formatting
-YELLOW_COLOR=$'\033[0;33m'
+#!/bin/bash
+
+# Define color variables
+BLACK_TEXT=$'\033[0;90m'
+RED_TEXT=$'\033[0;91m'
+GREEN_TEXT=$'\033[0;92m'
+YELLOW_TEXT=$'\033[0;93m'
+BLUE_TEXT=$'\033[0;94m'
+MAGENTA_TEXT=$'\033[0;95m'
+CYAN_TEXT=$'\033[0;96m'
+WHITE_TEXT=$'\033[0;97m'
+
 NO_COLOR=$'\033[0m'
-BACKGROUND_RED=`tput setab 1`
-GREEN_TEXT=`tput setab 2`
-RED_TEXT=`tput setaf 1`
+RESET_FORMAT=$'\033[0m'
+BOLD_TEXT=$'\033[1m'
+UNDERLINE_TEXT=$'\033[4m'
 
-BOLD_TEXT=`tput bold`
-RESET_FORMAT=`tput sgr0`
+# Clear the screen
+clear
 
-echo "${BACKGROUND_RED}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
+# Print the welcome message
+echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
+echo "${BLUE_TEXT}${BOLD_TEXT}         INITIATING EXECUTION...  ${RESET_FORMAT}"
+echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
+echo
 
-# Prompt user to enter the desired compute zone
-read -p "${YELLOW_COLOR}${BOLD_TEXT}Enter ZONE:${RESET_FORMAT}" ZONE
+# Instruction for user input
+read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter ZONE:${RESET_FORMAT} " ZONE
 
+# Instruction for authentication
+echo "${CYAN_TEXT}${BOLD_TEXT}Authenticating with Google Cloud...${RESET_FORMAT}"
 gcloud auth list
 
+# Instruction for setting project ID
+echo "${MAGENTA_TEXT}${BOLD_TEXT}Fetching the current project ID...${RESET_FORMAT}"
 export PROJECT_ID=$(gcloud config get-value project)
 
 export PROJECT_ID=$DEVSHELL_PROJECT_ID
 
-# Set the zone based on user input
+# Instruction for setting the compute zone
+echo "${GREEN_TEXT}${BOLD_TEXT}Setting the compute zone to the user-provided value...${RESET_FORMAT}"
 gcloud config set compute/zone $ZONE
 
+# Instruction for creating a VM instance
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating a VM instance and configuring firewall rules...${RESET_FORMAT}"
 gcloud compute instances create quickstart-vm --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --machine-type=e2-small --image-family=debian-11 --image-project=debian-cloud --tags=http-server,https-server && gcloud compute firewall-rules create default-allow-http --target-tags=http-server --allow tcp:80 --description="Allow HTTP traffic" && gcloud compute firewall-rules create default-allow-https --target-tags=https-server --allow tcp:443 --description="Allow HTTPS traffic"
 
+# Instruction for configuring the VM
+echo "${CYAN_TEXT}${BOLD_TEXT}Configuring the VM with Apache and Google Cloud Ops Agent...${RESET_FORMAT}"
 cat > cp_disk.sh <<'EOF_CP'
 
 sudo apt-get update && sudo apt-get install apache2 php
@@ -68,10 +91,16 @@ sleep 60
 
 EOF_CP
 
+# Instruction for copying the script to the VM
+echo "${MAGENTA_TEXT}${BOLD_TEXT}Copying the configuration script to the VM...${RESET_FORMAT}"
 gcloud compute scp cp_disk.sh quickstart-vm:/tmp --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet
 
+# Instruction for executing the script on the VM
+echo "${YELLOW_TEXT}${BOLD_TEXT}Executing the configuration script on the VM...${RESET_FORMAT}"
 gcloud compute ssh quickstart-vm --project=$DEVSHELL_PROJECT_ID --zone=$ZONE --quiet --command="bash /tmp/cp_disk.sh"
 
+# Instruction for creating a notification channel
+echo "${CYAN_TEXT}${BOLD_TEXT}Creating a notification channel for monitoring...${RESET_FORMAT}"
 cat > cp-channel.json <<EOF_CP
 {
   "type": "pubsub",
@@ -85,9 +114,13 @@ EOF_CP
 
 gcloud beta monitoring channels create --channel-content-from-file=cp-channel.json
 
+# Instruction for fetching the channel ID
+echo "${GREEN_TEXT}${BOLD_TEXT}Fetching the notification channel ID...${RESET_FORMAT}"
 email_channel=$(gcloud beta monitoring channels list)
 channel_id=$(echo "$email_channel" | grep -oP 'name: \K[^ ]+' | head -n 1)
 
+# Instruction for creating an alert policy
+echo "${BLUE_TEXT}${BOLD_TEXT}Creating an alert policy for Apache traffic monitoring...${RESET_FORMAT}"
 cat > stopped-vm-alert-policy.json <<EOF_CP
 {
   "displayName": "Apache traffic above threshold",
@@ -127,8 +160,12 @@ EOF_CP
 
 gcloud alpha monitoring policies create --policy-from-file=stopped-vm-alert-policy.json
 
-
-
 # Completion message
-echo -e "${RED_TEXT}${BOLD_TEXT}Lab Completed Successfully!${RESET_FORMAT}"
-echo -e "${GREEN_TEXT}${BOLD_TEXT}Check out our Channel: \e]8;;https://www.youtube.com/@Arcade61432\e\\https://www.youtube.com/@Arcade61432\e]8;;\e\\${RESET_FORMAT}"
+echo
+echo "${GREEN_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
+echo "${GREEN_TEXT}${BOLD_TEXT}            LAB COMPLETED!             ${RESET_FORMAT}"
+echo "${GREEN_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
+
+# Subscription message
+echo
+echo -e "${RED_TEXT}${BOLD_TEXT}Subscribe to my Channel (Arcade Crew):${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
