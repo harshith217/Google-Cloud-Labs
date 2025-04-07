@@ -15,87 +15,90 @@ RESET_FORMAT=$'\033[0m'
 BOLD_TEXT=$'\033[1m'
 UNDERLINE_TEXT=$'\033[4m'
 
-# Clear the screen
 clear
 
-# Print the welcome message
+# Welcome message
 echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
 echo "${BLUE_TEXT}${BOLD_TEXT}         INITIATING EXECUTION...  ${RESET_FORMAT}"
 echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
 echo
 
-# Function to print command before execution
-execute_command() {
-  echo "${YELLOW_TEXT}---> Executing command:${RESET_FORMAT}"
-  echo "${CYAN_TEXT}$@${RESET_FORMAT}"
-  "$@"
-  local status=$?
-  if [ $status -ne 0 ]; then
-    echo "${RED_TEXT}---> Command failed with status $status: $@${RESET_FORMAT}"
-    # Decide if you want to exit on failure: exit $status
+projectid_check() {
+  local project_id=$1
+  if [[ -z "$project_id" ]]; then
+    echo "${RED_TEXT}${BOLD_TEXT}Error: PROJECT_ID is not set.${RESET_FORMAT}"
   fi
-  echo # Add a newline for better readability
-  return $status
 }
 
-# Function to print message before execution (for non-standard commands like cat, read, export etc.)
-prepare_to_execute() {
-  echo "${YELLOW_TEXT}---> Preparing to execute:${RESET_FORMAT}"
-  echo "${CYAN_TEXT}$@${RESET_FORMAT}"
-  # No execution here, just printing
-}
-# Loop to run the script content twice
-for i in {1..2}
-do
-  echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
-  echo "${BLUE_TEXT}${BOLD_TEXT}         STARTING RUN $i of 2...       ${RESET_FORMAT}"
-  echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
-  echo
-
-  read -p "Enter GCP Zone: " ZONE
-  echo # Add newline after read
-
-  prepare_to_execute "export ZONE"
+# Function to set zone and region
+lab_setup() {
+  echo "${CYAN_TEXT}${BOLD_TEXT}Detecting zone and region from gcloud config...${RESET_FORMAT}"
+  # Try to detect zone from gcloud config
+  ZONE=$(gcloud config get-value compute/zone 2>/dev/null)
+  REGION=$(gcloud config get-value compute/region 2>/dev/null)
+  
+  # If not set, prompt user
+  if [[ -z "$ZONE" ]]; then
+    echo "${MAGENTA_TEXT}${BOLD_TEXT}Zone not set in gcloud config.${RESET_FORMAT}"
+    read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter the zone: ${RESET_FORMAT}" ZONE
+  fi
+  
+  echo "${GREEN_TEXT}${BOLD_TEXT}Using zone: $ZONE${RESET_FORMAT}"
+  if [[ -z "$REGION" ]]; then
+    # Derive region from zone if not set
+    if [[ -n "$ZONE" ]]; then
+      REGION=$(echo $ZONE | awk -F'-' '{print $1"-"$2}')
+    else
+      read -p "${MAGENTA_TEXT}${BOLD_TEXT}Enter the region: ${RESET_FORMAT}" REGION
+    fi
+  fi
+  
   export ZONE
+  export REGION
+  echo "${GREEN_TEXT}${BOLD_TEXT}Using zone: $ZONE and region: $REGION${RESET_FORMAT}"
+}
 
-  prepare_to_execute "export REGION=\"\${ZONE%-*}\""
-  export REGION="${ZONE%-*}"
-  prepare_to_execute "export PROJECT_ID=\$(gcloud config get-value project)"
-  export PROJECT_ID=$(gcloud config get-value project)
-  prepare_to_execute "export PROJECT_NUMBER=\$(gcloud projects describe \$PROJECT_ID --format='value(projectNumber)')"
-  export PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID \
-      --format='value(projectNumber)')
-  echo # newline
+# Main script
+echo "${CYAN_TEXT}${BOLD_TEXT}Starting lab setup...${RESET_FORMAT}"
+echo "${CYAN_TEXT}${BOLD_TEXT}Setting up project variables...${RESET_FORMAT}"
 
-  execute_command gcloud services enable \
-    cloudkms.googleapis.com \
-    cloudbuild.googleapis.com \
-    container.googleapis.com \
-    containerregistry.googleapis.com \
-    artifactregistry.googleapis.com \
-    containerscanning.googleapis.com \
-    ondemandscanning.googleapis.com \
-    binaryauthorization.googleapis.com
+# Set project variables
+export PROJECT_ID=$(gcloud config get-value project)
+projectid_check "$PROJECT_ID"
+export PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
 
-  execute_command gcloud artifacts repositories create artifact-scanning-repo \
-    --repository-format=docker \
-    --location=$REGION \
-    --description="Docker repository" \
-    --project=${PROJECT_ID} # Added project for clarity, may prevent errors in some contexts
+# Set zone and region
+lab_setup
 
-  execute_command gcloud auth configure-docker $REGION-docker.pkg.dev --project=${PROJECT_ID}
+# Enable services
+echo "${CYAN_TEXT}${BOLD_TEXT}Enabling required services...${RESET_FORMAT}"
+gcloud services enable \
+  cloudkms.googleapis.com \
+  cloudbuild.googleapis.com \
+  container.googleapis.com \
+  containerregistry.googleapis.com \
+  artifactregistry.googleapis.com \
+  containerscanning.googleapis.com \
+  ondemandscanning.googleapis.com \
+  binaryauthorization.googleapis.com
 
-  # Use a unique directory for each run to avoid conflicts
-  RUN_DIR="vuln-scan-run-$i"
-  prepare_to_execute "rm -rf ${RUN_DIR} && mkdir ${RUN_DIR} && cd ${RUN_DIR}"
-  rm -rf ${RUN_DIR} # Clean up from previous potential failed run
-  mkdir ${RUN_DIR}
-  cd ${RUN_DIR}
-  echo # newline
+# Task 1: Create Artifact Registry repository
+echo "${CYAN_TEXT}${BOLD_TEXT}Creating Artifact Registry repository...${RESET_FORMAT}"
+gcloud artifacts repositories create artifact-scanning-repo \
+  --repository-format=docker \
+  --location=$REGION \
+  --description="Docker repository"
 
-  prepare_to_execute "cat > ./Dockerfile << EOF ... EOF"
+echo "${CYAN_TEXT}${BOLD_TEXT}Configuring Docker authentication...${RESET_FORMAT}"
+gcloud auth configure-docker ${REGION}-docker.pkg.dev
+
+echo "${CYAN_TEXT}${BOLD_TEXT}Creating directory for vulnerability scanning...${RESET_FORMAT}"
+mkdir -p vuln-scan && cd vuln-scan
+
+# Create Dockerfile
+echo "${CYAN_TEXT}${BOLD_TEXT}Creating Dockerfile...${RESET_FORMAT}"
 cat > ./Dockerfile << EOF
-FROM python:3.8-alpine
+FROM python:3.8-alpine  
 
 # App
 WORKDIR /app
@@ -105,13 +108,11 @@ RUN pip3 install Flask==2.1.0
 RUN pip3 install gunicorn==20.1.0
 RUN pip3 install Werkzeug==2.2.2
 
-
 CMD exec gunicorn --bind :\$PORT --workers 1 --threads 8 main:app
-
 EOF
-  echo # newline
 
-  prepare_to_execute "cat > ./main.py << EOF ... EOF"
+# Create main.py
+echo "${CYAN_TEXT}${BOLD_TEXT}Creating main.py...${RESET_FORMAT}"
 cat > ./main.py << EOF
 import os
 from flask import Flask
@@ -126,64 +127,47 @@ def hello_world():
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
 EOF
-  echo # newline
 
-  execute_command gcloud builds submit . -t $REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image --project=${PROJECT_ID}
+# Build and push image
+echo "${CYAN_TEXT}${BOLD_TEXT}Building and pushing Docker image...${RESET_FORMAT}"
+gcloud builds submit . -t ${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image
 
-  prepare_to_execute "cat > ./vulnz_note.json << EOM ... EOM"
+# Task 2: Image Signing
+echo "${CYAN_TEXT}${BOLD_TEXT}Setting up image signing...${RESET_FORMAT}"
+
+# Create note
+echo "${CYAN_TEXT}${BOLD_TEXT}Creating vulnerability note...${RESET_FORMAT}"
 cat > ./vulnz_note.json << EOM
 {
   "attestation": {
     "hint": {
-      "human_readable_name": "Container Vulnerabilities attestation authority run $i"
+      "human_readable_name": "Container Vulnerabilities attestation authority"
     }
   }
 }
 EOM
-  echo # newline
 
-  # Make Note ID unique per run to avoid conflicts
-  NOTE_ID=vulnz-note-run-$i
-  prepare_to_execute "NOTE_ID=vulnz-note-run-$i" # Show variable assignment
-  echo
+NOTE_ID=vulnz_note
 
-  prepare_to_execute "curl -vvv -X POST ... create note ..."
-  curl -vvv -X POST \
-      -H "Content-Type: application/json"  \
-      -H "Authorization: Bearer $(gcloud auth print-access-token)"  \
-      --data-binary @./vulnz_note.json  \
-      "https://containeranalysis.googleapis.com/v1/projects/${PROJECT_ID}/notes/?noteId=${NOTE_ID}"
-  echo # newline
+echo "${CYAN_TEXT}${BOLD_TEXT}Uploading note to Container Analysis API...${RESET_FORMAT}"
+curl -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+    --data-binary @./vulnz_note.json \
+    "https://containeranalysis.googleapis.com/v1/projects/${PROJECT_ID}/notes/?noteId=${NOTE_ID}"
 
-  prepare_to_execute "curl -vvv ... get note ..."
-  curl -vvv  \
-      -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-      "https://containeranalysis.googleapis.com/v1/projects/${PROJECT_ID}/notes/${NOTE_ID}"
-  echo # newline
+# Create attestor
+ATTESTOR_ID=vulnz-attestor
 
-  # Make Attestor ID unique per run
-  ATTESTOR_ID=vulnz-attestor-run-$i
-  prepare_to_execute "ATTESTOR_ID=vulnz-attestor-run-$i" # Show variable assignment
-  echo
+echo "${CYAN_TEXT}${BOLD_TEXT}Creating attestor...${RESET_FORMAT}"
+gcloud container binauthz attestors create $ATTESTOR_ID \
+    --attestation-authority-note=$NOTE_ID \
+    --attestation-authority-note-project=${PROJECT_ID}
 
-  execute_command gcloud container binauthz attestors create $ATTESTOR_ID \
-      --attestation-authority-note=$NOTE_ID \
-      --attestation-authority-note-project=${PROJECT_ID} \
-      --project=${PROJECT_ID}
+# Set IAM policy
+BINAUTHZ_SA_EMAIL="service-${PROJECT_NUMBER}@gcp-sa-binaryauthorization.iam.gserviceaccount.com"
 
-  execute_command gcloud container binauthz attestors list --project=${PROJECT_ID}
-
-  # Project number should be the same, re-fetch just in case context changes
-  prepare_to_execute "PROJECT_NUMBER=\$(gcloud projects describe \"\${PROJECT_ID}\"  --format=\"value(projectNumber)\")"
-  PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}"  --format="value(projectNumber)")
-  echo # newline
-
-  prepare_to_execute "BINAUTHZ_SA_EMAIL=\"service-\${PROJECT_NUMBER}@gcp-sa-binaryauthorization.iam.gserviceaccount.com\""
-  BINAUTHZ_SA_EMAIL="service-${PROJECT_NUMBER}@gcp-sa-binaryauthorization.iam.gserviceaccount.com"
-  echo # newline
-
-  # Update iam_request.json dynamically for the unique NOTE_ID
-  prepare_to_execute "cat > ./iam_request.json << EOM ... EOM (dynamically setting NOTE_ID)"
+echo "${CYAN_TEXT}${BOLD_TEXT}Setting IAM policy for attestor...${RESET_FORMAT}"
 cat > ./iam_request.json << EOM
 {
   "resource": "projects/${PROJECT_ID}/notes/${NOTE_ID}",
@@ -199,201 +183,110 @@ cat > ./iam_request.json << EOM
   }
 }
 EOM
-  echo # newline
 
-  prepare_to_execute "curl -X POST ... setIamPolicy ..."
-  curl -X POST  \
-      -H "Content-Type: application/json" \
-      -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-      --data-binary @./iam_request.json \
-      "https://containeranalysis.googleapis.com/v1/projects/${PROJECT_ID}/notes/${NOTE_ID}:setIamPolicy"
-  echo # newline
+curl -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+    --data-binary @./iam_request.json \
+    "https://containeranalysis.googleapis.com/v1/projects/${PROJECT_ID}/notes/${NOTE_ID}:setIamPolicy"
 
-  # KMS resources might need unique names per run or careful cleanup
-  KEY_LOCATION=global # Global might conflict between runs if not cleaned. Consider regional if possible.
-  KEYRING=binauthz-keys-run-$i
-  KEY_NAME=codelab-key-run-$i
-  KEY_VERSION=1 # Version usually starts at 1
+# Task 3: Adding a KMS key
+echo "${CYAN_TEXT}${BOLD_TEXT}Setting up KMS key...${RESET_FORMAT}"
 
-  prepare_to_execute "KEY_LOCATION=global"
-  prepare_to_execute "KEYRING=binauthz-keys-run-$i"
-  prepare_to_execute "KEY_NAME=codelab-key-run-$i"
-  prepare_to_execute "KEY_VERSION=1"
-  echo
+KEY_LOCATION=global
+KEYRING=binauthz-keys
+KEY_NAME=codelab-key
+KEY_VERSION=1
 
-  # Add --project to KMS commands
-  execute_command gcloud kms keyrings create "${KEYRING}" --location="${KEY_LOCATION}" --project="${PROJECT_ID}"
+echo "${CYAN_TEXT}${BOLD_TEXT}Creating keyring...${RESET_FORMAT}"
+gcloud kms keyrings create "${KEYRING}" --location="${KEY_LOCATION}"
 
-  execute_command gcloud kms keys create "${KEY_NAME}" \
-      --keyring="${KEYRING}" --location="${KEY_LOCATION}" \
-      --purpose asymmetric-signing   \
-      --default-algorithm="ec-sign-p256-sha256" \
-      --project="${PROJECT_ID}"
+echo "${CYAN_TEXT}${BOLD_TEXT}Creating asymmetric signing key...${RESET_FORMAT}"
+gcloud kms keys create "${KEY_NAME}" \
+    --keyring="${KEYRING}" --location="${KEY_LOCATION}" \
+    --purpose asymmetric-signing \
+    --default-algorithm="ec-sign-p256-sha256"
 
-  # Use beta command as in original script
-  execute_command gcloud beta container binauthz attestors public-keys add  \
-      --attestor="${ATTESTOR_ID}"  \
-      --keyversion-project="${PROJECT_ID}"  \
-      --keyversion-location="${KEY_LOCATION}" \
-      --keyversion-keyring="${KEYRING}" \
-      --keyversion-key="${KEY_NAME}" \
-      --keyversion="${KEY_VERSION}" \
-      --project="${PROJECT_ID}" # Attestor project
+echo "${CYAN_TEXT}${BOLD_TEXT}Adding public key to attestor...${RESET_FORMAT}"
+gcloud beta container binauthz attestors public-keys add \
+    --attestor="${ATTESTOR_ID}" \
+    --keyversion-project="${PROJECT_ID}" \
+    --keyversion-location="${KEY_LOCATION}" \
+    --keyversion-keyring="${KEYRING}" \
+    --keyversion-key="${KEY_NAME}" \
+    --keyversion="${KEY_VERSION}"
 
-  execute_command gcloud container binauthz attestors list --project=${PROJECT_ID}
+# Task 4: Creating a signed attestation
+echo "${CYAN_TEXT}${BOLD_TEXT}Creating signed attestation...${RESET_FORMAT}"
 
-  prepare_to_execute "CONTAINER_PATH=$REGION-docker.pkg.dev/\${PROJECT_ID}/artifact-scanning-repo/sample-image"
-  CONTAINER_PATH=$REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image
-  echo # newline
+CONTAINER_PATH=${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image
+DIGEST=$(gcloud container images describe ${CONTAINER_PATH}:latest --format='get(image_summary.digest)')
 
-  # Ensure using the 'latest' tag explicitly if needed, or a specific digest
-  prepare_to_execute "DIGEST=\$(gcloud container images describe \${CONTAINER_PATH}:latest --format='get(image_summary.digest)' --project=\${PROJECT_ID})"
-  DIGEST=$(gcloud container images describe ${CONTAINER_PATH}:latest \
-      --format='get(image_summary.digest)' --project=${PROJECT_ID})
-  echo # newline
+echo "${CYAN_TEXT}${BOLD_TEXT}Signing and creating attestation...${RESET_FORMAT}"
+gcloud beta container binauthz attestations sign-and-create \
+    --artifact-url="${CONTAINER_PATH}@${DIGEST}" \
+    --attestor="${ATTESTOR_ID}" \
+    --attestor-project="${PROJECT_ID}" \
+    --keyversion-project="${PROJECT_ID}" \
+    --keyversion-location="${KEY_LOCATION}" \
+    --keyversion-keyring="${KEYRING}" \
+    --keyversion-key="${KEY_NAME}" \
+    --keyversion="${KEY_VERSION}"
 
-  # Use beta command as in original script
-  execute_command gcloud beta container binauthz attestations sign-and-create  \
-      --artifact-url="${CONTAINER_PATH}@${DIGEST}" \
-      --attestor="${ATTESTOR_ID}" \
-      --attestor-project="${PROJECT_ID}" \
-      --keyversion-project="${PROJECT_ID}" \
-      --keyversion-location="${KEY_LOCATION}" \
-      --keyversion-keyring="${KEYRING}" \
-      --keyversion-key="${KEY_NAME}" \
-      --keyversion="${KEY_VERSION}" \
-      --project="${PROJECT_ID}" # Project where the command runs
+# Task 5: Admission control policies
+echo "${CYAN_TEXT}${BOLD_TEXT}Setting up GKE cluster with Binary Authorization...${RESET_FORMAT}"
 
-  execute_command gcloud container binauthz attestations list \
-     --attestor=$ATTESTOR_ID --attestor-project=${PROJECT_ID} \
-     --project=${PROJECT_ID} # Project where the command runs
+gcloud beta container clusters create binauthz \
+    --zone $ZONE \
+    --binauthz-evaluation-mode=PROJECT_SINGLETON_POLICY_ENFORCE
 
-  # Make cluster name unique per run
-  CLUSTER_NAME=binauthz-run-$i
-  prepare_to_execute "CLUSTER_NAME=binauthz-run-$i"
-  echo
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+    --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" \
+    --role="roles/container.developer"
 
-  execute_command gcloud beta container clusters create ${CLUSTER_NAME} \
-      --zone $ZONE  \
-      --binauthz-evaluation-mode=PROJECT_SINGLETON_POLICY_ENFORCE \
-      --project=${PROJECT_ID}
+# Task 6: Automatically signing images
+echo "${CYAN_TEXT}${BOLD_TEXT}Configuring automatic image signing...${RESET_FORMAT}"
 
-  # Get credentials for the newly created cluster
-  execute_command gcloud container clusters get-credentials ${CLUSTER_NAME} --zone $ZONE --project=${PROJECT_ID}
+# Add required roles
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+  --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
+  --role roles/binaryauthorization.attestorsViewer
 
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+  --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
+  --role roles/cloudkms.signerVerifier
 
-  execute_command gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-          --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" \
-          --role="roles/container.developer" \
-          --condition=None # Explicitly add no condition
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+  --member serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com \
+  --role roles/cloudkms.signerVerifier
 
-  execute_command gcloud container binauthz policy export --project=${PROJECT_ID}
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+  --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
+  --role roles/containeranalysis.notes.attacher
 
-  prepare_to_execute "kubectl run hello-server --image gcr.io/google-samples/hello-app:1.0 --port 8080"
-  kubectl run hello-server --image gcr.io/google-samples/hello-app:1.0 --port 8080
-  echo # newline
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+  --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountUser"
 
-  prepare_to_execute "kubectl get pods"
-  kubectl get pods
-  echo # newline
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+  --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" \
+  --role="roles/ondemandscanning.admin"
 
-  prepare_to_execute "sleep 30"
-  sleep 30
-  echo # newline
+echo "${CYAN_TEXT}${BOLD_TEXT}Cloning cloud-builders-community repository...${RESET_FORMAT}"
+git clone https://github.com/GoogleCloudPlatform/cloud-builders-community.git
+cd cloud-builders-community/binauthz-attestation
+gcloud builds submit . --config cloudbuild.yaml
+cd ../..
+rm -rf cloud-builders-community
 
-  prepare_to_execute "kubectl delete pod hello-server"
-  kubectl delete pod hello-server --ignore-not-found=true # Avoid error if pod failed to start
-  echo # newline
-
-  execute_command gcloud container binauthz policy export --project=${PROJECT_ID} > policy.yaml
-
-  prepare_to_execute "cat > policy.yaml << EOM ... ALWAYS_DENY ..."
-cat > policy.yaml << EOM
-# Policy for Run $i - Initial DENY
-globalPolicyEvaluationMode: ENABLE
-defaultAdmissionRule:
-  evaluationMode: ALWAYS_DENY
-  enforcementMode: ENFORCED_BLOCK_AND_AUDIT_LOG
-name: projects/$PROJECT_ID/policy
-EOM
-  echo # newline
-
-  execute_command gcloud container binauthz policy import policy.yaml --project=${PROJECT_ID}
-
-  prepare_to_execute "kubectl run hello-server --image gcr.io/google-samples/hello-app:1.0 --port 8080 (expecting failure)"
-  kubectl run hello-server --image gcr.io/google-samples/hello-app:1.0 --port 8080
-  # Don't exit on expected failure here
-  echo # newline
-
-  prepare_to_execute "cat > policy.yaml << EOM ... ALWAYS_ALLOW ..."
-cat > policy.yaml << EOM
-# Policy for Run $i - Back to ALLOW
-globalPolicyEvaluationMode: ENABLE
-defaultAdmissionRule:
-  evaluationMode: ALWAYS_ALLOW
-  enforcementMode: ENFORCED_BLOCK_AND_AUDIT_LOG
-name: projects/$PROJECT_ID/policy
-EOM
-  echo # newline
-
-  execute_command gcloud container binauthz policy import policy.yaml --project=${PROJECT_ID}
-
-  execute_command gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
-    --role roles/binaryauthorization.attestorsViewer \
-    --condition=None
-
-  execute_command gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
-    --role roles/cloudkms.signerVerifier \
-    --condition=None
-
-  execute_command gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
-    --role roles/containeranalysis.notes.attacher \
-    --condition=None
-
-  execute_command gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-          --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" \
-          --role="roles/iam.serviceAccountUser" \
-          --condition=None
-
-  execute_command gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-          --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" \
-          --role="roles/ondemandscanning.admin" \
-          --condition=None
-
-  # Clone repo into a unique directory per run
-  COMMUNITY_BUILDERS_DIR="cloud-builders-community-run-$i"
-  prepare_to_execute "rm -rf ${COMMUNITY_BUILDERS_DIR} && git clone https://github.com/GoogleCloudPlatform/cloud-builders-community.git ${COMMUNITY_BUILDERS_DIR}"
-  rm -rf ${COMMUNITY_BUILDERS_DIR}
-  git clone https://github.com/GoogleCloudPlatform/cloud-builders-community.git ${COMMUNITY_BUILDERS_DIR}
-  echo
-
-  prepare_to_execute "cd ${COMMUNITY_BUILDERS_DIR}/binauthz-attestation"
-  cd ${COMMUNITY_BUILDERS_DIR}/binauthz-attestation
-  echo
-
-  execute_command gcloud builds submit . --config cloudbuild.yaml --project=${PROJECT_ID}
-
-  prepare_to_execute "cd ../../"
-  cd ../..
-  echo
-
-  prepare_to_execute "rm -rf ${COMMUNITY_BUILDERS_DIR}"
-  rm -rf ${COMMUNITY_BUILDERS_DIR}
-  echo
-
-  # Update cloudbuild.yaml with unique attestor/kms info for this run
-  prepare_to_execute "cat > ./cloudbuild.yaml << EOF ... (dynamically setting run-specific vars)"
+# Create cloudbuild.yaml
+echo "${CYAN_TEXT}${BOLD_TEXT}Creating cloudbuild.yaml...${RESET_FORMAT}"
 cat > ./cloudbuild.yaml << EOF
-# Cloud Build config for Run $i
 steps:
-
 # build
 - id: "build"
   name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', '$REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image', '.']
+  args: ['build', '-t', '${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image', '.']
   waitFor: ['-']
 
 # additional CICD checks (not shown)
@@ -401,80 +294,65 @@ steps:
 #Retag
 - id: "retag"
   name: 'gcr.io/cloud-builders/docker'
-  args: ['tag',  '$REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image', '$REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:good-run-$i']
-
+  args: ['tag',  '${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image', '${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:good']
 
 #pushing to artifact registry
 - id: "push"
   name: 'gcr.io/cloud-builders/docker'
-  args: ['push',  '$REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:good-run-$i']
-
+  args: ['push',  '${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:good']
 
 #Sign the image only if the previous severity check passes
 - id: 'create-attestation'
   name: 'gcr.io/${PROJECT_ID}/binauthz-attestation:latest'
   args:
     - '--artifact-url'
-    - '$REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:good-run-$i'
+    - '${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:good'
     - '--attestor'
-    - 'projects/${PROJECT_ID}/attestors/${ATTESTOR_ID}' # Unique Attestor ID
+    - 'projects/${PROJECT_ID}/attestors/$ATTESTOR_ID'
     - '--keyversion'
-    - 'projects/${PROJECT_ID}/locations/${KEY_LOCATION}/keyRings/${KEYRING}/cryptoKeys/${KEY_NAME}/cryptoKeyVersions/${KEY_VERSION}' # Unique Key Version path
+    - 'projects/${PROJECT_ID}/locations/$KEY_LOCATION/keyRings/$KEYRING/cryptoKeys/$KEY_NAME/cryptoKeyVersions/$KEY_VERSION'
 
 images:
-  - $REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:good-run-$i
+  - ${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:good
 EOF
-  echo # newline
 
-  execute_command gcloud builds submit --project=${PROJECT_ID} --config=./cloudbuild.yaml . # Specify config file
+# Run the build
+echo "${CYAN_TEXT}${BOLD_TEXT}Submitting build to Cloud Build...${RESET_FORMAT}"
+gcloud builds submit
 
-  # Update policy to use the unique attestor and cluster for this run
-  prepare_to_execute "COMPUTE_ZONE=$ZONE" # Variable already set, just showing
-  COMPUTE_ZONE=$ZONE # Use actual zone here, not region
-  prepare_to_execute "cat > binauth_policy.yaml << EOM ... (dynamically setting run-specific vars)"
+# Task 7: Authorizing signed images
+echo "${CYAN_TEXT}${BOLD_TEXT}Updating GKE policy to require attestation...${RESET_FORMAT}"
+
 cat > binauth_policy.yaml << EOM
-# Binauthz policy for Run $i
 defaultAdmissionRule:
   enforcementMode: ENFORCED_BLOCK_AND_AUDIT_LOG
   evaluationMode: REQUIRE_ATTESTATION
   requireAttestationsBy:
-  - projects/${PROJECT_ID}/attestors/${ATTESTOR_ID} # Unique Attestor
+  - projects/${PROJECT_ID}/attestors/vulnz-attestor
 globalPolicyEvaluationMode: ENABLE
 clusterAdmissionRules:
-  # Use the actual zone and unique cluster name here
-  ${COMPUTE_ZONE}.${CLUSTER_NAME}:
+  ${ZONE}.binauthz:
     evaluationMode: REQUIRE_ATTESTATION
     enforcementMode: ENFORCED_BLOCK_AND_AUDIT_LOG
     requireAttestationsBy:
-    - projects/${PROJECT_ID}/attestors/${ATTESTOR_ID} # Unique Attestor
+    - projects/${PROJECT_ID}/attestors/vulnz-attestor
 EOM
-  echo # newline
 
-  execute_command gcloud beta container binauthz policy import binauth_policy.yaml --project=${PROJECT_ID}
+gcloud beta container binauthz policy import binauth_policy.yaml
 
-  # Use the image tagged for this specific run
-  GOOD_IMAGE_TAG="good-run-$i"
-  prepare_to_execute "GOOD_IMAGE_TAG=\"good-run-$i\""
-  prepare_to_execute "CONTAINER_PATH=$REGION-docker.pkg.dev/\${PROJECT_ID}/artifact-scanning-repo/sample-image" # Base path
-  CONTAINER_PATH=$REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image
-  prepare_to_execute "DIGEST=\$(gcloud container images describe \${CONTAINER_PATH}:${GOOD_IMAGE_TAG} --format='get(image_summary.digest)' --project=\${PROJECT_ID})"
-  DIGEST=$(gcloud container images describe ${CONTAINER_PATH}:${GOOD_IMAGE_TAG} \
-      --format='get(image_summary.digest)' --project=${PROJECT_ID})
-  echo # newline
+# Deploy signed image
+echo "${CYAN_TEXT}${BOLD_TEXT}Deploying signed image to GKE...${RESET_FORMAT}"
+CONTAINER_PATH=${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image
+DIGEST=$(gcloud container images describe ${CONTAINER_PATH}:good --format='get(image_summary.digest)')
 
-  # Update deploy.yaml with the correct signed image digest and unique name/label
-  DEPLOYMENT_NAME="deb-httpd-run-$i"
-  prepare_to_execute "DEPLOYMENT_NAME=\"deb-httpd-run-$i\""
-  prepare_to_execute "cat > deploy.yaml << EOM ... (dynamically setting image digest and deployment name)"
 cat > deploy.yaml << EOM
-# Deployment for Run $i - Signed Image
 apiVersion: v1
 kind: Service
 metadata:
-  name: ${DEPLOYMENT_NAME}-svc # Unique service name
+  name: deb-httpd
 spec:
   selector:
-    app: ${DEPLOYMENT_NAME} # Match unique label
+    app: deb-httpd
   ports:
     - protocol: TCP
       port: 80
@@ -483,103 +361,75 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ${DEPLOYMENT_NAME} # Unique deployment name
+  name: deb-httpd
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ${DEPLOYMENT_NAME} # Unique label selector
+      app: deb-httpd
   template:
     metadata:
       labels:
-        app: ${DEPLOYMENT_NAME} # Unique label
-    spec:
-      containers:
-      - name: deb-httpd # Container name can be reused
-        image: ${CONTAINER_PATH}@${DIGEST} # Specific signed digest
-        ports:
-        - containerPort: 8080
-        env:
-          - name: PORT
-            value: "8080"
-EOM
-  echo # newline
-
-  prepare_to_execute "kubectl apply -f deploy.yaml (signed image, should succeed)"
-  kubectl apply -f deploy.yaml
-  echo # newline
-
-  # Build and push a 'bad' image specific to this run
-  BAD_IMAGE_TAG="bad-run-$i"
-  prepare_to_execute "BAD_IMAGE_TAG=\"bad-run-$i\""
-  execute_command docker build -t $REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:${BAD_IMAGE_TAG} .
-
-  execute_command docker push $REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:${BAD_IMAGE_TAG}
-
-  prepare_to_execute "CONTAINER_PATH=$REGION-docker.pkg.dev/\${PROJECT_ID}/artifact-scanning-repo/sample-image" # Base path again
-  CONTAINER_PATH=$REGION-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image
-  prepare_to_execute "DIGEST=\$(gcloud container images describe \${CONTAINER_PATH}:${BAD_IMAGE_TAG} --format='get(image_summary.digest)' --project=\${PROJECT_ID})"
-  DIGEST=$(gcloud container images describe ${CONTAINER_PATH}:${BAD_IMAGE_TAG} \
-      --format='get(image_summary.digest)' --project=${PROJECT_ID})
-  echo # newline
-
-  # Update deploy.yaml for the unsigned 'bad' image, keep unique name
-  prepare_to_execute "cat > deploy.yaml << EOM ... (dynamically setting unsigned image digest)"
-cat > deploy.yaml << EOM
-# Deployment for Run $i - Unsigned Image Attempt
-apiVersion: v1
-kind: Service
-metadata:
-  name: ${DEPLOYMENT_NAME}-svc # Keep unique service name
-spec:
-  selector:
-    app: ${DEPLOYMENT_NAME} # Match unique label
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ${DEPLOYMENT_NAME} # Keep unique deployment name (will cause update)
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ${DEPLOYMENT_NAME} # Keep unique label selector
-  template:
-    metadata:
-      labels:
-        app: ${DEPLOYMENT_NAME} # Keep unique label
+        app: deb-httpd
     spec:
       containers:
       - name: deb-httpd
-        image: ${CONTAINER_PATH}@${DIGEST} # Specific unsigned digest
+        image: ${CONTAINER_PATH}@${DIGEST}
         ports:
         - containerPort: 8080
         env:
           - name: PORT
             value: "8080"
 EOM
-  echo # newline
 
-  prepare_to_execute "kubectl apply -f deploy.yaml (unsigned image, expect failure/rejection)"
-  kubectl apply -f deploy.yaml
-  # Don't exit on expected failure
-  echo # newline
+kubectl apply -f deploy.yaml
 
-  # Go back to the parent directory before the next loop iteration
-  prepare_to_execute "cd .."
-  cd ..
-  echo
+# Task 8: Blocked unsigned Images
+echo "${CYAN_TEXT}${BOLD_TEXT}Testing blocked unsigned images...${RESET_FORMAT}"
 
-  echo "${GREEN_TEXT}${BOLD_TEXT}--------------------------------------${RESET_FORMAT}"
-  echo "${GREEN_TEXT}${BOLD_TEXT}         COMPLETED RUN $i of 2        ${RESET_FORMAT}"
-  echo "${GREEN_TEXT}${BOLD_TEXT}--------------------------------------${RESET_FORMAT}"
-  echo
+docker build -t ${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:bad .
+docker push ${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:bad
 
-done # End of the for loop (runs twice)
+DIGEST=$(gcloud container images describe ${CONTAINER_PATH}:bad --format='get(image_summary.digest)')
+
+cat > deploy.yaml << EOM
+apiVersion: v1
+kind: Service
+metadata:
+  name: deb-httpd
+spec:
+  selector:
+    app: deb-httpd
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deb-httpd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deb-httpd
+  template:
+    metadata:
+      labels:
+        app: deb-httpd
+    spec:
+      containers:
+      - name: deb-httpd
+        image: ${CONTAINER_PATH}@${DIGEST}
+        ports:
+        - containerPort: 8080
+        env:
+          - name: PORT
+            value: "8080"
+EOM
+
+kubectl apply -f deploy.yaml
 
 # Completion Message
 echo
