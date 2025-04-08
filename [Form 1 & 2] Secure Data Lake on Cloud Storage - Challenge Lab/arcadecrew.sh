@@ -32,54 +32,75 @@ ENTRY_GROUP_ID="custom_entry_group"
 # TASK 1
 echo "${YELLOW_TEXT}${BOLD_TEXT}Creating a Cloud Storage bucket in the specified region...${RESET_FORMAT}"
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Executing: gsutil mb -p \$DEVSHELL_PROJECT_ID -l \$REGION -b on gs://\$DEVSHELL_PROJECT_ID-bucket/${RESET_FORMAT}"
-gsutil mb -p $DEVSHELL_PROJECT_ID -l $REGION -b on gs://$DEVSHELL_PROJECT_ID-bucket/
+if ! gsutil mb -p $DEVSHELL_PROJECT_ID -l $REGION -b on gs://$DEVSHELL_PROJECT_ID-bucket/; then
+    echo "${RED_TEXT}${BOLD_TEXT}Failed to create Cloud Storage bucket. Exiting.${RESET_FORMAT}"
+    exit 1
+fi
 
 # TASK 2
 echo "${YELLOW_TEXT}${BOLD_TEXT}Creating a Dataplex lake named 'customer-lake'...${RESET_FORMAT}"
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Executing: gcloud alpha dataplex lakes create customer-lake ...${RESET_FORMAT}"
-gcloud alpha dataplex lakes create customer-lake \
---display-name="Customer-Lake" \
- --location=$REGION \
- --labels="key_1=$KEY_1,value_1=$VALUE_1"
+if ! gcloud alpha dataplex lakes create customer-lake \
+    --display-name="Customer-Lake" \
+    --location=$REGION \
+    --labels="key_1=$KEY_1,value_1=$VALUE_1"; then
+    echo "${RED_TEXT}${BOLD_TEXT}Failed to create Dataplex lake. Exiting.${RESET_FORMAT}"
+    exit 1
+fi
 
 echo "${YELLOW_TEXT}${BOLD_TEXT}Creating a Dataplex zone named 'public-zone'...${RESET_FORMAT}"
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Executing: gcloud dataplex zones create public-zone ...${RESET_FORMAT}"
-gcloud dataplex zones create public-zone \
+if ! gcloud dataplex zones create public-zone \
     --lake=customer-lake \
     --location=$REGION \
     --type=RAW \
     --resource-location-type=SINGLE_REGION \
-    --display-name="Public-Zone"
+    --display-name="Public-Zone"; then
+    echo "${RED_TEXT}${BOLD_TEXT}Failed to create Dataplex zone. Exiting.${RESET_FORMAT}"
+    exit 1
+fi
 
 echo "${YELLOW_TEXT}${BOLD_TEXT}Creating a Dataplex environment named 'dataplex-lake-env'...${RESET_FORMAT}"
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Executing: gcloud dataplex environments create dataplex-lake-env ...${RESET_FORMAT}"
-gcloud dataplex environments create dataplex-lake-env \
-           --project=$DEVSHELL_PROJECT_ID --location=$REGION --lake=customer-lake \
-           --os-image-version=1.0 --compute-node-count 3  --compute-max-node-count 3 
+if ! gcloud dataplex environments create dataplex-lake-env \
+    --project=$DEVSHELL_PROJECT_ID --location=$REGION --lake=customer-lake \
+    --os-image-version=1.0 --compute-node-count 3 --compute-max-node-count 3; then
+    echo "${RED_TEXT}${BOLD_TEXT}Failed to create Dataplex environment. Exiting.${RESET_FORMAT}"
+    exit 1
+fi
 
 echo "${YELLOW_TEXT}${BOLD_TEXT}Creating a Data Catalog entry group named 'custom_entry_group'...${RESET_FORMAT}"
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Executing: gcloud data-catalog entry-groups create \$ENTRY_GROUP_ID ...${RESET_FORMAT}"
-gcloud data-catalog entry-groups create $ENTRY_GROUP_ID \
+if ! gcloud data-catalog entry-groups create $ENTRY_GROUP_ID \
     --location=$REGION \
-    --display-name="Custom entry group"
+    --display-name="Custom entry group"; then
+    echo "${RED_TEXT}${BOLD_TEXT}Failed to create Data Catalog entry group. Exiting.${RESET_FORMAT}"
+    exit 1
+fi
 
 # TASK 3
 echo "${YELLOW_TEXT}${BOLD_TEXT}Creating Dataplex asset 'customer-raw-data' for raw data storage...${RESET_FORMAT}"
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Executing: gcloud dataplex assets create customer-raw-data ...${RESET_FORMAT}"
-gcloud dataplex assets create customer-raw-data --location=$REGION \
-            --lake=customer-lake --zone=public-zone \
-            --resource-type=STORAGE_BUCKET \
-            --resource-name=projects/$DEVSHELL_PROJECT_ID/buckets/$DEVSHELL_PROJECT_ID-customer-bucket \
-            --discovery-enabled \
-            --display-name="Customer Raw Data"
+if ! gcloud dataplex assets create customer-raw-data --location=$REGION \
+    --lake=customer-lake --zone=public-zone \
+    --resource-type=STORAGE_BUCKET \
+    --resource-name=projects/$DEVSHELL_PROJECT_ID/buckets/$DEVSHELL_PROJECT_ID-customer-bucket \
+    --discovery-enabled \
+    --display-name="Customer Raw Data"; then
+    echo "${RED_TEXT}${BOLD_TEXT}Failed to create Dataplex asset 'customer-raw-data'. Exiting.${RESET_FORMAT}"
+    exit 1
+fi
 
 echo "${YELLOW_TEXT}${BOLD_TEXT}Creating Dataplex asset 'customer-reference-data' for reference data...${RESET_FORMAT}"
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Executing: gcloud dataplex assets create customer-reference-data ...${RESET_FORMAT}"
-gcloud dataplex assets create customer-reference-data --location=$REGION \
-            --lake=customer-lake --zone=public-zone \
-            --resource-type=BIGQUERY_DATASET \
-            --resource-name=projects/$DEVSHELL_PROJECT_ID/datasets/customer_reference_data \
-            --display-name="Customer Reference Data"
+if ! gcloud dataplex assets create customer-reference-data --location=$REGION \
+    --lake=customer-lake --zone=public-zone \
+    --resource-type=BIGQUERY_DATASET \
+    --resource-name=projects/$DEVSHELL_PROJECT_ID/datasets/customer_reference_data \
+    --display-name="Customer Reference Data"; then
+    echo "${RED_TEXT}${BOLD_TEXT}Failed to create Dataplex asset 'customer-reference-data'. Exiting.${RESET_FORMAT}"
+    exit 1
+fi
 
 # TASK 4
 # Uncomment and modify the following lines if needed for creating tag templates
