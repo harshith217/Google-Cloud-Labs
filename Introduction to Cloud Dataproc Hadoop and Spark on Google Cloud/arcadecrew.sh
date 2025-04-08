@@ -1,86 +1,107 @@
 #!/bin/bash
 
-# Define color variables
-YELLOW_TEXT=$'\033[0;33m'
-MAGENTA_TEXT=$'\033[0;35m'
+BLACK_TEXT=$'\033[0;90m'
+RED_TEXT=$'\033[0;91m'
+GREEN_TEXT=$'\033[0;92m'
+YELLOW_TEXT=$'\033[0;93m'
+BLUE_TEXT=$'\033[0;94m'
+MAGENTA_TEXT=$'\033[0;95m'
+CYAN_TEXT=$'\033[0;96m'
+WHITE_TEXT=$'\033[0;97m'
+
 NO_COLOR=$'\033[0m'
-GREEN_TEXT=$'\033[0;32m'
-RED_TEXT=$'\033[0;31m'
-CYAN_TEXT=$'\033[0;36m'
-BOLD_TEXT=`tput bold`
-RESET_FORMAT=`tput sgr0`
-BLUE_TEXT=$'\033[0;34m'
+RESET_FORMAT=$'\033[0m'
+BOLD_TEXT=$'\033[1m'
+UNDERLINE_TEXT=$'\033[4m'
 
-echo
-echo
+clear
 
-# Display initiation message
-echo "${GREEN_TEXT}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
-
+echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
+echo "${BLUE_TEXT}${BOLD_TEXT}         INITIATING EXECUTION...  ${RESET_FORMAT}"
+echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
 echo
 
-# Fetching project region and zone
-echo "${CYAN_TEXT}${BOLD_TEXT}Fetching project region and zone...${RESET_FORMAT}"
-export REGION=$(gcloud compute project-info describe \
---format="value(commonInstanceMetadata.items[google-compute-default-region])")
+echo -e "${YELLOW_TEXT}${BOLD_TEXT}Please enter the cluster name:${RESET_FORMAT}"
+read -p "Cluster Name: " CLUSTER_NAME
+export CLUSTER_NAME
 
-export ZONE=$(gcloud compute project-info describe \
---format="value(commonInstanceMetadata.items[google-compute-default-zone])")
+echo -e "${MAGENTA_TEXT}${BOLD_TEXT}Authenticating your GCP account...${RESET_FORMAT}"
+gcloud auth list
 
-# Fetching project ID
-echo "${YELLOW_TEXT}${BOLD_TEXT}Fetching Project ID...${RESET_FORMAT}"
-PROJECT_ID=`gcloud config get-value project`
+echo -e "${MAGENTA_TEXT}${BOLD_TEXT}Fetching default zone and region from project metadata...${RESET_FORMAT}"
+export ZONE=$(gcloud compute project-info describe --format="value(commonInstanceMetadata.items[google-compute-default-zone])")
 
-# Fetching project number
-echo "${YELLOW_TEXT}${BOLD_TEXT}Fetching Project Number...${RESET_FORMAT}"
+export REGION=$(gcloud compute project-info describe --format="value(commonInstanceMetadata.items[google-compute-default-region])")
+
+echo -e "${MAGENTA_TEXT}${BOLD_TEXT}Fetching project number...${RESET_FORMAT}"
 PROJECT_NUMBER=$(gcloud projects describe $(gcloud config get-value project) --format="value(projectNumber)")
-echo "${MAGENTA_TEXT}Project Number: ${PROJECT_NUMBER}${RESET_FORMAT}"
 
-# Granting Storage Admin role
-echo "${BLUE_TEXT}${BOLD_TEXT}Granting Storage Admin role to service account...${RESET_FORMAT}"
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-    --member="serviceAccount:$PROJECT_NUMBER-compute@developer.gserviceaccount.com" \
-    --role="roles/storage.admin"
+echo -e "${MAGENTA_TEXT}${BOLD_TEXT}Adding IAM policy binding for storage admin role...${RESET_FORMAT}"
+gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID \
+  --member="serviceAccount:$PROJECT_NUMBER-compute@developer.gserviceaccount.com" \
+  --role="roles/storage.admin"
 
-echo "${GREEN_TEXT}${BOLD_TEXT}Waiting for changes to take effect...${RESET_FORMAT}"
+echo -e "${YELLOW_TEXT}${BOLD_TEXT}Waiting for 60 seconds to ensure IAM policy changes propagate...${RESET_FORMAT}"
 sleep 60
 
-# Creating Dataproc cluster
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating Dataproc cluster 'qlab'...${RESET_FORMAT}"
-gcloud dataproc clusters create qlab --enable-component-gateway --region $REGION --zone $ZONE --master-machine-type e2-standard-4 --master-boot-disk-type pd-balanced --master-boot-disk-size 100 --num-workers 2 --worker-machine-type e2-standard-2 --worker-boot-disk-size 100 --image-version 2.2-debian12 --project $PROJECT_ID
+#!/bin/bash
 
-echo "${GREEN_TEXT}${BOLD_TEXT}Waiting for cluster creation...${RESET_FORMAT}"
-sleep 120
+echo -e "${CYAN_TEXT}${BOLD_TEXT}Cluster Name:${RESET_FORMAT} $CLUSTER_NAME"
+echo -e "${CYAN_TEXT}${BOLD_TEXT}Zone:${RESET_FORMAT} $ZONE"
+echo -e "${CYAN_TEXT}${BOLD_TEXT}Region:${RESET_FORMAT} $REGION"
 
-# Deleting Dataproc cluster
-echo "${RED_TEXT}${BOLD_TEXT}Deleting Dataproc cluster 'qlab'...${RESET_FORMAT}"
-gcloud dataproc clusters delete qlab --region $REGION --quiet
+echo -e "${MAGENTA_TEXT}${BOLD_TEXT}Creating Dataproc cluster...${RESET_FORMAT}"
+echo -e "${CYAN_TEXT}This may take a few minutes. Please wait.${RESET_FORMAT}"
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Recreating Dataproc cluster 'qlab'...${RESET_FORMAT}"
-gcloud dataproc clusters create qlab --enable-component-gateway --region $REGION --zone $ZONE --master-machine-type e2-standard-4 --master-boot-disk-type pd-balanced --master-boot-disk-size 100 --num-workers 2 --worker-machine-type e2-standard-2 --worker-boot-disk-size 100 --image-version 2.2-debian12 --project $PROJECT_ID
+cluster_function() {
+  gcloud dataproc clusters create "$CLUSTER_NAME" \
+  --region "$REGION" \
+  --zone "$ZONE" \
+  --master-machine-type n1-standard-2 \
+  --worker-machine-type n1-standard-2 \
+  --num-workers 2 \
+  --worker-boot-disk-size 100 \
+  --worker-boot-disk-type pd-standard \
+  --no-address
+}
 
-echo "${GREEN_TEXT}${BOLD_TEXT}Waiting for cluster to be ready...${RESET_FORMAT}"
-sleep 120
+cp_success=false
 
-# Submitting Spark job
-echo "${YELLOW_TEXT}${BOLD_TEXT}Submitting Spark job to cluster...${RESET_FORMAT}"
+while [ "$cp_success" = false ]; do
+  cluster_function
+  exit_status=$?
+
+  if [ "$exit_status" -eq 0 ]; then
+  echo -e "${GREEN_TEXT}${BOLD_TEXT}Cluster created successfully!${RESET_FORMAT}"
+  cp_success=true
+  else
+  echo -e "${RED_TEXT}${BOLD_TEXT}Cluster creation failed!${RESET_FORMAT}"
+
+  if gcloud dataproc clusters describe "$CLUSTER_NAME" --region "$REGION" &>/dev/null; then
+    echo -e "${YELLOW_TEXT}${BOLD_TEXT}Cluster already exists. Deleting it...${RESET_FORMAT}"
+    gcloud dataproc clusters delete "$CLUSTER_NAME" --region "$REGION" --quiet
+    echo -e "${CYAN_TEXT}Cluster deleted. Retrying in 10 seconds...${RESET_FORMAT}"
+  else
+    echo -e "${RED_TEXT}${BOLD_TEXT}Cluster does not exist. Retrying in 10 seconds...${RESET_FORMAT}"
+  fi
+  sleep 10
+  fi
+done
+
+echo -e "${MAGENTA_TEXT}${BOLD_TEXT}Submitting Spark job to the cluster...${RESET_FORMAT}"
 gcloud dataproc jobs submit spark \
-    --cluster=qlab \
-    --region=$REGION \
-    --class=org.apache.spark.examples.SparkPi \
-    --jars=file:///usr/lib/spark/examples/jars/spark-examples.jar \
-    -- 1000
-
-# Safely delete the script if it exists
-SCRIPT_NAME="arcadecrew.sh"
-if [ -f "$SCRIPT_NAME" ]; then
-    echo -e "${BOLD_TEXT}${RED_TEXT}Deleting the script ($SCRIPT_NAME) for safety purposes...${RESET_FORMAT}${NO_COLOR}"
-    rm -- "$SCRIPT_NAME"
-fi
+  --project $DEVSHELL_PROJECT_ID \
+  --region $REGION \
+  --cluster $CLUSTER_NAME \
+  --class org.apache.spark.examples.SparkPi \
+  --jars file:///usr/lib/spark/examples/jars/spark-examples.jar \
+  -- 1000
 
 echo
+echo "${GREEN_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
+echo "${GREEN_TEXT}${BOLD_TEXT}              LAB COMPLETED SUCCESSFULLY!              ${RESET_FORMAT}"
+echo "${GREEN_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
 echo
-# Completion message
-echo -e "${MAGENTA_TEXT}${BOLD_TEXT}Lab Completed Successfully!${RESET_FORMAT}"
-echo -e "${GREEN_TEXT}${BOLD_TEXT}Subscribe our Channel:${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
+
+echo -e "${RED_TEXT}${BOLD_TEXT}Subscribe my Channel (Arcade Crew):${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
 echo
