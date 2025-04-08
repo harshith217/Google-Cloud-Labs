@@ -23,6 +23,15 @@ echo "${BLUE_TEXT}${BOLD_TEXT}         INITIATING EXECUTION...  ${RESET_FORMAT}"
 echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
 echo
 
+echo -n "${YELLOW_TEXT}${BOLD_TEXT}Please enter the GCP region: ${RESET_FORMAT}"
+read REGION
+export REGION
+export PROJECT_ID=`gcloud config get-value project`
+export DATASET_ID=dataset1
+export FHIR_STORE_ID=fhirstore1
+export DICOM_STORE_ID=dicomstore1
+export HL7_STORE_ID=hl7v2store1
+
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Enabling required services and configure your GCP environment.${RESET_FORMAT}"
 echo
 
