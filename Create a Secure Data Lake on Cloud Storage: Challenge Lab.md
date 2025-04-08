@@ -12,7 +12,7 @@
 
 ## 🧩 Lab Variants & Solution Links
 
-> **Note:** This lab includes *4 different forms*. When you start the lab, the tasks are assigned dynamically. **Identify the tasks** by matching their headings with the ones listed below, then **watch the corresponding video* for the correct solution. 
+> **Note:** This lab includes *4 different forms*. When you start the lab, the tasks are assigned dynamically. **Identify the tasks** by matching their headings with the ones listed below, then **watch the corresponding video** for the correct solution. 
 
 ---
 
