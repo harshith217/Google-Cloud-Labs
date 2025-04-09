@@ -25,7 +25,7 @@ curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
-
+* **After Pasting watch the video, to get full score.**
 ```
 pip install apache-beam[gcp]==2.59.0
 
