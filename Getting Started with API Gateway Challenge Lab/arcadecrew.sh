@@ -80,7 +80,7 @@ else
 fi
 
 echo "${BLUE_TEXT}${BOLD_TEXT}Deploying the initial Cloud Function...${RESET_FORMAT}"
-gcloud functions deploy GCFunction --region=$REGION --runtime=nodejs20 --trigger-http --gen2 --allow-unauthenticated --entry-point=helloWorld --max-instances 5 --source=./
+gcloud functions deploy GCFunction --region=$REGION --runtime=nodejs22 --trigger-http --gen2 --allow-unauthenticated --entry-point=helloWorld --max-instances 5 --source=./
 
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Creating a Pub/Sub topic...${RESET_FORMAT}"
 gcloud pubsub topics create demo-topic
@@ -115,7 +115,7 @@ cat > package.json <<EOF_CP
 EOF_CP
 
 echo "${BLUE_TEXT}${BOLD_TEXT}Redeploying the updated Cloud Function...${RESET_FORMAT}"
-gcloud functions deploy GCFunction --region=$REGION --runtime=nodejs20 --trigger-http --gen2 --allow-unauthenticated --entry-point=helloWorld --max-instances 5 --source=./
+gcloud functions deploy GCFunction --region=$REGION --runtime=nodejs22 --trigger-http --gen2 --allow-unauthenticated --entry-point=helloWorld --max-instances 5 --source=./
 
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Creating the OpenAPI specification file...${RESET_FORMAT}"
 cat > openapispec.yaml <<EOF_CP
