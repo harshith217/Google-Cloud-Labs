@@ -37,8 +37,8 @@ python dataflow_python_examples/data_ingestion.py \
   --runner=DataflowRunner \
   --machine_type=e2-standard-2 \
   --staging_location=gs://$PROJECT/test \
-  --temp_location gs://$PROJECT/test \
-  --input gs://$PROJECT/data_files/head_usa_names.csv \
+  --temp_location=gs://$PROJECT/test \
+  --input=gs://$PROJECT/data_files/head_usa_names.csv \
   --save_main_session
 
 python dataflow_python_examples/data_transformation.py \
@@ -47,8 +47,8 @@ python dataflow_python_examples/data_transformation.py \
   --runner=DataflowRunner \
   --machine_type=e2-standard-2 \
   --staging_location=gs://$PROJECT/test \
-  --temp_location gs://$PROJECT/test \
-  --input gs://$PROJECT/data_files/head_usa_names.csv \
+  --temp_location=gs://$PROJECT/test \
+  --input=gs://$PROJECT/data_files/head_usa_names.csv \
   --save_main_session
 
 sed -i "s/values = \[x.decode('utf8') for x in csv_row\]/values = \[x for x in csv_row\]/" ./dataflow_python_examples/data_enrichment.py
@@ -59,18 +59,20 @@ python dataflow_python_examples/data_enrichment.py \
   --runner=DataflowRunner \
   --machine_type=e2-standard-2 \
   --staging_location=gs://$PROJECT/test \
-  --temp_location gs://$PROJECT/test \
-  --input gs://$PROJECT/data_files/head_usa_names.csv \
+  --temp_location=gs://$PROJECT/test \
+  --input=gs://$PROJECT/data_files/head_usa_names.csv \
   --save_main_session
 
+# Note: worker_disk_type path looks potentially problematic, often it's just 'pd-ssd' or 'pd-standard'
+# If the below fails, try removing the full path from worker_disk_type
 python dataflow_python_examples/data_lake_to_mart.py \
-  --worker_disk_type="compute.googleapis.com/projects//zones//diskTypes/pd-ssd" \
+  --worker_disk_type="compute.googleapis.com/projects/$PROJECT/zones/$REGION-a/diskTypes/pd-ssd" \ # Adjusted path, assuming zone 'a' exists - might still need tweaking
   --max_num_workers=4 \
   --project=$PROJECT \
   --runner=DataflowRunner \
   --machine_type=e2-standard-2 \
   --staging_location=gs://$PROJECT/test \
-  --temp_location gs://$PROJECT/test \
+  --temp_location=gs://$PROJECT/test \
   --save_main_session \
   --region=$REGION
 ```
