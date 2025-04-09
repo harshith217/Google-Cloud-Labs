@@ -19,7 +19,8 @@
 
 <div style="padding: 15px; margin: 10px 0;">
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
-
+    
+* **Follow Full Video, otherwise you will not get Full Score**
 ```bash
 curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Build%20a%20Multi-Modal%20GenAI%20Application%20Challenge%20Lab/arcadecrew.sh
 
