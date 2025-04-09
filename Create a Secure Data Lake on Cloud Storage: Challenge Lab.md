@@ -28,7 +28,7 @@
 ---
 
 ### 📁 **Form 2**  
-🔗 **Solution Video:** [Watch Here](Coming Soon)
+🔗 **Solution Video:** [Watch Here](https://www.youtube.com/watch?v=egx3yJAQ6tQ)
 
 ✅ Tasks:
 - 🌊 **Create a lake in Dataplex and add a zone to your lake**  
