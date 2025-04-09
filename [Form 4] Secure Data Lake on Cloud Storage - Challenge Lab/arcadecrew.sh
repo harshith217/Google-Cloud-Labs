@@ -22,24 +22,17 @@ echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FOR
 echo
 
 read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter the ZONE: ${RESET_FORMAT}" ZONE
-echo "${GREEN_TEXT}${BOLD_TEXT}✓ Zone received. Proceeding with environment setup...${RESET_FORMAT}"
+echo "${GREEN_TEXT}${BOLD_TEXT}Zone received: ${ZONE}. Proceeding with environment setup...${RESET_FORMAT}"
 echo
-read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter KEY_1 for labels: ${RESET_FORMAT}" KEY_1
-read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter VALUE_1 for labels: ${RESET_FORMAT}" VALUE_1
-
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Setting up the environment variables based on your inputs...${RESET_FORMAT}"
 export REGION="${ZONE%-*}"
-echo "${GREEN_TEXT}${BOLD_TEXT}✓ REGION: ${WHITE_TEXT}${BOLD_TEXT}${REGION}${RESET_FORMAT}"
-echo "${GREEN_TEXT}${BOLD_TEXT}✓ Using PROJECT_ID: ${WHITE_TEXT}${BOLD_TEXT}${DEVSHELL_PROJECT_ID}${RESET_FORMAT}"
-echo
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating a Dataplex Lake named 'Customer-Lake' in the specified region...${RESET_FORMAT}"
+echo "${CYAN_TEXT}${BOLD_TEXT}Step 1: Creating a Dataplex lake named 'customer-lake'...${RESET_FORMAT}"
 gcloud alpha dataplex lakes create customer-lake \
-    --display-name="Customer-Lake" \
-    --location=$REGION \
-    --labels="key_1=$KEY_1,value_1=$VALUE_1"
+--display-name="Customer-Lake" \
+ --location=$REGION \
+ --labels="key_1=$KEY_1,value_1=$VALUE_1"
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Creating a Dataplex Zone named 'Public-Zone' under the lake...${RESET_FORMAT}"
+echo "${CYAN_TEXT}${BOLD_TEXT}Step 2: Creating a Dataplex zone named 'public-zone'...${RESET_FORMAT}"
 gcloud dataplex zones create public-zone \
     --lake=customer-lake \
     --location=$REGION \
@@ -47,24 +40,23 @@ gcloud dataplex zones create public-zone \
     --resource-location-type=SINGLE_REGION \
     --display-name="Public-Zone"
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Creating 'Customer Raw Data' asset linked to a Cloud Storage bucket...${RESET_FORMAT}"
-gcloud dataplex assets create customer-raw-data \
-    --location=$REGION \
-    --lake=customer-lake \
-    --zone=public-zone \
-    --resource-type=STORAGE_BUCKET \
-    --resource-name=projects/$DEVSHELL_PROJECT_ID/buckets/$DEVSHELL_PROJECT_ID-customer-bucket \
-    --discovery-enabled \
-    --display-name="Customer Raw Data"
+echo "${CYAN_TEXT}${BOLD_TEXT}Step 3: Creating a Dataplex asset for raw data in Cloud Storage...${RESET_FORMAT}"
+gcloud dataplex assets create customer-raw-data --location=$REGION \
+            --lake=customer-lake --zone=public-zone \
+            --resource-type=STORAGE_BUCKET \
+            --resource-name=projects/$DEVSHELL_PROJECT_ID/buckets/$DEVSHELL_PROJECT_ID-customer-bucket \
+            --discovery-enabled \
+            --display-name="Customer Raw Data"
 
-echo "${MAGENTA_TEXT}${BOLD_TEXT}Creating 'Customer Reference Data' asset linked to a BigQuery dataset...${RESET_FORMAT}"
-gcloud dataplex assets create customer-reference-data \
-    --location=$REGION \
-    --lake=customer-lake \
-    --zone=public-zone \
-    --resource-type=BIGQUERY_DATASET \
-    --resource-name=projects/$DEVSHELL_PROJECT_ID/datasets/customer_reference_data \
-    --display-name="Customer Reference Data"
+echo "${CYAN_TEXT}${BOLD_TEXT}Step 4: Creating a Dataplex asset for reference data in BigQuery...${RESET_FORMAT}"
+gcloud dataplex assets create customer-reference-data --location=$REGION \
+            --lake=customer-lake --zone=public-zone \
+            --resource-type=BIGQUERY_DATASET \
+            --resource-name=projects/$DEVSHELL_PROJECT_ID/datasets/customer_reference_data \
+            --display-name="Customer Reference Data"
+
+echo "${CYAN_TEXT}${BOLD_TEXT}Step 5: You can now create entities in the Dataplex zone.${RESET_FORMAT}"
+echo "${YELLOW_TEXT}${BOLD_TEXT}OPEN THIS LINK:${BLUE_TEXT}${BOLD_TEXT} https://console.cloud.google.com/dataplex/lakes/customer-lake/zones/public-zone/create-entity;location=$REGION?project=$DEVSHELL_PROJECT_ID ${RESET_FORMAT}"
 
 echo
 echo "${GREEN_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
