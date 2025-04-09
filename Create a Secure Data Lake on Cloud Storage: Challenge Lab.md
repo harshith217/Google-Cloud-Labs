@@ -17,7 +17,7 @@
 ---
 
 ### 🗂️ **Form 1**  
-🔗 **Solution Video:** [Watch Here](Coming Soon)
+🔗 **Solution Video:** [Watch Here](https://www.youtube.com/watch?v=TRejFsKLYHA)
 
 ✅ Tasks:
 - 📦 **Create a Cloud Storage bucket**  
@@ -50,7 +50,7 @@
 ---
 
 ### 🧪 **Form 4**  
-🔗 **Solution Video:** [Watch Here](Coming Soon)
+🔗 **Solution Video:** [Watch Here](https://www.youtube.com/watch?v=_eIKXbrgye4)
 
 ✅ Tasks:
 - 🌊 **Create a lake in Dataplex and add a zone to your lake**  
