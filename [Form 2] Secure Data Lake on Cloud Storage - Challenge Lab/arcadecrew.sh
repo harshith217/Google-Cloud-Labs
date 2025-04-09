@@ -98,6 +98,9 @@ gcloud data-catalog tag-templates create customer_data_tag_template \
     --field=id=pii_data,display-name="PII Data",type='enum(Yes|No)',required=TRUE
 
 echo
+echo "${YELLOW_TEXT}${BOLD_TEXT}OPEN THIS LINK: ${BLUE_TEXT}${BOLD_TEXT}https://console.cloud.google.com/projectselector2/dataplex/groups${RESET_FORMAT}"
+
+echo
 echo "${GREEN_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
 echo "${GREEN_TEXT}${BOLD_TEXT}              LAB COMPLETED SUCCESSFULLY!              ${RESET_FORMAT}"
 echo "${GREEN_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
