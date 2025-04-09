@@ -39,7 +39,7 @@
 ---
 
 ### 📊 **Form 3**  
-🔗 **Solution Video:** [Watch Here](Coming Soon)
+🔗 **Solution Video:** [Watch Here](https://www.youtube.com/watch?v=JetjLecFWqs)
 
 ✅ Tasks:
 - 🧠 **Create a BigQuery dataset**  
