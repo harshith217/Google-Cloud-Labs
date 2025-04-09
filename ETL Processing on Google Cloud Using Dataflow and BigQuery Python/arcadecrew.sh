@@ -22,13 +22,13 @@ echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FOR
 echo
 
 read -p "${YELLOW_TEXT}${BOLD_TEXT}Enter the REGION: ${RESET_FORMAT}" REGION
-export REGION=$REGION
+export REGION=$REGION 
 
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Disabling the Dataflow API if already enabled...${RESET_FORMAT}"
-gcloud services disable dataflow.googleapis.com
+gcloud services disable dataflow.googleapis.com --quiet --no-user-output-enabled
 
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Enabling the Dataflow API...${RESET_FORMAT}"
-gcloud services enable dataflow.googleapis.com
+gcloud services enable dataflow.googleapis.com --quiet --no-user-output-enabled
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Copying example files from the public GCS bucket to your local environment...${RESET_FORMAT}"
 gsutil -m cp -R gs://spls/gsp290/dataflow-python-examples .
@@ -39,18 +39,17 @@ echo "${YELLOW_TEXT}${BOLD_TEXT}Setting the active project to: ${RESET_FORMAT}${
 gcloud config set project $PROJECT
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Creating a regional bucket in your specified region: ${RESET_FORMAT}${GREEN_TEXT}${BOLD_TEXT}$REGION${RESET_FORMAT}"
-gcloud storage buckets create gs://$PROJECT --location=$REGION
+gsutil mb -p $PROJECT -l $REGION gs://$PROJECT
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Copying data files to your newly created bucket...${RESET_FORMAT}"
-gcloud storage cp gs://spls/gsp290/data_files/usa_names.csv gs://$PROJECT/data_files/
-gcloud storage cp gs://spls/gsp290/data_files/head_usa_names.csv gs://$PROJECT/data_files/
+gsutil cp gs://spls/gsp290/data_files/usa_names.csv gs://$PROJECT/data_files/
+gsutil cp gs://spls/gsp290/data_files/head_usa_names.csv gs://$PROJECT/data_files/
 
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Creating a BigQuery dataset named 'lake'...${RESET_FORMAT}"
-bq mk lake
-
+bq mk --location=$REGION lake 
 echo "${CYAN_TEXT}${BOLD_TEXT}Launching a Docker container with Python 3.8 for further processing...${RESET_FORMAT}"
 cd ~
-docker run -it -e PROJECT=$PROJECT -v $(pwd)/dataflow-python-examples:/dataflow python:3.8 /bin/bash
+docker run -it -e PROJECT=$PROJECT -e REGION=$REGION -v $(pwd)/dataflow-python-examples:/dataflow python:3.8 /bin/bash
 
 # echo
 # echo "${GREEN_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
