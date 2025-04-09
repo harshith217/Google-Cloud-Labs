@@ -21,7 +21,7 @@
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
 ```bash
-curl -LO 
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/ETL%20Processing%20on%20Google%20Cloud%20Using%20Dataflow%20and%20BigQuery%20Python/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
