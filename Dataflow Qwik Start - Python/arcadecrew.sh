@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Define color variables
 BLACK_TEXT=$'\033[0;90m'
 RED_TEXT=$'\033[0;91m'
 GREEN_TEXT=$'\033[0;92m'
@@ -17,37 +16,31 @@ UNDERLINE_TEXT=$'\033[4m'
 
 clear
 
-# Welcome message
 echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
 echo "${BLUE_TEXT}${BOLD_TEXT}         INITIATING EXECUTION...  ${RESET_FORMAT}"
 echo "${BLUE_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
 echo
 
-# Request region input
-echo "${MAGENTA_TEXT}${BOLD_TEXT}ENTER REGION:${RESET_FORMAT}"
-read -p "${GREEN_TEXT}> ${RESET_FORMAT}" REGION
+echo -n "${YELLOW_TEXT}${BOLD_TEXT}Enter the location: ${RESET_FORMAT}"
+read LOCATION
+export LOCATION=$LOCATION
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Setting region to: ${WHITE_TEXT}$REGION${RESET_FORMAT}"
-echo
+echo "${MAGENTA_TEXT}${BOLD_TEXT}Setting the compute region to the location you provided...${RESET_FORMAT}"
+gcloud config set compute/region $LOCATION
 
-gcloud config set compute/region $REGION
-
-echo "${YELLOW_TEXT}${BOLD_TEXT}Creating Cloud Storage bucket...${RESET_FORMAT}"
+echo "${MAGENTA_TEXT}${BOLD_TEXT}Creating a Cloud Storage bucket for your project...${RESET_FORMAT}"
 gsutil mb gs://$DEVSHELL_PROJECT_ID-bucket/
 
-echo "${YELLOW_TEXT}${BOLD_TEXT}Resetting Dataflow API (this may take a moment)...${RESET_FORMAT}"
+echo "${MAGENTA_TEXT}${BOLD_TEXT}Disabling the Dataflow API temporarily...${RESET_FORMAT}"
 gcloud services disable dataflow.googleapis.com
+sleep 20
 
-echo "${GREEN_TEXT}${BOLD_TEXT}Enabling Dataflow API...${RESET_FORMAT}"
+echo "${MAGENTA_TEXT}${BOLD_TEXT}Re-enabling the Dataflow API. This may take a few moments...${RESET_FORMAT}"
 gcloud services enable dataflow.googleapis.com
+sleep 20
 
-echo "${CYAN_TEXT}${BOLD_TEXT}Starting Docker container to run Apache Beam pipelines...${RESET_FORMAT}"
-echo "${YELLOW_TEXT}This will run both a local and cloud-based pipeline.${RESET_FORMAT}"
-echo "${YELLOW_TEXT}Please wait, this may take several minutes.${RESET_FORMAT}"
-echo
-
-docker run -it -e DEVSHELL_PROJECT_ID=$DEVSHELL_PROJECT_ID -e REGION=$REGION python:3.9 /bin/bash -c '
-
+echo "${MAGENTA_TEXT}${BOLD_TEXT}Starting a Docker container to run the Apache Beam pipeline...${RESET_FORMAT}"
+docker run -it -e DEVSHELL_PROJECT_ID=$DEVSHELL_PROJECT_ID -e LOCATION=$LOCATION python:3.9 /bin/bash -c '
 pip install "apache-beam[gcp]"==2.42.0 && \
 python -m apache_beam.examples.wordcount --output OUTPUT_FILE && \
 HUSTLER=gs://$DEVSHELL_PROJECT_ID-bucket && \
@@ -56,14 +49,14 @@ python -m apache_beam.examples.wordcount --project $DEVSHELL_PROJECT_ID \
   --staging_location $HUSTLER/staging \
   --temp_location $HUSTLER/temp \
   --output $HUSTLER/results/output \
-  --region $REGION
+  --region $LOCATION
 '
 
-# Completion Message
 echo
 echo "${GREEN_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
 echo "${GREEN_TEXT}${BOLD_TEXT}              LAB COMPLETED SUCCESSFULLY!              ${RESET_FORMAT}"
 echo "${GREEN_TEXT}${BOLD_TEXT}=======================================================${RESET_FORMAT}"
-echo ""
+echo
+
 echo -e "${RED_TEXT}${BOLD_TEXT}Subscribe my Channel (Arcade Crew):${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
 echo
