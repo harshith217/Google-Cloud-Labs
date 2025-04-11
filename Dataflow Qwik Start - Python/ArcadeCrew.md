@@ -1,6 +1,9 @@
-# ✨ Dataflow: Qwik Start - Python || GSP207
-
-[![Lab Link](https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://www.cloudskillsboost.google/focuses/1100?parent=catalog)
+# ✨ Dataflow: Qwik Start - Python || GSP207 ✨
+<div align="center">
+<a href="https://www.cloudskillsboost.google/focuses/1100?parent=catalog" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+    <img src="https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white&labelColor=34A853" alt="Open Lab" style="height: 35px; border-radius: 5px;">
+  </a>
+</div>
 
 ---
 
@@ -24,6 +27,7 @@ curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
+
 </div>
 
 ---
@@ -55,6 +59,6 @@ sudo chmod +x arcadecrew.sh
     <em>This guide is provided for educational purposes. Always follow Qwiklabs terms of service and YouTube's community guidelines.</em>
   </p>
   <p style="font-size: 12px; color: #586069;">
-    <em>Last updated: March 2025</em>
+    <em>Last updated: April 2025</em>
   </p>
 </div>
