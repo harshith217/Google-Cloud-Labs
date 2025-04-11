@@ -17,6 +17,8 @@
 
 ## ⚙️ Lab Environment Setup
 
+* **NOTE: Watch Full Video to get Full Scores on Check My Progress.**
+
 <div style="padding: 15px; margin: 10px 0;">
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
