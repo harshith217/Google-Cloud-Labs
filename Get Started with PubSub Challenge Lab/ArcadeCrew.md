@@ -25,7 +25,7 @@
 
 ---
 
-### 🗂️ **Form 1** [Solution Video](Coming Soon)
+### 🗂️ **Form 1** [Solution Video](https://youtu.be/oi6IEhyfCnw)
 
 ✅ Tasks:
 - 📦 **Task 1. Publish a message to the topic.**  
