@@ -25,7 +25,7 @@
 
 ---
 
-### 🗂️ **Form 1** [Solution Video](https://youtu.be/oi6IEhyfCnw)
+### 🗂️ **Form 1** || [Solution Video](https://youtu.be/oi6IEhyfCnw)
 
 ✅ Tasks:
 - 📦 **Task 1. Publish a message to the topic.**  
@@ -44,7 +44,7 @@ sudo chmod +x arcadecrew.sh
 
 ---
 
-### 🗂️ **Form 2** [Solution Video](Coming Soon)  
+### 🗂️ **Form 2** || [Solution Video](Coming Soon)  
 
 ✅ Tasks:
 - 📦 **Task 1. Create Pub/Sub schema.**  
@@ -63,7 +63,7 @@ sudo chmod +x arcadecrew1.sh
 
 ---
 
-### 🗂️ **Form 3** [Solution Video](Coming Soon)  
+### 🗂️ **Form 3** || [Solution Video](Coming Soon)  
 
 ✅ Tasks:
 - 📦 **Task 1. Set up Cloud Pub/Sub.**  
