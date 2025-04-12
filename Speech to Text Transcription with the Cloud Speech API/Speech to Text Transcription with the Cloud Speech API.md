@@ -1,51 +1,63 @@
-# 🌐 Speech to Text Transcription with the Cloud Speech API
-
-### 📖 Lab: [GSP048](https://www.cloudskillsboost.google/focuses/2187?parent=catalog)
-
---- 
-
-Watch the full video walkthrough for this lab:  
-[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://youtu.be/CSI1RNNrIsA)
-
----
-## ⚠️ **Important Note:**
-This guide is provided to support your educational journey in this lab. Please open and review each step of the script to gain full understanding. Be sure to follow the terms of Qwiklabs and YouTube’s guidelines as you proceed.
+# ✨ Speech to Text Transcription with the Cloud Speech API || GSP048 ✨
+<div align="center">
+<a href="https://www.cloudskillsboost.google/focuses/2187?parent=catalog" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+    <img src="https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white&labelColor=34A853" alt="Open Lab Badge" style="height: 35px; border-radius: 5px; transition: transform 0.2s ease-in-out;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+  </a>
+</div>
 
 ---
 
-## 🛠️ Steps to Complete the Lab
+## ⚠️ Disclaimer ⚠️
 
-1. **Log in with Username and Password** in the Google Cloud Console.
-
-2. **Run the following commands** in **Cloud Shell** :
-
-    ```bash
-    curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Speech%20to%20Text%20Transcription%20with%20the%20Cloud%20Speech%20API/arcadecrew1.sh
-
-    sudo chmod +x arcadecrew1.sh
-
-    ./arcadecrew1.sh
-    ```
-
-    ### `NOTE:` Now Check The Score Upto `Task 3` then again Run the following Commands in CloudShell.
-
-    ```bash
-    curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Speech%20to%20Text%20Transcription%20with%20the%20Cloud%20Speech%20API/arcadecrew2.sh
-
-    sudo chmod +x arcadecrew2.sh
-
-    ./arcadecrew2.sh
-    ```
----
-
-### 🏆 Congratulations! You've completed the Lab! 🎉
+> **Educational Purpose Only:** This script and guide are intended *solely for educational purposes* to help you understand Google Cloud monitoring services and advance your cloud skills. Before using, please review it carefully to become familiar with the services involved.
+>
+> **Terms Compliance:** Always ensure compliance with Qwiklabs' terms of service and YouTube's community guidelines. The aim is to enhance your learning experience—*not* to circumvent it.
 
 ---
 
-### 🤝 Join the Community!
+## ⚙️ Lab Environment Setup
 
-- [Whatsapp Group](https://chat.whatsapp.com/FbVg9NI6Dp4CzfdsYmy0AE)  
+* **NOTE: Watch Full Video to get Full Scores on Check My Progress.**
 
-[![Arcade Crew Channel](https://img.shields.io/badge/YouTube-Arcade%20Crew-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432)
+<div style="padding: 15px; margin: 10px 0;">
+<p><strong>☁️ Run in Cloud Shell:</strong></p>
+
+```bash
+curl -LO 
+sudo chmod +x arcadecrew.sh
+./arcadecrew.sh
+```
+</div>
 
 ---
+
+## 🎉 **Congratulations! Lab Completed Successfully!** 🏆  
+
+<div align="center" style="padding: 5px;">
+  <h3>📱 Join the Arcade Crew Community</h3>
+  
+  <a href="https://chat.whatsapp.com/KkNEauOhBQXHdVcmqIlv9F">
+    <img src="https://img.shields.io/badge/Join_WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="Join WhatsApp">
+  </a>
+  &nbsp;
+  <a href="https://www.youtube.com/@Arcade61432?sub_confirmation=1">
+    <img src="https://img.shields.io/badge/Subscribe-Arcade%20Crew-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube Channel">
+  </a>
+  &nbsp;
+  <a href="https://www.linkedin.com/in/gourav61432/">
+    <img src="https://img.shields.io/badge/LINKEDIN-Gourav%20Sen-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
+</a>
+
+
+</div>
+
+---
+
+<div align="center">
+  <p style="font-size: 12px; color: #586069;">
+    <em>This guide is provided for educational purposes. Always follow Qwiklabs terms of service and YouTube's community guidelines.</em>
+  </p>
+  <p style="font-size: 12px; color: #586069;">
+    <em>Last updated: April 2025</em>
+  </p>
+</div>
