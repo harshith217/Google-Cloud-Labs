@@ -58,7 +58,7 @@ def generate_image(
 
     vertexai.init(project=project_id, location=location)
 
-    model = ImageGenerationModel.from_pretrained("imagegeneration@002")
+    model = ImageGenerationModel.from_pretrained("imagen-3.0-generate-002")
 
     images = model.generate_images(
         prompt=prompt,
