@@ -22,6 +22,8 @@ echo "${CYAN_TEXT}${BOLD_TEXT}                  Starting the process...         
 echo "${CYAN_TEXT}${BOLD_TEXT}╚════════════════════════════════════════════════════════╝${RESET_FORMAT}"
 echo
 
+LAB_MODEL="gemini-2.0-flash-001"
+
 echo "${YELLOW_TEXT}${BOLD_TEXT}Enter REGION:${RESET_FORMAT}"
 read -r REGION
 echo
@@ -32,90 +34,87 @@ ID="$(gcloud projects list --format='value(PROJECT_ID)')"
 echo
 echo "${GREEN_TEXT}${BOLD_TEXT}Project ID:${RESET_FORMAT} ${CYAN_TEXT}$ID${RESET_FORMAT}"
 echo
+echo "${GREEN_TEXT}${BOLD_TEXT}Using Model:${RESET_FORMAT} ${CYAN_TEXT}${LAB_MODEL}${RESET_FORMAT}"
+echo
 echo "${YELLOW_TEXT}${BOLD_TEXT}Generating SendChatwithoutStream.py...${RESET_FORMAT}"
 
 
 cat > SendChatwithoutStream.py <<EOF
-import vertexai
-from vertexai.generative_models import GenerativeModel, ChatSession
+from google import genai
+from google.genai.types import HttpOptions, ModelContent, Part, UserContent
 
 import logging
 from google.cloud import logging as gcp_logging
 
-# ------  Below cloud logging code is for Qwiklab's internal use, do not edit/remove it. --------
 # Initialize GCP logging
 gcp_logging_client = gcp_logging.Client()
 gcp_logging_client.setup_logging()
 
-project_id = "$ID"
-location = "$REGION"
+client = genai.Client(
+    vertexai=True,
+    project='${ID}',
+    location='${REGION}',
+    http_options=HttpOptions(api_version="v1")
+)
+chat = client.chats.create(
+    model="${LAB_MODEL}",
+    history=[
+        UserContent(parts=[Part(text="Hello")]),
+        ModelContent(
+            parts=[Part(text="Great to meet you. What would you like to know?")],
+        ),
+    ],
+)
+response = chat.send_message("What are all the colors in a rainbow?")
+logging.info(f'Received response 1: {response.text}') # Added logging
+print(response.text)
 
-vertexai.init(project=project_id, location=location)
-model = GenerativeModel("gemini-1.0-pro")
-chat = model.start_chat()
-
-def get_chat_response(chat: ChatSession, prompt: str) -> str:
-    logging.info(f'Sending prompt: {prompt}')
-    response = chat.send_message(prompt)
-    logging.info(f'Received response: {response.text}')
-    return response.text
-
-prompt = "Hello."
-print(get_chat_response(chat, prompt))
-
-prompt = "What are all the colors in a rainbow?"
-print(get_chat_response(chat, prompt))
-
-prompt = "Why does it appear when it rains?"
-print(get_chat_response(chat, prompt))
-
+response = chat.send_message("Why does it appear when it rains?")
+logging.info(f'Received response 2: {response.text}') # Added logging
+print(response.text)
 EOF
+
 echo "${GREEN_TEXT}${BOLD_TEXT}Executing SendChatwithoutStream.py...${RESET_FORMAT}"
 /usr/bin/python3 /home/student/SendChatwithoutStream.py
+sleep 5
+
 echo
 echo "${YELLOW_TEXT}${BOLD_TEXT}Generating SendChatwithStream.py...${RESET_FORMAT}"
 
 cat > SendChatwithStream.py <<EOF
-import vertexai
-from vertexai.generative_models import GenerativeModel, ChatSession
+from google import genai
+from google.genai.types import HttpOptions
 
 import logging
 from google.cloud import logging as gcp_logging
 
-# ------  Below cloud logging code is for Qwiklab's internal use, do not edit/remove it. --------
 # Initialize GCP logging
 gcp_logging_client = gcp_logging.Client()
 gcp_logging_client.setup_logging()
 
-project_id = "$ID"
-location = "$REGION"
+client = genai.Client(
+    vertexai=True,
+    project='${ID}',
+    location='${REGION}',
+    http_options=HttpOptions(api_version="v1")
+)
+chat = client.chats.create(model="${LAB_MODEL}")
+response_text = ""
 
-vertexai.init(project=project_id, location=location)
-model = GenerativeModel("gemini-1.0-pro")
-chat = model.start_chat()
-
-def get_chat_response(chat: ChatSession, prompt: str) -> str:
-    text_response = []
-    logging.info(f'Sending prompt: {prompt}')
-    responses = chat.send_message(prompt, stream=True)
-    for chunk in responses:
-        text_response.append(chunk.text)
-    return "".join(text_response)
-    logging.info(f'Received response: {response.text}')
-
-prompt = "Hello."
-print(get_chat_response(chat, prompt))
-
-prompt = "What are all the colors in a rainbow?"
-print(get_chat_response(chat, prompt))
-
-prompt = "Why does it appear when it rains?"
-print(get_chat_response(chat, prompt))
+logging.info("Sending streaming prompt...") # Added logging
+print("Streaming response:") # Added for clarity
+for chunk in chat.send_message_stream("What are all the colors in a rainbow?"):
+    print(chunk.text, end="")
+    response_text += chunk.text
+print() # Add a newline after streaming output
+logging.info(f"Received full streaming response: {response_text}") # Added logging
 
 EOF
 
 echo "${GREEN_TEXT}${BOLD_TEXT}Executing SendChatwithStream.py...${RESET_FORMAT}"
 /usr/bin/python3 /home/student/SendChatwithStream.py
+# small delay
+sleep 5
 echo
 echo "${GREEN_TEXT}${BOLD_TEXT}╔════════════════════════════════════════════════════════╗${RESET_FORMAT}"
 echo "${GREEN_TEXT}${BOLD_TEXT}              Lab Completed Successfully!               ${RESET_FORMAT}"
