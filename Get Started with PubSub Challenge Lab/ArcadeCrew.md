@@ -44,7 +44,7 @@ sudo chmod +x arcadecrew.sh
 
 ---
 
-### 🗂️ **Form 2** || [Solution Video](Coming Soon)  
+### 🗂️ **Form 2** || [Solution Video](https://youtu.be/LoiywpiO9vE)  
 
 ✅ Tasks:
 - 📦 **Task 1. Create Pub/Sub schema.**  
