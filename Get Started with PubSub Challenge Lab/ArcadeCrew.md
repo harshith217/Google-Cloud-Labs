@@ -63,7 +63,7 @@ sudo chmod +x arcadecrew1.sh
 
 ---
 
-### 🗂️ **Form 3** || [Solution Video](Coming Soon)  
+### 🗂️ **Form 3** || [Solution Video](https://youtu.be/_VQl61IW65Q)  
 
 ✅ Tasks:
 - 📦 **Task 1. Set up Cloud Pub/Sub.**  
