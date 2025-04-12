@@ -23,7 +23,7 @@
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
 ```bash
-curl -LO 
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Speech%20to%20Text%20Transcription%20with%20the%20Cloud%20Speech%20API/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
