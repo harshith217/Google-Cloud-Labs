@@ -75,8 +75,8 @@ sudo chmod +x arcadecrew1.sh
 
 ```bash
 curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Get%20Started%20with%20PubSub%20Challenge%20Lab/arcadecrew3.sh
-sudo chmod +x arcadecrew2.sh
-./arcadecrew2.sh
+sudo chmod +x arcadecrew3.sh
+./arcadecrew3.sh
 ```
 </div>
 
