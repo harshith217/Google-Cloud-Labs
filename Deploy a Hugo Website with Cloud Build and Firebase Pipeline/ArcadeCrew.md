@@ -52,8 +52,6 @@ sudo chmod +x arcadecrew.sh
 ```
 </div>
 
-* OPEN THIS [LINK](https://github.com/login/device) TO LOGIN TO GITHUB
-
 ---
 
 ## 🎉 **Congratulations! Lab Completed Successfully!** 🏆  
