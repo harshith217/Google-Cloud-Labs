@@ -20,22 +20,6 @@
 
 ---
 
-### 📋 <ins>**Prerequisites**</ins>
-
-✅ If you do not already have a **GitHub** account, you will need to create a  
-👉 [GitHub account](https://github.com/signup)
-
----
-
-### 🔐 <ins>**Recommendations**</ins>
-
-✔️ Use an OLD **GitHub** account if you have.  
-🔒 **GitHub** will likely block a new account as spam.
-
-🛡️ Enable [Two-Factor Authentication](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication) on your **GitHub** to enhance security.
-
----
-
 ## ⚙️ <ins>Lab Environment Setup</ins>
 
 > ✅ **NOTE:** *Watch Full Video to get Full Scores on Check My Progress.*
@@ -44,7 +28,7 @@
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
 ```bash
-curl -LO 
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Artifact%20Registry%20Qwik%20Start/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
