@@ -132,17 +132,35 @@ echo "Initializing Hugo site inside 'my_hugo_site' directory..."
 echo
 
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Step 10: Adding the Hugo theme.${RESET_FORMAT}"
-# Assumes we are still in ~/my_hugo_site
-echo "Cloning theme 'hello-friend-ng'..."
-git clone \
-    https://github.com/rhazdon/hugo-theme-hello-friend-ng.git themes/hello-friend-ng
-echo "Adding theme to config.toml..."
-# Check if theme line already exists to prevent duplicates
-if ! grep -q 'theme = "hello-friend-ng"' config.toml; then
-    echo 'theme = "hello-friend-ng"' >> config.toml
+cd ~/my_hugo_site # Ensure we are in the correct directory
+
+# Clone the theme only if the directory doesn't exist
+if [ ! -d "themes/hello-friend-ng" ]; then
+    echo "Cloning theme 'hello-friend-ng'..."
+    git clone \
+        https://github.com/rhazdon/hugo-theme-hello-friend-ng.git themes/hello-friend-ng
 else
-    echo "Theme already configured in config.toml."
+    echo "Theme directory 'themes/hello-friend-ng' already exists. Skipping clone."
 fi
+
+echo "Ensuring correct theme is set in config.toml..."
+# Check if config.toml exists, create a basic one if not (though hugo new site should create it)
+if [ ! -f "config.toml" ]; then
+    echo "baseURL = 'http://example.org/'" > config.toml
+    echo "languageCode = 'en-us'" >> config.toml
+    echo "title = 'My New Hugo Site'" >> config.toml
+fi
+
+# Remove any existing theme line (commented or uncommented) to prevent duplicates
+sed -i.bak '/^theme\s*=/d' config.toml
+
+# Add the correct theme line at the end
+echo 'theme = "hello-friend-ng"' >> config.toml
+
+# Verify the change
+echo "--- config.toml theme line ---"
+grep '^theme\s*=' config.toml
+echo "----------------------------"
 echo
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Step 11: Removing unnecessary Git files from the theme.${RESET_FORMAT}"
