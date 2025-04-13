@@ -40,6 +40,8 @@
 
 > ✅ **NOTE:** *Watch Full Video to get Full Scores on Check My Progress.*
 
+* OPEN THIS [LINK](https://console.cloud.google.com/compute/instances)
+
 <div style="padding: 15px; margin: 10px 0;">
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
