@@ -32,7 +32,7 @@ function check_progress {
                 echo "${YELLOW_TEXT}${BOLD_TEXT}Please ensure you have configured the following Cloud Build triggers:${RESET_FORMAT}"
                 echo "${CYAN_TEXT}  - Trigger 1 for repository: ${WHITE_TEXT}hello-cloudbuild${RESET_FORMAT}"
                 echo "${CYAN_TEXT}  - Trigger 2 for repository: ${WHITE_TEXT}hello-cloudbuild-deploy ($REGION)${RESET_FORMAT}"
-                echo "${CYAN_TEXT}  - Both triggers should be set for branches matching: ${WHITE_TEXT}^candidate$ ${RESET_FORMAT}"
+                echo "${CYAN_TEXT}  - Trigger 2 should be set for branches matching: ${WHITE_TEXT} ^candidate$ ${RESET_FORMAT}"
                 echo
                 echo -n "${RED_TEXT}${BOLD_TEXT}Have you completed this step? (Y/N): ${RESET_FORMAT}"
                 read -r user_input
