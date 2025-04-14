@@ -27,6 +27,8 @@
 <div style="padding: 15px; margin: 10px 0;">
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
+* DO **NOT** PRESS CTRL+C AT THE END
+
 ```bash
 curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Cloud%20Endpoints%20Qwik%20Start/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
