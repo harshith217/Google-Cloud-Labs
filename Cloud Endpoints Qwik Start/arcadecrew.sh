@@ -49,10 +49,14 @@ cd scripts
 # Deploying the API
 echo "${YELLOW_TEXT}${BOLD_TEXT}Step 6:${RESET_FORMAT} ${CYAN_TEXT}Deploying the API using the provided deployment script.${RESET_FORMAT}"
 ./deploy_api.sh
+echo "${MAGENTA_TEXT}Pausing for 60 seconds to avoid quota issues...${RESET_FORMAT}"
+sleep 60
 
 # Deploying the application
 echo "${YELLOW_TEXT}${BOLD_TEXT}Step 7:${RESET_FORMAT} ${CYAN_TEXT}Deploying the application template to the region: ${REGION}.${RESET_FORMAT}"
 ./deploy_app.sh ../app/app_template.yaml $REGION
+echo "${MAGENTA_TEXT}Pausing for 60 seconds...${RESET_FORMAT}"
+sleep 60
 
 # Querying the API
 echo "${YELLOW_TEXT}${BOLD_TEXT}Step 8:${RESET_FORMAT} ${CYAN_TEXT}Querying the API to verify its functionality.${RESET_FORMAT}"
@@ -65,10 +69,14 @@ echo "${YELLOW_TEXT}${BOLD_TEXT}Step 9:${RESET_FORMAT} ${CYAN_TEXT}Querying the 
 # Deploying the API with rate limiting
 echo "${YELLOW_TEXT}${BOLD_TEXT}Step 10:${RESET_FORMAT} ${CYAN_TEXT}Deploying the API with rate limiting configuration.${RESET_FORMAT}"
 ./deploy_api.sh ../openapi_with_ratelimit.yaml
+echo "${MAGENTA_TEXT}Pausing for 60 seconds to avoid quota issues...${RESET_FORMAT}"
+sleep 60
 
 # Redeploying the application
 echo "${YELLOW_TEXT}${BOLD_TEXT}Step 11:${RESET_FORMAT} ${CYAN_TEXT}Redeploying the application template to the region: ${REGION}.${RESET_FORMAT}"
 ./deploy_app.sh ../app/app_template.yaml $REGION
+echo "${MAGENTA_TEXT}Pausing for 60 seconds...${RESET_FORMAT}" 
+sleep 60
 
 # Creating an API key
 echo "${YELLOW_TEXT}${BOLD_TEXT}Step 12:${RESET_FORMAT} ${CYAN_TEXT}Creating an API key with the display name 'awesome'.${RESET_FORMAT}"
