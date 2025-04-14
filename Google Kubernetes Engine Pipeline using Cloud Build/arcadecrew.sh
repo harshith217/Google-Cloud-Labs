@@ -32,7 +32,7 @@ function check_progress {
                 echo "${YELLOW_TEXT}${BOLD_TEXT}Please ensure you have configured the following Cloud Build triggers:${RESET_FORMAT}"
                 echo "${CYAN_TEXT}  - Trigger 1 for repository: ${WHITE_TEXT}hello-cloudbuild${RESET_FORMAT}"
                 echo "${CYAN_TEXT}  - Trigger 2 for repository: ${WHITE_TEXT}hello-cloudbuild-deploy ($REGION)${RESET_FORMAT}"
-                echo "${CYAN_TEXT}  - Both triggers should be set for branches matching: ${WHITE_TEXT}^candidate$${RESET_FORMAT}"
+                echo "${CYAN_TEXT}  - Both triggers should be set for branches matching: ${WHITE_TEXT}^candidate$ ${RESET_FORMAT}"
                 echo
                 echo -n "${RED_TEXT}${BOLD_TEXT}Have you completed this step? (Y/N): ${RESET_FORMAT}"
                 read -r user_input
@@ -211,7 +211,7 @@ git checkout -b production
 
 rm cloudbuild.yaml
 
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Google%20Kubernetes%20Engine%20Pipeline%20using%20Cloud%20Build/ENV-cloudbuild.yaml
+curl -LO /ENV-cloudbuild.yaml
 
 mv ENV-cloudbuild.yaml cloudbuild.yaml
 
@@ -240,7 +240,7 @@ git push google master
 
 rm cloudbuild.yaml
 
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Google%20Kubernetes%20Engine%20Pipeline%20using%20Cloud%20Build/APP-cloudbuild.yaml
+curl -LO /APP-cloudbuild.yaml
 
 mv APP-cloudbuild.yaml cloudbuild.yaml
 
