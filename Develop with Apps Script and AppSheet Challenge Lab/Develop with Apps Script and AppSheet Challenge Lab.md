@@ -1,54 +1,62 @@
-# 🎓 **Develop with Apps Script and AppSheet: Challenge Lab**
-### LAB: [ARC126](https://www.cloudskillsboost.google/focuses/66584?parent=catalog)
-Watch the full video walkthrough:  
-[![YouTube Solution](https://img.shields.io/badge/YouTube-Watch%20Solution-red?style=flat&logo=youtube)](https://youtu.be/nTB6AWZpbaY)
+# ✨ Develop with Apps Script and AppSheet: Challenge Lab || ARC126 ✨
+<div align="center">
+<a href="https://www.cloudskillsboost.google/focuses/66584?parent=catalog" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+    <img src="https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white&labelColor=34A853" alt="Open Lab Badge" style="height: 35px; border-radius: 5px; transition: transform 0.2s ease-in-out;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+  </a>
+</div>
 
 ---
 
-## ⚠️ **Important Note:**
-This guide is provided to support your educational journey in this lab. Please open and review each step of the script to gain full understanding. Be sure to follow the terms of Qwiklabs and YouTube’s guidelines as you proceed.
+## ⚠️ Disclaimer ⚠️
+
+> **Educational Purpose Only:** This script and guide are intended *solely for educational purposes* to help you understand Google Cloud monitoring services and advance your cloud skills. Before using, please review it carefully to become familiar with the services involved.
+>
+> **Terms Compliance:** Always ensure compliance with Qwiklabs' terms of service and YouTube's community guidelines. The aim is to enhance your learning experience—*not* to circumvent it.
 
 ---
 
-##  **Task 1: Building and Customizing an AppSheet App**
+## <ins>📝 Task 1: Create and customize an AppSheet app</ins>
 
-1. **Login** to **AppSheet**.
-2. Access the **[ATM Maintenance App](https://www.appsheet.com/template/AppDef?appName=ATMMaintenance-925818016)** in **Incognito Mode**.
-3. Use the left menu to select **Copy app**.
-4. In the **Copy app** form, set the **App name** as:
-
-   ```plaintext
-   ATM Maintenance Tracker
-   ```
-   Leave other settings as they are.
-5. Click **Copy app** to proceed.
-
----
-
-##  **Task 2: Integrating Automation in AppSheet**
-
-1. Open **My Drive** from **[this link](https://drive.google.com/drive/my-drive)**.
-2. Download the required file **[here](https://gourav8959-my.sharepoint.com/:f:/g/personal/gourav8959_gourav8959_onmicrosoft_com/Ejr59_zDiNRGko-iuLIritwBBmt-46CjuTLVqWpfzy9QeA?e=icLCtw)**.
+1.  **Login** to **AppSheet**.
+2.  Access the **[ATM Maintenance App](https://www.appsheet.com/template/AppDef?appName=ATMMaintenance-925818016)** in **Incognito Mode**.
+3.  Use the left menu to select **Copy app**.
+4.  In the **Copy app** form, set the **App name** as:
+    ```plaintext
+    ATM Maintenance Tracker
+    ```
+    *Leave other settings as they are.*
+5.  Click **Copy app** to proceed.
 
 ---
 
-##  **Task 3: Creating and Publishing a Google Chat Bot with Apps Script**
+## <ins>⚙️ Task 2: Add an automation to an AppSheet app</ins>
 
-1. Start a new **Apps Script Chat App** project from **[this link](https://script.google.com/home/projects/create?template=hangoutsChat)**.
+1.  Open **My Drive** from **[this link](https://drive.google.com/drive/my-drive)**.
+2.  Download the required file **[here 📥](https://gourav8959-my.sharepoint.com/:f:/g/personal/gourav8959_gourav8959_onmicrosoft_com/Ejr59_zDiNRGko-iuLIritwBBmt-46CjuTLVqWpfzy9QeA?e=icLCtw)**.
 
-   <table style="width:100%; border:1px solid #cccccc t; border-collapse:collapse; text-align:center; font-family:Arial, sans-serif;">
-    <tr style="background-color:#004080; color:#ffffff;">
-        <th style="padding:12px; border:1px solid #cccccc;">Property</th>
-        <th style="padding:12px; border:1px solid #cccccc;">Value</th>
-    </tr>
-    <tr style="background-color:#e6f2ff; color:#000;">
-        <td style="padding:12px; border:1px solid #cccccc;">Project name</td>
-        <td style="padding:12px; border:1px solid #cccccc;">Helper Bot</td>
-    </tr>
-</table>
+---
 
+## <ins>🤖 Task 3: Creating and Publishing a Google Chat Bot with Apps Script</ins>
 
-2. Replace the following code in **Code.gs**:
+1.  Start a new **Apps Script Chat App** project from **[this link](https://script.google.com/home/projects/create?template=hangoutsChat)**.
+
+    <table style="width:100%; border: 1px solid #dfe2e5; border-collapse: collapse; text-align: center; font-family: sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      <thead style="background-color: #0366d6; color: #ffffff;">
+        <tr>
+          <th style="padding: 10px 15px; border: 1px solid #dfe2e5;">Property</th>
+          <th style="padding: 10px 15px; border: 1px solid #dfe2e5;">Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background-color: #f6f8fa; border-top: 1px solid #dfe2e5;">
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">Project name</td>
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5; font-family: monospace; background-color: #eff2f5;">Helper Bot</td>
+        </tr>
+      </tbody>
+    </table>
+    <br/>
+
+2.  Replace the content in `Code.gs` with the following script:
 
    ```javascript
    /**
@@ -104,86 +112,115 @@ This guide is provided to support your educational journey in this lab. Please o
 
 ---
 
-##  **Configuring OAuth Consent Screen**
+## <ins>🔧 Configuring OAuth Consent Screen</ins>
 
-1. Go to the **OAuth consent screen** from **[here](https://console.cloud.google.com/apis/credentials/consent)**.
+1.  Navigate to the **OAuth consent screen** using **[this link](https://console.cloud.google.com/apis/credentials/consent)**.
+2.  Configure the settings as follows:
 
-   <table style="width:100%; border:1px solid #cccccc t; border-collapse:collapse; text-align:center; font-family:Arial, sans-serif;">
-    <tr style="background-color:#004080; color:#ffffff;">
-        <th style="padding:12px; border:1px solid #cccccc;">Field</th>
-        <th style="padding:12px; border:1px solid #cccccc;">Value</th>
-    </tr>
-    <tr style="background-color:#f5f9ff; color:#000;">
-        <td style="padding:12px; border:1px solid #cccccc;">App name</td>
-        <td style="padding:12px; border:1px solid #cccccc;">Helper Bot</td>
-    </tr>
-    <tr style="background-color:#e9f3ff; color:#000;">
-        <td style="padding:12px; border:1px solid #cccccc;">User support email</td>
-        <td style="padding:12px; border:1px solid #cccccc;">Your selected email</td>
-    </tr>
-    <tr style="background-color:#f5f9ff; color:#000;">
-        <td style="padding:12px; border:1px solid #cccccc;">Developer contact</td>
-        <td style="padding:12px; border:1px solid #cccccc;">Your email address</td>
-    </tr>
-</table>
-
-
----
-
-##  **Setting Up Google Chat API**
-
-1. Visit **Google Chat API Configuration [here](https://console.cloud.google.com/apis/api/chat.googleapis.com/hangouts-chat)**.
-
-   <table style="width:100%; border:1px solid #cccccc; border-collapse:collapse; text-align:left; font-family:Arial, sans-serif;">
-    <tr style="background-color:#004080; color:#ffffff;">
-        <th style="padding:12px; border:1px solid #cccccc;">Field</th>
-        <th style="padding:12px; border:1px solid #cccccc;">Value</th>
-    </tr>
-    <tr style="background-color:#f3f8ff; color:#000;">
-        <td style="padding:12px; border:1px solid #cccccc;">App name</td>
-        <td style="padding:12px; border:1px solid #cccccc;">Helper Bot</td>
-    </tr>
-    <tr style="background-color:#e7f0ff; color:#000;">
-        <td style="padding:12px; border:1px solid #cccccc;">Avatar URL</td>
-        <td style="padding:12px; border:1px solid #cccccc;">https://goo.gl/kv2ENA</td>
-    </tr>
-    <tr style="background-color:#f3f8ff; color:#000;">
-        <td style="padding:12px; border:1px solid #cccccc;">Description</td>
-        <td style="padding:12px; border:1px solid #cccccc;">Helper chat bot</td>
-    </tr>
-    <tr style="background-color:#e7f0ff; color:#000;">
-        <td style="padding:12px; border:1px solid #cccccc;">Functionality</td>
-        <td style="padding:12px; border:1px solid #cccccc;">Receive 1:1 messages and join spaces/group conversations</td>
-    </tr>
-    <tr style="background-color:#f3f8ff; color:#000;">
-        <td style="padding:12px; border:1px solid #cccccc;">Connection settings</td>
-        <td style="padding:12px; border:1px solid #cccccc;">Check <b>Apps Script project</b> and add <b>Head Deployment ID</b></td>
-    </tr>
-    <tr style="background-color:#e7f0ff; color:#000;">
-        <td style="padding:12px; border:1px solid #cccccc;">Visibility</td>
-        <td style="padding:12px; border:1px solid #cccccc;">Your email address</td>
-    </tr>
-    <tr style="background-color:#f3f8ff; color:#000;">
-        <td style="padding:12px; border:1px solid #cccccc;">App Status</td>
-        <td style="padding:12px; border:1px solid #cccccc;">LIVE – Available to users</td>
-    </tr>
-</table>
-
+    <table style="width:100%; border: 1px solid #dfe2e5; border-collapse: collapse; text-align: left; font-family: sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      <thead style="background-color: #0366d6; color: #ffffff;">
+        <tr>
+          <th style="padding: 10px 15px; border: 1px solid #dfe2e5;">Field</th>
+          <th style="padding: 10px 15px; border: 1px solid #dfe2e5;">Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background-color: #f6f8fa; border-top: 1px solid #dfe2e5;">
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">App name</td>
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5; font-family: monospace; background-color: #eff2f5;">Helper Bot</td>
+        </tr>
+        <tr style="background-color: #ffffff; border-top: 1px solid #dfe2e5;">
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">User support email</td>
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">*Your selected email*</td>
+        </tr>
+        <tr style="background-color: #f6f8fa; border-top: 1px solid #dfe2e5;">
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">Developer contact</td>
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">*Your email address*</td>
+        </tr>
+      </tbody>
+    </table>
 
 ---
 
-##  **Testing Your Helper Bot**
+## <ins>🛠️ Setting Up Google Chat API</ins>
 
-You can test your bot directly **[here](https://mail.google.com/chat/u/0/#chat/home)**.
+1.  Visit the **Google Chat API Configuration** page **[here](https://console.cloud.google.com/apis/api/chat.googleapis.com/hangouts-chat)**.
+2.  Apply the following configuration:
+
+    <table style="width:100%; border: 1px solid #dfe2e5; border-collapse: collapse; text-align: left; font-family: sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      <thead style="background-color: #0366d6; color: #ffffff;">
+        <tr>
+          <th style="padding: 10px 15px; border: 1px solid #dfe2e5;">Field</th>
+          <th style="padding: 10px 15px; border: 1px solid #dfe2e5;">Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background-color: #f6f8fa; border-top: 1px solid #dfe2e5;">
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">App name</td>
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5; font-family: monospace; background-color: #eff2f5;">Helper Bot</td>
+        </tr>
+        <tr style="background-color: #ffffff; border-top: 1px solid #dfe2e5;">
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">Avatar URL</td>
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5; font-family: monospace; background-color: #eff2f5;">https://goo.gl/kv2ENA</td>
+        </tr>
+        <tr style="background-color: #f6f8fa; border-top: 1px solid #dfe2e5;">
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">Description</td>
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">Helper chat bot</td>
+        </tr>
+        <tr style="background-color: #ffffff; border-top: 1px solid #dfe2e5;">
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">Functionality</td>
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">✅ Receive 1:1 messages and join spaces/group conversations</td>
+        </tr>
+        <tr style="background-color: #f6f8fa; border-top: 1px solid #dfe2e5;">
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">Connection settings</td>
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">✅ Check <b>Apps Script project</b> and add <b>Head Deployment ID</b></td>
+        </tr>
+        <tr style="background-color: #ffffff; border-top: 1px solid #dfe2e5;">
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">Visibility</td>
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">✅ Specific people and groups: *Your email address*</td>
+        </tr>
+        <tr style="background-color: #f6f8fa; border-top: 1px solid #dfe2e5;">
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">App Status</td>
+          <td style="padding: 10px 15px; border: 1px solid #dfe2e5;">🟢 LIVE – Available to users</td>
+        </tr>
+      </tbody>
+    </table>
 
 ---
 
-### 🏆 Congratulations!!! You completed the Lab! 🎉
+## <ins>🧪 Testing Your Helper Bot</ins>
+
+You can test your newly created bot directly in Google Chat **[here](https://mail.google.com/chat/u/0/#chat/home)**.
 
 ---
 
-### **Join the Community!**
+## 🎉 **Congratulations! Lab Completed Successfully!** 🏆  
 
-- [Whatsapp Group](https://chat.whatsapp.com/FbVg9NI6Dp4CzfdsYmy0AE)  
+<div align="center" style="padding: 5px;">
+  <h3>📱 Join the Arcade Crew Community</h3>
+  
+  <a href="https://chat.whatsapp.com/KkNEauOhBQXHdVcmqIlv9F">
+    <img src="https://img.shields.io/badge/Join_WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="Join WhatsApp">
+  </a>
+  &nbsp;
+  <a href="https://www.youtube.com/@Arcade61432?sub_confirmation=1">
+    <img src="https://img.shields.io/badge/Subscribe-Arcade%20Crew-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube Channel">
+  </a>
+  &nbsp;
+  <a href="https://www.linkedin.com/in/gourav61432/">
+    <img src="https://img.shields.io/badge/LINKEDIN-Gourav%20Sen-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
+</a>
 
-[![Arcade Crew Channel](https://img.shields.io/badge/YouTube-Arcade%20Crew-red?style=flat&logo=youtube)](https://www.youtube.com/@Arcade61432)
+
+</div>
+
+---
+
+<div align="center">
+  <p style="font-size: 12px; color: #586069;">
+    <em>This guide is provided for educational purposes. Always follow Qwiklabs terms of service and YouTube's community guidelines.</em>
+  </p>
+  <p style="font-size: 12px; color: #586069;">
+    <em>Last updated: April 2025</em>
+  </p>
+</div>
