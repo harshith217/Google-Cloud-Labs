@@ -32,9 +32,6 @@ curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
-
-* Create Alerting Policy (**`Active Cloud Run Function Instances`**) from [HERE](https://console.cloud.google.com/monitoring/alerting/policies/create?)
-
 </div>
 
 ---
