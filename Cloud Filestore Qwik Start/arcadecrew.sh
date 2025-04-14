@@ -1,19 +1,18 @@
 #!/bin/bash
 
 # Define text colors and formatting
-BLACK_TEXT=$(tput setaf 0)
-RED_TEXT=$(tput setaf 1)
-GREEN_TEXT=$(tput setaf 10) # Brighter Green
-YELLOW_TEXT=$(tput setaf 3)
-BLUE_TEXT=$(tput setaf 4)
-MAGENTA_TEXT=$(tput setaf 5)
-CYAN_TEXT=$(tput setaf 6)
-WHITE_TEXT=$(tput setaf 7)
+BLACK_TEXT=$'\033[0;90m'
+RED_TEXT=$'\033[0;91m'
+GREEN_TEXT=$'\033[0;92m'
+YELLOW_TEXT=$'\033[0;93m'
+BLUE_TEXT=$'\033[0;94m'
+MAGENTA_TEXT=$'\033[0;95m'
+CYAN_TEXT=$'\033[0;96m'
+WHITE_TEXT=$'\033[0;97m'
 
-RESET_FORMAT=$(tput sgr0)
-BOLD_TEXT=$(tput bold)
-ITALIC_TEXT=$(tput sitm)
-UNDERLINE_TEXT=$(tput smul)
+RESET_FORMAT=$'\033[0m'
+BOLD_TEXT=$'\033[1m'
+UNDERLINE_TEXT=$'\033[4m'
 clear # Clear the terminal screen
 
 # --- Script Header ---
