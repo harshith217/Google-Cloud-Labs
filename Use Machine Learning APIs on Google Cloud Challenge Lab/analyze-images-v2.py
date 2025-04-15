@@ -35,7 +35,6 @@ try:
     storage_client = storage.Client(project=project_id)
     bq_client = bigquery.Client(project=project_id)
     # Note: language client (nl_client) was in original but not needed for this task.
-    # nl_client = language.LanguageServiceClient() # Removed as unused
 
     # Set up client objects for the vision and translate_v2 API Libraries
     vision_client = vision.ImageAnnotatorClient()
@@ -51,8 +50,6 @@ bq_dataset_id = 'image_classification_dataset'
 bq_table_id = 'image_text_detail'
 try:
     dataset_ref = bq_client.dataset(bq_dataset_id)
-    # The dataset object itself isn't strictly needed here, just the ref
-    # dataset = bigquery.Dataset(dataset_ref) # Can be removed
     table_ref = dataset_ref.table(bq_table_id)
     table = bq_client.get_table(table_ref) # Verify table exists
     logging.info(f"Connected to BigQuery table: {project_id}.{bq_dataset_id}.{bq_table_id}")
@@ -63,6 +60,7 @@ except Exception as e:
 
 
 # Create an array to store results data to be inserted into the BigQuery table
+# The BigQuery table expects rows as tuples in the order: (image_uri, text, locale, translated_text)
 rows_for_bq = []
 
 # Get a list of the files in the Cloud Storage Bucket
@@ -88,27 +86,23 @@ for blob in files:
        # Initialize variables for this file
        text_data = ""
        locale = "und" # Default to undetermined
-       translated_text = ""
+       translated_text = "" # Initialize translated text
 
        try:
            # Download image content - necessary for the vision.Image(content=...) approach
            file_content = blob.download_as_bytes()
 
-           # TBD 1: Create a Vision API image object called image_object - DONE
-           # Ref: https://googleapis.dev/python/vision/latest/gapic/v1/types.html#google.cloud.vision_v1.types.Image
-           # Note: Using vision.Image directly, not vision_v1 explicitly unless needed
+           # 1. Create Vision API image object
            image = vision.Image(content=file_content)
 
-           # TBD 2: Detect text in the image and save the response data into an object called response - DONE
-           # Ref: https://googleapis.dev/python/vision/latest/gapic/v1/api.html#google.cloud.vision_v1.ImageAnnotatorClient.text_detection
-           # Using text_detection as it's suitable for general text on images
+           # 2. Detect text using Vision API
            response = vision_client.text_detection(image=image)
 
            # --- Extract Text and Locale (More Robustly) ---
            if response.error.message:
                logging.error(f"Vision API error for {blob.name}: {response.error.message}")
            elif response.full_text_annotation:
-               text_data = response.full_text_annotation.text
+               text_data = response.full_text_annotation.text # Get the full detected text block
                logging.info(f"  Extracted text snippet: {text_data[:100].replace(os.linesep, ' ')}...")
 
                # Attempt to get locale from page properties first (more reliable)
@@ -123,31 +117,35 @@ for blob in files:
                     logging.warning(f"  Using locale from text_annotations[0]: {locale}")
                else:
                    logging.warning(f"  Could not determine locale for {blob.name}. Using '{locale}'.")
+                   locale = 'und' # Explicitly set to 'und' if undetected
 
            else:
                logging.info(f"  No text found in image {blob.name}.")
 
            # --- Save Original Text to GCS ---
-           # Save the text detection response data in results/<filename>.txt to cloud storage
+           # (Optional based on requirements, but good practice)
            output_filename = f"results/{blob.name}.txt" # Store in results/ prefix
            output_blob = bucket.blob(output_filename)
-           # Upload the contents of the text_data string variable to the Cloud Storage file
            output_blob.upload_from_string(text_data, content_type='text/plain')
-           logging.info(f"  Saved extracted text to gs://{output_bucket_name}/{output_filename}")
+           # logging.info(f"  Saved extracted text to gs://{output_bucket_name}/{output_filename}") # Can uncomment if needed
 
-           # --- Translate Text if Needed ---
-           # if the locale is English (en) save the description as the translated_txt
-           if locale == 'en':
+           # --- Translate Text if Needed (Task 4 Logic) ---
+           # If the locale is French ('fr'), save the original text as the translated_text
+           if locale == 'fr':
                translated_text = text_data # No translation needed
-               logging.info("  Locale is 'en'. No translation needed.")
-           elif text_data: # Only translate if locale is not 'en' AND text exists
-               logging.info(f"  Locale is '{locale}'. Translating to 'en'...")
-               # TBD 3: For non EN locales pass the description data to the translation API - DONE
-               # ref: https://googleapis.dev/python/translation/latest/client.html#google.cloud.translate_v2.client.Client.translate
-               # Set the target_language locale to 'en')
+               logging.info("  Locale is 'fr'. No translation needed.")
+           elif text_data: # Only translate if locale is NOT 'fr' AND text exists
+               logging.info(f"  Locale is '{locale}'. Translating to 'fr'...")
+               # For non FR locales pass the description data to the translation API
+               # Set the target_language locale to 'fr'
                try:
                    # Use the client initialized outside the loop
-                   translation = translate_client.translate(text_data, target_language='en', source_language=locale if locale != 'und' else None)
+                   # Specify target_language='fr'
+                   translation = translate_client.translate(
+                       text_data,
+                       target_language='fr', # <--- MODIFIED FOR TASK 4
+                       source_language=locale if locale != 'und' else None # Help translation if locale is known
+                   )
                    translated_text = translation['translatedText']
                    logging.info(f"  Translation successful. Snippet: {translated_text[:100].replace(os.linesep, ' ')}...")
                except Exception as trans_ex:
@@ -159,14 +157,17 @@ for blob in files:
                logging.info("  No text extracted, skipping translation.")
 
 
-           # Append data for BigQuery, using the full GCS URI as identifier
-           # Use text_data (full extracted text), locale, and translated_text
-           rows_for_bq.append((image_uri, text_data, locale, translated_text))
+           # --- Prepare row for BigQuery ---
+           # Ensure the order matches the table schema: (image_uri, text, locale, translated_text)
+           # Use text_data (full original text), locale (detected), and translated_text (translated to 'fr' if needed)
+           row_tuple = (image_uri, text_data, locale, translated_text)
+           rows_for_bq.append(row_tuple)
+           logging.debug(f"  Prepared BQ row: {row_tuple}") # Log row data for debugging if needed
 
        except Exception as e:
            logging.error(f"Error processing file {blob.name}: {e}", exc_info=True)
-           # Optionally append a row with nulls/error indicators if needed
-           # rows_for_bq.append((image_uri, "ERROR", "err", "ERROR"))
+           # Optionally append a row with error indicators if needed for tracking failures
+           # rows_for_bq.append((image_uri, "ERROR_PROCESSING", "err", "ERROR_PROCESSING"))
 
    else:
        logging.debug(f"Skipping non-image file: {blob.name}")
@@ -174,21 +175,25 @@ for blob in files:
 
 # --- Load Data into BigQuery ---
 if rows_for_bq:
-    logging.info(f"\nWriting {len(rows_for_bq)} rows of image data to BigQuery...")
+    logging.info(f"\nWriting {len(rows_for_bq)} rows of image data to BigQuery table {project_id}.{bq_dataset_id}.{bq_table_id}...")
 
-    # Define schema explicitly for insert_rows_json (more robust) or ensure table schema matches tuple order
-    # Tuple order for insert_rows: (image_uri, text, locale, translated_text)
-    # Ensure BQ table columns are in this order: STRING, STRING, STRING, STRING
+    # The table object 'table' was fetched earlier and verified
+    # insert_rows expects a list of tuples/lists where order matches table schema.
+    # Ensure BQ table columns ARE: image_uri (STRING), text (STRING), locale (STRING), translated_text (STRING)
 
-    # TBD: When the script is working uncomment the next line to upload results to BigQuery - DONE (Uncommented)
-    errors = bq_client.insert_rows(table, rows_for_bq) # Insert rows from list of tuples
+    # Ensure this line IS uncommented for the final run
+    errors = bq_client.insert_rows(table, rows_for_bq)
 
     if errors == []:
         logging.info("Data successfully loaded into BigQuery.")
     else:
         logging.error("Errors occurred while inserting rows into BigQuery:")
-        for error in errors:
-            logging.error(f"  Row index {error['index']}: {error['errors']}")
+        # Log details about the rows that failed
+        for error_detail in errors:
+            row_index = error_detail['index']
+            row_content = rows_for_bq[row_index] if row_index < len(rows_for_bq) else "Row index out of bounds"
+            logging.error(f"  Row index {row_index}: {error_detail['errors']}")
+            logging.error(f"  Failed row data (approx): {row_content}") # Log the data that failed
 else:
     logging.warning("No image data processed or available to load into BigQuery.")
 
