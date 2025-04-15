@@ -65,7 +65,7 @@ export GOOGLE_APPLICATION_CREDENTIALS=${PWD}/sample-sa-key.json
 
 # Informing user about downloading Python script
 echo "${YELLOW_TEXT}${BOLD_TEXT}Downloading the Python script for analysis...${RESET_FORMAT}"
-wget https://raw.githubusercontent.com/guys-in-the-cloud/cloud-skill-boosts/main/Challenge-labs/Integrate%20with%20Machine%20Learning%20APIs%3A%20Challenge%20Lab/analyze-images-v2.py
+wget https://raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Use%20Machine%20Learning%20APIs%20on%20Google%20Cloud%20Challenge%20Lab/analyze-images-v2.py
 
 # Informing user about modifying the Python script
 echo "${YELLOW_TEXT}${BOLD_TEXT}Modifying the Python script...${RESET_FORMAT}"
