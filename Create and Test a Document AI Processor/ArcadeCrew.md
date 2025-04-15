@@ -43,9 +43,6 @@ curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
-
-* Download [form.pdf](https://storage.googleapis.com/cloud-training/document-ai/generic/form.pdf)
-
 </div>
 
 ---
