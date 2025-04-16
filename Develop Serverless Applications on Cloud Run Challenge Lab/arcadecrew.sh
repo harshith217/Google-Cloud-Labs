@@ -15,7 +15,7 @@ clear
 
 echo
 echo "${YELLOW_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
-echo "${YELLOW_TEXT}${BOLD_TEXT}         INITIATING SCRIPT...          ${RESET_FORMAT}"
+echo "${YELLOW_TEXT}${BOLD_TEXT}         INITIATING EXECUTION...          ${RESET_FORMAT}"
 echo "${YELLOW_TEXT}${BOLD_TEXT}=======================================${RESET_FORMAT}"
 echo
 
