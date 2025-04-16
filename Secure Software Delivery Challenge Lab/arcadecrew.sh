@@ -23,22 +23,22 @@ echo
 echo "${CYAN_TEXT}${BOLD_TEXT}Step 1:${RESET_FORMAT} ${GREEN_TEXT}Fetching project details and setting environment variables.${RESET_FORMAT}"
 export PROJECT_ID=$(gcloud config get-value project)
 export PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID \
---format='value(projectNumber)')
+    --format='value(projectNumber)')
 export ZONE=$(gcloud compute project-info describe \
---format="value(commonInstanceMetadata.items[google-compute-default-zone])")
+    --format="value(commonInstanceMetadata.items[google-compute-default-zone])")
 export REGION=$(echo "$ZONE" | cut -d '-' -f 1-2)
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Step 2:${RESET_FORMAT} ${GREEN_TEXT}Enabling required GCP services.${RESET_FORMAT}"
 gcloud services enable \
-cloudkms.googleapis.com \
-run.googleapis.com \
-cloudbuild.googleapis.com \
-container.googleapis.com \
-containerregistry.googleapis.com \
-artifactregistry.googleapis.com \
-containerscanning.googleapis.com \
-ondemandscanning.googleapis.com \
-binaryauthorization.googleapis.com
+    cloudkms.googleapis.com \
+    run.googleapis.com \
+    cloudbuild.googleapis.com \
+    container.googleapis.com \
+    containerregistry.googleapis.com \
+    artifactregistry.googleapis.com \
+    containerscanning.googleapis.com \
+    ondemandscanning.googleapis.com \
+    binaryauthorization.googleapis.com
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Step 3:${RESET_FORMAT} ${GREEN_TEXT}Setting up the sample application.${RESET_FORMAT}"
 mkdir sample-app && cd sample-app
@@ -46,21 +46,21 @@ gcloud storage cp gs://spls/gsp521/* .
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Step 4:${RESET_FORMAT} ${GREEN_TEXT}Creating Artifact Registry repositories.${RESET_FORMAT}"
 gcloud artifacts repositories create artifact-scanning-repo \
---repository-format=docker \
---location=$REGION \
---description="Scanning repository"
+    --repository-format=docker \
+    --location=$REGION \
+    --description="Scanning repository"
 
 gcloud artifacts repositories create artifact-prod-repo \
---repository-format=docker \
---location=$REGION \
---description="Production repository"
+    --repository-format=docker \
+    --location=$REGION \
+    --description="Production repository"
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Step 5:${RESET_FORMAT} ${GREEN_TEXT}Configuring Docker authentication.${RESET_FORMAT}"
 gcloud auth configure-docker $REGION-docker.pkg.dev
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Step 6:${RESET_FORMAT} ${GREEN_TEXT}Adding IAM policy bindings.${RESET_FORMAT}"
 gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" --role="roles/iam.serviceAccountUser"
- 
+
 gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" --role="roles/ondemandscanning.admin"
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Step 7:${RESET_FORMAT} ${GREEN_TEXT}Creating a Cloud Build configuration file.${RESET_FORMAT}"
@@ -90,57 +90,57 @@ echo "${CYAN_TEXT}${BOLD_TEXT}Step 8:${RESET_FORMAT} ${GREEN_TEXT}Submitting the
 gcloud builds submit
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Step 9:${RESET_FORMAT} ${GREEN_TEXT}Creating a vulnerability note.${RESET_FORMAT}"
-cat > ./vulnerability_note.json << EOM
+cat > ./vulnerability_note.json <<EOM
 {
-"attestation": {
-"hint": {
- "human_readable_name": "Container Vulnerabilities attestation authority"
-}
-}
+    "attestation": {
+        "hint": {
+            "human_readable_name": "Container Vulnerabilities attestation authority"
+        }
+    }
 }
 EOM
 
 NOTE_ID=vulnerability_note
 curl -vvv -X POST \
--H "Content-Type: application/json"  \
--H "Authorization: Bearer $(gcloud auth print-access-token)"  \
---data-binary @./vulnerability_note.json  \
-"https://containeranalysis.googleapis.com/v1/projects/${PROJECT_ID}/notes/?noteId=${NOTE_ID}"
+    -H "Content-Type: application/json"  \
+    -H "Authorization: Bearer $(gcloud auth print-access-token)"  \
+    --data-binary @./vulnerability_note.json  \
+    "https://containeranalysis.googleapis.com/v1/projects/${PROJECT_ID}/notes/?noteId=${NOTE_ID}"
 
 curl -vvv -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-"https://containeranalysis.googleapis.com/v1/projects/${PROJECT_ID}/notes/${NOTE_ID}"
+    "https://containeranalysis.googleapis.com/v1/projects/${PROJECT_ID}/notes/${NOTE_ID}"
 
 echo "${CYAN_TEXT}${BOLD_TEXT}Step 10:${RESET_FORMAT} ${GREEN_TEXT}Creating an attestor.${RESET_FORMAT}"
 ATTESTOR_ID=vulnerability-attestor
 gcloud container binauthz attestors create $ATTESTOR_ID \
---attestation-authority-note=$NOTE_ID \
---attestation-authority-note-project=${PROJECT_ID}
+    --attestation-authority-note=$NOTE_ID \
+    --attestation-authority-note-project=${PROJECT_ID}
 
 PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}"  --format="value(projectNumber)")
- 
+
 BINAUTHZ_SA_EMAIL="service-${PROJECT_NUMBER}@gcp-sa-binaryauthorization.iam.gserviceaccount.com"
- 
-cat > ./iam_request.json << EOM
+
+cat > ./iam_request.json <<EOM
 {
-'resource': 'projects/${PROJECT_ID}/notes/${NOTE_ID}',
-'policy': {
-'bindings': [
- {
-     'role': 'roles/containeranalysis.notes.occurrences.viewer',
-     'members': [
-         'serviceAccount:${BINAUTHZ_SA_EMAIL}'
-     ]
- }
-]
-}
+    "resource": "projects/${PROJECT_ID}/notes/${NOTE_ID}",
+    "policy": {
+        "bindings": [
+            {
+                "role": "roles/containeranalysis.notes.occurrences.viewer",
+                "members": [
+                    "serviceAccount:${BINAUTHZ_SA_EMAIL}"
+                ]
+            }
+        ]
+    }
 }
 EOM
 
 curl -X POST  \
--H "Content-Type: application/json" \
--H "Authorization: Bearer $(gcloud auth print-access-token)" \
---data-binary @./iam_request.json \
-"https://containeranalysis.googleapis.com/v1/projects/${PROJECT_ID}/notes/${NOTE_ID}:setIamPolicy"
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+    --data-binary @./iam_request.json \
+    "https://containeranalysis.googleapis.com/v1/projects/${PROJECT_ID}/notes/${NOTE_ID}:setIamPolicy"
 
 KEY_LOCATION=global
 KEYRING=binauthz-keys
@@ -151,21 +151,21 @@ echo "${CYAN_TEXT}${BOLD_TEXT}Step 11:${RESET_FORMAT} ${GREEN_TEXT}Creating a KM
 gcloud kms keyrings create "${KEYRING}" --location="${KEY_LOCATION}"
 
 gcloud kms keys create "${KEY_NAME}" \
---keyring="${KEYRING}" --location="${KEY_LOCATION}" \
---purpose asymmetric-signing   \
---default-algorithm="ec-sign-p256-sha256"
+    --keyring="${KEYRING}" --location="${KEY_LOCATION}" \
+    --purpose asymmetric-signing   \
+    --default-algorithm="ec-sign-p256-sha256"
 
 gcloud beta container binauthz attestors public-keys add  \
---attestor="${ATTESTOR_ID}"  \
---keyversion-project="${PROJECT_ID}"  \
---keyversion-location="${KEY_LOCATION}" \
---keyversion-keyring="${KEYRING}" \
---keyversion-key="${KEY_NAME}" \
---keyversion="${KEY_VERSION}"
+    --attestor="${ATTESTOR_ID}"  \
+    --keyversion-project="${PROJECT_ID}"  \
+    --keyversion-location="${KEY_LOCATION}" \
+    --keyversion-keyring="${KEYRING}" \
+    --keyversion-key="${KEY_NAME}" \
+    --keyversion="${KEY_VERSION}"
 
 gcloud container binauthz policy export > my_policy.yaml
 
-cat > my_policy.yaml << EOM
+cat > my_policy.yaml <<EOM
 defaultAdmissionRule:
     enforcementMode: ENFORCED_BLOCK_AND_AUDIT_LOG
     evaluationMode: REQUIRE_ATTESTATION
@@ -178,21 +178,21 @@ EOM
 gcloud container binauthz policy import my_policy.yaml
 
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
---member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
---role roles/binaryauthorization.attestorsViewer
+    --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
+    --role roles/binaryauthorization.attestorsViewer
 
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
---member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
---role roles/cloudkms.signerVerifier
+    --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
+    --role roles/cloudkms.signerVerifier
 
 gcloud projects add-iam-policy-binding ${PROJECT_ID} --member serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com --role roles/cloudkms.signerVerifier
 
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
---member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
---role roles/containeranalysis.notes.attacher
+    --member serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
+    --role roles/containeranalysis.notes.attacher
 
 gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" --role="roles/iam.serviceAccountUser"
- 
+
 gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" --role="roles/ondemandscanning.admin"
 
 git clone https://github.com/GoogleCloudPlatform/cloud-builders-community.git
@@ -217,8 +217,8 @@ steps:
     name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
-    - '-c'
-    - |
+        - '-c'
+        - |
             (gcloud artifacts docker images scan \\
             <command url> \\
             --location us \\
@@ -228,8 +228,8 @@ steps:
     name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
-    - '-c'
-    - |
+        - '-c'
+        - |
             gcloud artifacts docker images list-vulnerabilities \$(cat /workspace/scan_id.txt) \\
             --format="value(vulnerability.effectiveSeverity)" | if grep -Fxq CRITICAL; \\
             then echo "Failed vulnerability check for CRITICAL level" && exit 1; else echo \\
@@ -259,10 +259,10 @@ steps:
     name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
-    - '-c'
-    - |
-        gcloud run deploy auth-service --image=${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:latest \
-        --binary-authorization=default --region=$REGION --allow-unauthenticated
+        - '-c'
+        - |
+            gcloud run deploy auth-service --image=${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:latest \
+            --binary-authorization=default --region=$REGION --allow-unauthenticated
 
 images:
     - ${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning-repo/sample-image:latest
@@ -272,19 +272,19 @@ sed -i "s|<command url>|${REGION}-docker.pkg.dev/${PROJECT_ID}/artifact-scanning
 
 gcloud builds submit
 
-cat > ./Dockerfile << EOF
+cat > ./Dockerfile <<EOF
 FROM python:3.8-alpine
- 
+
 # App
 WORKDIR /app
 COPY . ./
- 
+
 RUN pip3 install Flask==3.0.3
 RUN pip3 install gunicorn==23.0.0
 RUN pip3 install Werkzeug==3.0.4
- 
+
 CMD exec gunicorn --bind :\$PORT --workers 1 --threads 8 main:app
- 
+
 EOF
 
 gcloud builds submit
