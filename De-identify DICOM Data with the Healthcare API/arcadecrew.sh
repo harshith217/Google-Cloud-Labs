@@ -81,6 +81,8 @@ EOF
 echo "${CYAN_TEXT}${BOLD_TEXT}Applying the updated IAM policy to enable audit logs...${RESET_FORMAT}"
 gcloud projects set-iam-policy $PROJECT_ID policy.yaml
 
+sleep 15
+
 echo "${MAGENTA_TEXT}${BOLD_TEXT}Creating a DICOM store inside the previously created dataset...${RESET_FORMAT}"
 gcloud beta healthcare dicom-stores create $DICOM_STORE_ID --dataset=$DATASET_ID --location=$REGION
 
