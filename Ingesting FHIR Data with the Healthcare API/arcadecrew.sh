@@ -54,7 +54,7 @@ gcloud healthcare datasets create $DATASET_ID \
 
 # It's good practice to wait a bit after creating the dataset for the service account to provision
 echo "${YELLOW_TEXT}Waiting for Healthcare service account propagation...${RESET_FORMAT}"
-sleep 15
+sleep 30
 
 # --- MOVED THESE SECTIONS HERE ---
 echo "${CYAN_TEXT}Granting BigQuery Data Editor role to Healthcare service account...${RESET_FORMAT}"
