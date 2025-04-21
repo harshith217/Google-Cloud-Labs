@@ -63,17 +63,17 @@ echo "${GREEN_TEXT}Using Project:${RESET_FORMAT} ${WHITE_TEXT}${PROJECT_ID}${RES
 echo
 
 # === Task 1: Create Bigtable instance ===
-echo "${CYAN_TEXT}Task 1: Creating Bigtable instance '${INSTANCE_ID}'...${RESET_FORMAT}"
- gcloud bigtable instances create ${INSTANCE_ID} --project=${PROJECT_ID} \
-         --display-name="${INSTANCE_ID}" \
-         --cluster-config="id=${CLUSTER_ID},zone=${ZONE}" \
-         --cluster-storage-type=${STORAGE_TYPE}
+# echo "${CYAN_TEXT}Task 1: Creating Bigtable instance '${INSTANCE_ID}'...${RESET_FORMAT}"
+#  gcloud bigtable instances create ${INSTANCE_ID} --project=${PROJECT_ID} \
+#          --display-name="${INSTANCE_ID}" \
+#          --cluster-config="id=${CLUSTER_ID},zone=${ZONE}" \
+#          --cluster-storage-type=${STORAGE_TYPE}
  
- echo "${GREEN_TEXT}Instance creation command submitted. Provisioning takes several minutes.${RESET_FORMAT}"
- echo "${YELLOW_TEXT}-> IMPORTANT: Wait for instance '${INSTANCE_ID}' to show as 'Ready' in the Cloud Console before proceeding.${RESET_FORMAT}"
- echo "${BLUE_TEXT}Pausing for 90 seconds...${RESET_FORMAT}"
- sleep 90 # Basic wait time - Adjust if needed or monitor console
- echo
+#  echo "${GREEN_TEXT}Instance creation command submitted. Provisioning takes several minutes.${RESET_FORMAT}"
+#  echo "${YELLOW_TEXT}-> IMPORTANT: Wait for instance '${INSTANCE_ID}' to show as 'Ready' in the Cloud Console before proceeding.${RESET_FORMAT}"
+#  echo "${BLUE_TEXT}Pausing for 90 seconds...${RESET_FORMAT}"
+#  sleep 90 # Basic wait time - Adjust if needed or monitor console
+#  echo
 
 # === Task 2: Connect to your instance (Configure cbt) ===
 echo "${CYAN_TEXT}Task 2: Configuring cbt...${RESET_FORMAT}"
