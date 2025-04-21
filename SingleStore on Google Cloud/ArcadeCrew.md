@@ -1,9 +1,9 @@
 <h1 align="center">
-✨  Google Cloud SDK: Qwik Start - Redhat/Centos || GSP122 ✨
+✨  SingleStore on Google Cloud || GSP1096 ✨
 </h1>
 
 <div align="center">
-  <a href="https://www.cloudskillsboost.google/focuses/986?parent=catalog" target="_blank" rel="noopener noreferrer">
+  <a href="https://www.cloudskillsboost.google/focuses/56622?parent=catalog" target="_blank" rel="noopener noreferrer">
     <img src="https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white&labelColor=34A853" alt="Open Lab Badge">
   </a>
 </div>
