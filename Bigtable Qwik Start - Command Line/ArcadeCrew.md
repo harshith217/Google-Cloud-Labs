@@ -24,6 +24,8 @@
 
 > ✅ **NOTE:** *Watch Full Video to get Full Scores on Check My Progress.*
 
+* **UPDATED SOLUTION:** https://youtu.be/llmS_wyr6kM
+
 * Open `BigTable` From [HERE](https://console.cloud.google.com/bigtable/create-instance?)
 
 <div style="padding: 15px; margin: 10px 0;">
