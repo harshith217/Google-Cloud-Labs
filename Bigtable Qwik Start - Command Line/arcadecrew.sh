@@ -19,11 +19,14 @@ echo "${CYAN_TEXT}${BOLD_TEXT}==============================================${RE
 echo
 
 # === Configuration ===
-TABLE_NAME="my-table"
-COLUMN_FAMILY="cf1"
-
-# --- Dynamic Variables ---
-echo "${BLUE_TEXT}Fetching Project ID...${RESET_FORMAT}"
+INSTANCE_ID="quickstart-instance"
+ CLUSTER_ID="${INSTANCE_ID}-c1"
+ STORAGE_TYPE="SSD"
+ TABLE_NAME="my-table"
+ COLUMN_FAMILY="cf1"
+ 
+ # --- Dynamic Variables ---
+ echo "${BLUE_TEXT}Fetching Project ID...${RESET_FORMAT}"
 PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
 # Check if Project ID was found
 if [[ -z "$PROJECT_ID" ]]; then
@@ -61,14 +64,16 @@ echo
 
 # === Task 1: Create Bigtable instance ===
 echo "${CYAN_TEXT}Task 1: Creating Bigtable instance '${INSTANCE_ID}'...${RESET_FORMAT}"
-gcloud bigtable instances create quickstart-instance \
-  --cluster=quickstart-instance-c1 \
-  --cluster-zone=$ZONE \
-  --cluster-num-nodes=1 \
-  --cluster-storage-type=SSD \
-  --display-name="quickstart-instance"
-
-echo
+ gcloud bigtable instances create ${INSTANCE_ID} --project=${PROJECT_ID} \
+         --display-name="${INSTANCE_ID}" \
+         --cluster-config="id=${CLUSTER_ID},zone=${ZONE}" \
+         --cluster-storage-type=${STORAGE_TYPE}
+ 
+ echo "${GREEN_TEXT}Instance creation command submitted. Provisioning takes several minutes.${RESET_FORMAT}"
+ echo "${YELLOW_TEXT}-> IMPORTANT: Wait for instance '${INSTANCE_ID}' to show as 'Ready' in the Cloud Console before proceeding.${RESET_FORMAT}"
+ echo "${BLUE_TEXT}Pausing for 90 seconds...${RESET_FORMAT}"
+ sleep 90 # Basic wait time - Adjust if needed or monitor console
+ echo
 
 # === Task 2: Connect to your instance (Configure cbt) ===
 echo "${CYAN_TEXT}Task 2: Configuring cbt...${RESET_FORMAT}"
