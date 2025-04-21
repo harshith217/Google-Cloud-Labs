@@ -18,70 +18,75 @@ echo "${CYAN_TEXT}${BOLD_TEXT}             INITIATING EXECUTION          ${RESET
 echo "${CYAN_TEXT}${BOLD_TEXT}==============================================${RESET_FORMAT}"
 echo
 
-INSTANCE_ID="quickstart-instance"
-CLUSTER_ID="${INSTANCE_ID}-c1"
-STORAGE_TYPE="SSD"
-TABLE_NAME="my-table"
-COLUMN_FAMILY="cf1"
+INSTANCE_ID="${YELLOW_TEXT}quickstart-instance${RESET_FORMAT}"
+CLUSTER_ID="${YELLOW_TEXT}${INSTANCE_ID}-c1${RESET_FORMAT}"
+STORAGE_TYPE="${YELLOW_TEXT}SSD${RESET_FORMAT}"
+TABLE_NAME="${YELLOW_TEXT}my-table${RESET_FORMAT}"
+COLUMN_FAMILY="${YELLOW_TEXT}cf1${RESET_FORMAT}"
 
-# Attempt to get dynamic values, fallback to defaults
-PROJECT_ID=$(gcloud config get-value project 2>/dev/null || echo "YOUR_PROJECT_ID") # Replace YOUR_PROJECT_ID if needed
-REGION=$(gcloud config get-value compute/region 2>/dev/null || echo "us-central1")
-ZONE=$(gcloud config get-value compute/zone 2>/dev/null || echo "${REGION}-b")
+PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
+if [[ -z "$PROJECT_ID" ]]; then
+    echo "${RED_TEXT}${BOLD_TEXT}ERROR:${RESET_FORMAT} Could not determine Project ID. Run '${YELLOW_TEXT}gcloud config set project YOUR_PROJECT_ID${RESET_FORMAT}'"
+    exit 1
+fi
 
-echo "Using Project: $PROJECT_ID, Region: $REGION, Zone: $ZONE"
+REGION=$(gcloud config get-value compute/region 2>/dev/null)
+ZONE=$(gcloud config get-value compute/zone 2>/dev/null)
 
-# Exit immediately if a command exits with a non-zero status.
+if [[ -z "$REGION" ]]; then
+    REGION="us-central1"
+    echo "${YELLOW_TEXT}Warning:${RESET_FORMAT} Region not found, using default: ${GREEN_TEXT}$REGION${RESET_FORMAT}"
+fi
+if [[ -z "$ZONE" ]]; then
+    ZONE="${REGION}-b"
+    echo "${YELLOW_TEXT}Warning:${RESET_FORMAT} Zone not found, using default: ${GREEN_TEXT}$ZONE${RESET_FORMAT}"
+fi
+
+echo "Using Project: ${GREEN_TEXT}$PROJECT_ID${RESET_FORMAT}, Region: ${GREEN_TEXT}$REGION${RESET_FORMAT}, Zone: ${GREEN_TEXT}$ZONE${RESET_FORMAT}"
+
 set -e
 
-# === Task 1: Create Bigtable instance ===
-echo "Task 1: Creating Bigtable instance..."
+echo "${GREEN_TEXT}Task 1: Creating Bigtable instance '${INSTANCE_ID}'...${RESET_FORMAT}"
 gcloud bigtable instances create ${INSTANCE_ID} --project=${PROJECT_ID} \
     --display-name="${INSTANCE_ID}" \
-    --instance-type=PRODUCTION \
-    --cluster="${CLUSTER_ID}" \
-    --cluster-zone="${ZONE}" \
-    --cluster-storage-type=${STORAGE_TYPE} & # Run in background to allow script to continue
+    --cluster-config="id=${CLUSTER_ID},zone=${ZONE}" \
+    --cluster-storage-type=${STORAGE_TYPE}
 
-echo "Instance creation started in the background. Wait for completion in the Console."
+echo "${YELLOW_TEXT}Instance creation command submitted. Provisioning takes several minutes.${RESET_FORMAT}"
+echo "${CYAN_TEXT}-> IMPORTANT: Wait for instance '${INSTANCE_ID}' to show as 'Ready' in the Cloud Console before proceeding.${RESET_FORMAT}"
+sleep 90 
 
-
-# === Task 2: Connect to your instance (Configure cbt) ===
-echo "Task 2: Configuring cbt..."
+echo "${GREEN_TEXT}Task 2: Configuring cbt...${RESET_FORMAT}"
 echo project = ${PROJECT_ID} > ~/.cbtrc
 echo instance = ${INSTANCE_ID} >> ~/.cbtrc
-echo " ~/.cbtrc configured."
+echo "${BLUE_TEXT}~/.cbtrc configured.${RESET_FORMAT}"
 
+echo "${GREEN_TEXT}Task 3: Working with table '${TABLE_NAME}'...${RESET_FORMAT}"
 
-# === Task 3: Read and write data ===
-echo "Task 3: Working with table '${TABLE_NAME}'..."
+echo "${YELLOW_TEXT}Attempting to delete table '${TABLE_NAME}' if it exists (ignore errors if not found)...${RESET_FORMAT}"
+cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" deletetable ${TABLE_NAME} || true
 
-# Consider adding a manual prompt or a sleep here if needed.
-# echo "Pausing for 60 seconds to allow instance creation..."
-# sleep 60
-
-echo "Creating table..."
+echo "${GREEN_TEXT}Creating table...${RESET_FORMAT}"
 cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" createtable ${TABLE_NAME}
 
-echo "Listing tables:"
+echo "${BLUE_TEXT}Listing tables:${RESET_FORMAT}"
 cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" ls
 
-echo "Creating column family '${COLUMN_FAMILY}'..."
+echo "${GREEN_TEXT}Creating column family '${COLUMN_FAMILY}'...${RESET_FORMAT}"
 cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" createfamily ${TABLE_NAME} ${COLUMN_FAMILY}
 
-echo "Listing column families:"
+echo "${BLUE_TEXT}Listing column families:${RESET_FORMAT}"
 cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" ls ${TABLE_NAME}
 
-echo "Writing data..."
+echo "${GREEN_TEXT}Writing data...${RESET_FORMAT}"
 cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" set ${TABLE_NAME} r1 ${COLUMN_FAMILY}:c1="test-value"
 
-echo "Reading data:"
+echo "${BLUE_TEXT}Reading data:${RESET_FORMAT}"
 cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" read ${TABLE_NAME}
 
-echo "Deleting table..."
+echo "${RED_TEXT}Deleting table...${RESET_FORMAT}"
 cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" deletetable ${TABLE_NAME}
 
-# You can remove the set -e if you want the script to attempt subsequent commands even if one fails.
 set +e
 
 echo
