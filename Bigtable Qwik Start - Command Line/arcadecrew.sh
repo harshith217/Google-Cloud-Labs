@@ -18,76 +18,102 @@ echo "${CYAN_TEXT}${BOLD_TEXT}             INITIATING EXECUTION          ${RESET
 echo "${CYAN_TEXT}${BOLD_TEXT}==============================================${RESET_FORMAT}"
 echo
 
-INSTANCE_ID="${YELLOW_TEXT}quickstart-instance${RESET_FORMAT}"
-CLUSTER_ID="${YELLOW_TEXT}${INSTANCE_ID}-c1${RESET_FORMAT}"
-STORAGE_TYPE="${YELLOW_TEXT}SSD${RESET_FORMAT}"
-TABLE_NAME="${YELLOW_TEXT}my-table${RESET_FORMAT}"
-COLUMN_FAMILY="${YELLOW_TEXT}cf1${RESET_FORMAT}"
+# === Configuration ===
+INSTANCE_ID="quickstart-instance"
+CLUSTER_ID="${INSTANCE_ID}-c1"
+STORAGE_TYPE="SSD"
+TABLE_NAME="my-table"
+COLUMN_FAMILY="cf1"
 
+# --- Dynamic Variables ---
+echo "${BLUE_TEXT}Fetching Project ID...${RESET_FORMAT}"
 PROJECT_ID=$(gcloud config get-value project 2>/dev/null)
+# Check if Project ID was found
 if [[ -z "$PROJECT_ID" ]]; then
-    echo "${RED_TEXT}${BOLD_TEXT}ERROR:${RESET_FORMAT} Could not determine Project ID. Run '${YELLOW_TEXT}gcloud config set project YOUR_PROJECT_ID${RESET_FORMAT}'"
-    exit 1
+    echo "${RED_TEXT}ERROR: Could not determine Project ID. Run 'gcloud config set project YOUR_PROJECT_ID'${RESET_FORMAT}"
+    exit 1 # Exit if project ID is essential
 fi
 
-REGION=$(gcloud config get-value compute/region 2>/dev/null)
+# --- Determine Zone and Region ---
+echo "${BLUE_TEXT}Fetching Compute Zone...${RESET_FORMAT}"
 ZONE=$(gcloud config get-value compute/zone 2>/dev/null)
 
-if [[ -z "$REGION" ]]; then
-    REGION="us-central1"
-    echo "${YELLOW_TEXT}Warning:${RESET_FORMAT} Region not found, using default: ${GREEN_TEXT}$REGION${RESET_FORMAT}"
-fi
+# --- Prompt for Zone if Empty ---
 if [[ -z "$ZONE" ]]; then
-    ZONE="${REGION}-b"
-    echo "${YELLOW_TEXT}Warning:${RESET_FORMAT} Zone not found, using default: ${GREEN_TEXT}$ZONE${RESET_FORMAT}"
+        echo "${YELLOW_TEXT}Warning: Compute zone not found in gcloud config.${RESET_FORMAT}"
+        echo
+        read -p "${BLUE_TEXT}Please enter the zone: ${RESET_FORMAT}" ZONE
+        if [[ -z "$ZONE" ]]; then
+                        echo "${RED_TEXT}ERROR: Zone cannot be empty. Exiting.${RESET_FORMAT}"
+        fi
+        echo "${GREEN_TEXT}Using manually entered zone: ${WHITE_TEXT}${ZONE}${RESET_FORMAT}"
+        echo "${BLUE_TEXT}Setting compute/zone in gcloud config...${RESET_FORMAT}"
+        gcloud config set compute/zone $ZONE
 fi
 
-echo "Using Project: ${GREEN_TEXT}$PROJECT_ID${RESET_FORMAT}, Region: ${GREEN_TEXT}$REGION${RESET_FORMAT}, Zone: ${GREEN_TEXT}$ZONE${RESET_FORMAT}"
+REGION=${ZONE%-*} # Removes the last '-' and everything after it
 
-set -e
+# Check if Region derivation worked (basic check)
+if [[ -z "$REGION" ]] || [[ "$REGION" == "$ZONE" ]]; then
+                echo "${RED_TEXT}ERROR: Could not derive region from zone '${ZONE}'. Please ensure zone is in a standard format (e.g., region-x). Exiting.${RESET_FORMAT}"
+fi
 
-echo "${GREEN_TEXT}Task 1: Creating Bigtable instance '${INSTANCE_ID}'...${RESET_FORMAT}"
+echo "${GREEN_TEXT}Using Project:${RESET_FORMAT} ${WHITE_TEXT}${PROJECT_ID}${RESET_FORMAT}, ${GREEN_TEXT}Region:${RESET_FORMAT} ${WHITE_TEXT}${REGION}${RESET_FORMAT}, ${GREEN_TEXT}Zone:${RESET_FORMAT} ${WHITE_TEXT}${ZONE}${RESET_FORMAT}"
+echo
+
+# === Task 1: Create Bigtable instance ===
+echo "${CYAN_TEXT}Task 1: Creating Bigtable instance '${INSTANCE_ID}'...${RESET_FORMAT}"
 gcloud bigtable instances create ${INSTANCE_ID} --project=${PROJECT_ID} \
-    --display-name="${INSTANCE_ID}" \
-    --cluster-config="id=${CLUSTER_ID},zone=${ZONE}" \
-    --cluster-storage-type=${STORAGE_TYPE}
+        --display-name="${INSTANCE_ID}" \
+        --cluster-config="id=${CLUSTER_ID},zone=${ZONE}" \
+        --cluster-storage-type=${STORAGE_TYPE}
 
-echo "${YELLOW_TEXT}Instance creation command submitted. Provisioning takes several minutes.${RESET_FORMAT}"
-echo "${CYAN_TEXT}-> IMPORTANT: Wait for instance '${INSTANCE_ID}' to show as 'Ready' in the Cloud Console before proceeding.${RESET_FORMAT}"
-sleep 90 
+echo "${GREEN_TEXT}Instance creation command submitted. Provisioning takes several minutes.${RESET_FORMAT}"
+echo "${YELLOW_TEXT}-> IMPORTANT: Wait for instance '${INSTANCE_ID}' to show as 'Ready' in the Cloud Console before proceeding.${RESET_FORMAT}"
+echo "${BLUE_TEXT}Pausing for 90 seconds...${RESET_FORMAT}"
+sleep 90 # Basic wait time - Adjust if needed or monitor console
+echo
 
-echo "${GREEN_TEXT}Task 2: Configuring cbt...${RESET_FORMAT}"
+# === Task 2: Connect to your instance (Configure cbt) ===
+echo "${CYAN_TEXT}Task 2: Configuring cbt...${RESET_FORMAT}"
 echo project = ${PROJECT_ID} > ~/.cbtrc
 echo instance = ${INSTANCE_ID} >> ~/.cbtrc
-echo "${BLUE_TEXT}~/.cbtrc configured.${RESET_FORMAT}"
+echo "${GREEN_TEXT}~/.cbtrc configured.${RESET_FORMAT}"
+echo
 
-echo "${GREEN_TEXT}Task 3: Working with table '${TABLE_NAME}'...${RESET_FORMAT}"
+# === Task 3: Read and write data ===
+echo "${CYAN_TEXT}Task 3: Working with table '${TABLE_NAME}'...${RESET_FORMAT}"
 
-echo "${YELLOW_TEXT}Attempting to delete table '${TABLE_NAME}' if it exists (ignore errors if not found)...${RESET_FORMAT}"
-cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" deletetable ${TABLE_NAME} || true
+# Attempt to delete table first in case of prior partial run (optional)
+echo "${BLUE_TEXT}Attempting to delete table '${TABLE_NAME}' if it exists (ignore errors if not found)...${RESET_FORMAT}"
+cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" deletetable ${TABLE_NAME} || true # Suppress errors if table doesn't exist
 
-echo "${GREEN_TEXT}Creating table...${RESET_FORMAT}"
+echo "${BLUE_TEXT}Creating table '${TABLE_NAME}'...${RESET_FORMAT}"
 cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" createtable ${TABLE_NAME}
 
 echo "${BLUE_TEXT}Listing tables:${RESET_FORMAT}"
 cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" ls
 
-echo "${GREEN_TEXT}Creating column family '${COLUMN_FAMILY}'...${RESET_FORMAT}"
+echo "${BLUE_TEXT}Creating column family '${COLUMN_FAMILY}'...${RESET_FORMAT}"
 cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" createfamily ${TABLE_NAME} ${COLUMN_FAMILY}
 
 echo "${BLUE_TEXT}Listing column families:${RESET_FORMAT}"
 cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" ls ${TABLE_NAME}
 
-echo "${GREEN_TEXT}Writing data...${RESET_FORMAT}"
+echo "${YELLOW_TEXT}-> MANUAL STEP: Click 'Check my progress' for 'Create a table' in the lab UI.${RESET_FORMAT}"
+
+echo "${BLUE_TEXT}Writing data to '${TABLE_NAME}'...${RESET_FORMAT}"
 cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" set ${TABLE_NAME} r1 ${COLUMN_FAMILY}:c1="test-value"
 
-echo "${BLUE_TEXT}Reading data:${RESET_FORMAT}"
+echo "${BLUE_TEXT}Reading data from '${TABLE_NAME}':${RESET_FORMAT}"
 cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" read ${TABLE_NAME}
 
-echo "${RED_TEXT}Deleting table...${RESET_FORMAT}"
+echo "${BLUE_TEXT}Deleting table '${TABLE_NAME}'...${RESET_FORMAT}"
 cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" deletetable ${TABLE_NAME}
 
-set +e
+echo "${GREEN_TEXT}Table operations completed.${RESET_FORMAT}"
+
+set +e # Continue script even if some commands fail (already present)
 
 echo
 echo "${RED_TEXT}${BOLD_TEXT}Subscribe my Channel (Arcade Crew):${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
