@@ -24,7 +24,7 @@
 
 > ✅ **NOTE:** *Watch Full Video to get Full Scores on Check My Progress.*
 
-* Open BigTable From [HERE](https://console.cloud.google.com/bigtable/instances?)
+* Open `BigTable` From [HERE](https://console.cloud.google.com/bigtable/instances?)
 
 <div style="padding: 15px; margin: 10px 0;">
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
