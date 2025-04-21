@@ -144,8 +144,6 @@ task6_pubsub_dataflow() {
 }
 
 main() {
-        print_banner
-        
         task5_setup_storage
         task6_pubsub_dataflow
         }
