@@ -100,8 +100,6 @@ cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" createfamily ${TABLE_NAM
 echo "${BLUE_TEXT}Listing column families:${RESET_FORMAT}"
 cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" ls ${TABLE_NAME}
 
-echo "${YELLOW_TEXT}-> MANUAL STEP: Click 'Check my progress' for 'Create a table' in the lab UI.${RESET_FORMAT}"
-
 echo "${BLUE_TEXT}Writing data to '${TABLE_NAME}'...${RESET_FORMAT}"
 cbt -project "${PROJECT_ID}" -instance "${INSTANCE_ID}" set ${TABLE_NAME} r1 ${COLUMN_FAMILY}:c1="test-value"
 
