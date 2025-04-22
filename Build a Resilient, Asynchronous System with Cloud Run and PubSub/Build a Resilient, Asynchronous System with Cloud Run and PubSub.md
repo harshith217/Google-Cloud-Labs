@@ -16,6 +16,8 @@ This guide is provided to support your educational journey in this lab. Please o
 
 ### Run in Cloudshell:  
 
+* THIS IS **OLD SOLUTION**, WATCH **`UPDATED SOLUTION`** [HERE](https://youtu.be/JLWgvbcAMRY)
+
 ```bash
 curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Build%20a%20Resilient%2C%20Asynchronous%20System%20with%20Cloud%20Run%20and%20PubSub/arcadecrew.sh
 
