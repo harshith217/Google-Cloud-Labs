@@ -1,19 +1,21 @@
 #!/bin/bash
-
-# Define color variables
-YELLOW_TEXT=$'\033[0;33m'
-MAGENTA_TEXT=$'\033[0;35m'
-NO_COLOR=$'\033[0m'
-GREEN_TEXT=$'\033[0;32m'
-RED_TEXT=$'\033[0;31m'
-CYAN_TEXT=$'\033[0;36m'
-BOLD_TEXT=$'\033[1m'
+BLACK_TEXT=$'\033[0;90m'
+RED_TEXT=$'\033[0;91m'
+GREEN_TEXT=$'\033[0;92m'
+YELLOW_TEXT=$'\033[0;93m'
+BLUE_TEXT=$'\033[0;94m'
+MAGENTA_TEXT=$'\033[0;95m'
+CYAN_TEXT=$'\033[0;96m'
+WHITE_TEXT=$'\033[0;97m'
 RESET_FORMAT=$'\033[0m'
-BLUE_TEXT=$'\033[0;34m'
+BOLD_TEXT=$'\033[1m'
+UNDERLINE_TEXT=$'\033[4m'
+clear
 
-# Start of the script
 echo
-echo "${CYAN_TEXT}${BOLD_TEXT}Starting the process...${RESET_FORMAT}"
+echo "${CYAN_TEXT}${BOLD_TEXT}==============================================${RESET_FORMAT}"
+echo "${CYAN_TEXT}${BOLD_TEXT}             INITIATING EXECUTION          ${RESET_FORMAT}"
+echo "${CYAN_TEXT}${BOLD_TEXT}==============================================${RESET_FORMAT}"
 echo
 
 # User input for ZONE
@@ -112,7 +114,7 @@ EOF_CP
 
 # Create Dockerfile for lab-service
 cat > Dockerfile <<EOF_CP
-FROM node:10
+FROM node:18
 WORKDIR /usr/src/app
 COPY package.json package*.json ./
 RUN npm install --only=production
@@ -187,7 +189,7 @@ EOF_CP
 
 # Create Dockerfile for email-service
 cat > Dockerfile <<EOF_CP
-FROM node:10
+FROM node:18
 WORKDIR /usr/src/app
 COPY package.json package*.json ./
 RUN npm install --only=production
@@ -301,7 +303,7 @@ echo "${GREEN_TEXT}${BOLD_TEXT}SMS service setup completed successfully!${RESET_
 
 echo "${YELLOW_TEXT}${BOLD_TEXT}Step 15: Creating Dockerfile for the application...${RESET_FORMAT}"
 cat > Dockerfile <<EOF_CP
-FROM node:10
+FROM node:18
 WORKDIR /usr/src/app
 COPY package.json package*.json ./
 RUN npm install --only=production
@@ -312,26 +314,46 @@ echo "${GREEN_TEXT}Dockerfile created successfully!${RESET_FORMAT}"
 echo
 
 echo "${YELLOW_TEXT}${BOLD_TEXT}Step 16: Deploying the lab-report-service...${RESET_FORMAT}"
+
+# Define maximum retry attempts
+MAX_RETRIES=3
+retry_count=0
+
 deploy_function() {
   gcloud builds submit \
     --tag gcr.io/$GOOGLE_CLOUD_PROJECT/lab-report-service
+  build_result=$?
+  
+  if [ $build_result -ne 0 ]; then
+    return 1
+  fi
+  
   gcloud run deploy lab-report-service \
     --image gcr.io/$GOOGLE_CLOUD_PROJECT/lab-report-service \
     --platform managed \
     --region $REGION \
     --allow-unauthenticated \
     --max-instances=1
+  return $?
 }
 
 deploy_success=false
 
-while [ "$deploy_success" = false ]; do
+while [ "$deploy_success" = false ] && [ $retry_count -lt $MAX_RETRIES ]; do
+  echo "${YELLOW_TEXT}Deployment attempt $(($retry_count+1))/${MAX_RETRIES}${RESET_FORMAT}"
   if deploy_function; then
     echo "${GREEN_TEXT}lab-report-service deployed successfully!${RESET_FORMAT}"
     deploy_success=true
   else
-    echo "${RED_TEXT}Retrying, please wait...${RESET_FORMAT}"
-    sleep 10
+    retry_count=$((retry_count+1))
+    if [ $retry_count -lt $MAX_RETRIES ]; then
+      echo "${RED_TEXT}Deployment failed. Retrying in 10 seconds (Attempt $retry_count/$MAX_RETRIES)...${RESET_FORMAT}"
+      sleep 10
+    else
+      echo "${RED_TEXT}${BOLD_TEXT}Maximum retry attempts reached. Moving to next step.${RESET_FORMAT}"
+      # Continue with script even if this deployment fails
+      break
+    fi
   fi
 done
 echo
@@ -416,19 +438,6 @@ while [ "$deploy_success" = false ]; do
     sleep 10
   fi
 done
-echo
-
-
-# Safely delete the script if it exists
-SCRIPT_NAME="arcadecrew.sh"
-if [ -f "$SCRIPT_NAME" ]; then
-    echo -e "${BOLD_TEXT}${RED_TEXT}Deleting the script ($SCRIPT_NAME) for safety purposes...${RESET_FORMAT}${NO_COLOR}"
-    rm -- "$SCRIPT_NAME"
-fi
 
 echo
-echo
-# Completion message
-echo -e "${MAGENTA_TEXT}${BOLD_TEXT}Lab Completed Successfully!${RESET_FORMAT}"
-echo -e "${GREEN_TEXT}${BOLD_TEXT}Subscribe our Channel:${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
-echo
+echo "${RED_TEXT}${BOLD_TEXT}Subscribe to my Channel (Arcade Crew):${RESET_FORMAT} ${BLUE_TEXT}${BOLD_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
