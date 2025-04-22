@@ -20,8 +20,7 @@ echo
 
 # User input for ZONE
 echo "${YELLOW_TEXT}${BOLD_TEXT}Step 1: Set the compute zone.${RESET_FORMAT}"
-echo "${MAGENTA_TEXT}Please Enter ZONE:${NO_COLOR}"
-read -p "ZONE: " ZONE
+read -p "${CYAN_TEXT}Enter the ZONE: ${RESET_FORMAT}" ZONE
 export ZONE
 
 # Set PROJECT_ID
