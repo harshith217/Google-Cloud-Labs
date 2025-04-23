@@ -1,55 +1,92 @@
-# Define color codes for output formatting
-YELLOW_COLOR='\033[0;33m'
-BACKGROUND_RED=`tput setab 1`
-GREEN_TEXT=`tput setab 2`
-RED_TEXT=`tput setaf 1`
+#!/bin/bash
+# Define text formatting variables
+BLACK_TEXT=$'\033[0;90m'
+RED_TEXT=$'\033[0;91m'
+GREEN_TEXT=$'\033[0;92m'
+YELLOW_TEXT=$'\033[0;93m'
+BLUE_TEXT=$'\033[0;94m'
+MAGENTA_TEXT=$'\033[0;95m'
+CYAN_TEXT=$'\033[0;96m'
+WHITE_TEXT=$'\033[0;97m'
+RESET_FORMAT=$'\033[0m'
+BOLD_TEXT=$'\033[1m'
+UNDERLINE_TEXT=$'\033[4m'
 
-BOLD_TEXT=`tput bold`
-RESET_FORMAT=`tput sgr0`
+# Clear the screen for a fresh start
+clear
 
-NO_COLOR='\033[0m'
+# Display initial banner
+echo
+echo "${CYAN_TEXT}${BOLD_TEXT}=========================================${RESET_FORMAT}"
+echo "${CYAN_TEXT}${BOLD_TEXT}         INITIATING EXECUTION...${RESET_FORMAT}"
+echo "${CYAN_TEXT}${BOLD_TEXT}=========================================${RESET_FORMAT}"
+echo
 
-echo "${BACKGROUND_RED}${BOLD_TEXT}Initiating Execution...${RESET_FORMAT}"
+# --- Fetching Instance Details ---
+echo "${YELLOW_TEXT}${BOLD_TEXT}🔍 Fetching zone information for existing instances...${RESET_FORMAT}"
+export ZONE_1=$(gcloud compute instances list mynet-vm-1 --format 'csv[no-heading](zone)' 2>/dev/null)
+export ZONE_2=$(gcloud compute instances list mynet-vm-2 --format 'csv[no-heading](zone)' 2>/dev/null)
 
-# Fetch zones for instances
-export INSTANCE_ZONE_1=$(gcloud compute instances list mynet-vm-1 --format 'csv[no-heading](zone)')
-export INSTANCE_ZONE_2=$(gcloud compute instances list mynet-vm-2 --format 'csv[no-heading](zone)')
+# Check if zones were found
+if [ -z "$ZONE_1" ] || [ -z "$ZONE_2" ]; then
+    echo "${RED_TEXT}${BOLD_TEXT}Error: Could not retrieve zone information for mynet-vm-1 or mynet-vm-2. Please ensure these instances exist.${RESET_FORMAT}"
+    exit 1
+fi
 
-# Determine regions from zones
-export REGION_1=$(echo "$INSTANCE_ZONE_1" | cut -d '-' -f 1-2)
-export REGION_2=$(echo "$INSTANCE_ZONE_2" | cut -d '-' -f 1-2)
+# Derive regions from zones
+export REGION_1=$(echo "$ZONE_1" | cut -d '-' -f 1-2)
+export REGION_2=$(echo "$ZONE_2" | cut -d '-' -f 1-2)
 
-# Set up the management network
+echo "${GREEN_TEXT}Zone 1 identified: ${BOLD_TEXT}$ZONE_1${RESET_FORMAT}"
+echo "${GREEN_TEXT}Region 1 derived: ${BOLD_TEXT}$REGION_1${RESET_FORMAT}"
+echo "${GREEN_TEXT}Zone 2 identified: ${BOLD_TEXT}$ZONE_2${RESET_FORMAT}"
+echo "${GREEN_TEXT}Region 2 derived: ${BOLD_TEXT}$REGION_2${RESET_FORMAT}"
+echo
+
+# --- Network Creation ---
+echo "${YELLOW_TEXT}${BOLD_TEXT}🛠️ Creating the 'managementnet' VPC network...${RESET_FORMAT}"
 gcloud compute networks create managementnet --subnet-mode=custom
 
-# Add the management subnet in the first region
+echo "${YELLOW_TEXT}${BOLD_TEXT} subnet for 'managementnet' in region ${REGION_1}...${RESET_FORMAT}"
 gcloud compute networks subnets create managementsubnet-1 --network=managementnet --region=$REGION_1 --range=10.130.0.0/20
 
-# Configure the private network
+echo "${YELLOW_TEXT}${BOLD_TEXT}🛠️ Creating the 'privatenet' VPC network...${RESET_FORMAT}"
 gcloud compute networks create privatenet --subnet-mode=custom
 
-# Establish first private subnet in the initial region
+echo "${YELLOW_TEXT}${BOLD_TEXT} Creating the first private subnet 'privatesubnet-1' in region ${REGION_1}...${RESET_FORMAT}"
 gcloud compute networks subnets create privatesubnet-1 --network=privatenet --region=$REGION_1 --range=172.16.0.0/24
 
-# Set up the second private subnet in the alternate region
+echo "${YELLOW_TEXT}${BOLD_TEXT} Creating the second private subnet 'privatesubnet-2' in region ${REGION_2}...${RESET_FORMAT}"
 gcloud compute networks subnets create privatesubnet-2 --network=privatenet --region=$REGION_2 --range=172.20.0.0/20
+echo
 
-# Define firewall rules before launching instances
+# --- Firewall Rule Creation ---
+echo "${YELLOW_TEXT}${BOLD_TEXT}🛡️ Configuring firewall rule 'managementnet-allow-icmp-ssh-rdp' for management network...${RESET_FORMAT}"
 gcloud compute firewall-rules create managementnet-allow-icmp-ssh-rdp --direction=INGRESS --priority=1000 --network=managementnet --action=ALLOW --rules=icmp,tcp:22,tcp:3389 --source-ranges=0.0.0.0/0
+
+echo "${YELLOW_TEXT}${BOLD_TEXT}🛡️ Configuring firewall rule 'privatenet-allow-icmp-ssh-rdp' for private network...${RESET_FORMAT}"
 gcloud compute firewall-rules create privatenet-allow-icmp-ssh-rdp --direction=INGRESS --priority=1000 --network=privatenet --action=ALLOW --rules=icmp,tcp:22,tcp:3389 --source-ranges=0.0.0.0/0
+echo
 
-# Launch Instances
-gcloud compute instances create managementnet-vm-1 --zone=$INSTANCE_ZONE_1 --machine-type=e2-micro --subnet=managementsubnet-1
-gcloud compute instances create privatenet-vm-1 --zone=$INSTANCE_ZONE_1 --machine-type=e2-micro --subnet=privatesubnet-1
+# --- Instance Creation ---
+echo "${YELLOW_TEXT}${BOLD_TEXT}⚙️ Creating instance 'managementnet-vm-1' in zone ${ZONE_1}...${RESET_FORMAT}"
+gcloud compute instances create managementnet-vm-1 --zone=$ZONE_1 --machine-type=e2-micro --subnet=managementsubnet-1
 
-# Deploy the appliance instance with network interfaces
+echo "${YELLOW_TEXT}${BOLD_TEXT}⚙️ Creating instance 'privatenet-vm-1' in zone ${ZONE_1}...${RESET_FORMAT}"
+gcloud compute instances create privatenet-vm-1 --zone=$ZONE_1 --machine-type=e2-micro --subnet=privatesubnet-1
+
+echo "${YELLOW_TEXT}${BOLD_TEXT}⚙️ Creating the multi-NIC 'vm-appliance' instance in zone ${ZONE_1}...${RESET_FORMAT}"
+echo "${BLUE_TEXT}   Attaching interfaces to privatenet-1, managementsubnet-1, and mynetwork.${RESET_FORMAT}"
 gcloud compute instances create vm-appliance \
---zone=$INSTANCE_ZONE_1 \
+--zone=$ZONE_1 \
 --machine-type=e2-standard-4 \
 --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=privatesubnet-1 \
 --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=managementsubnet-1 \
 --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=mynetwork
 
-# Completion message
-echo -e "${RED_TEXT}${BOLD_TEXT}Lab Completed Successfully!${RESET_FORMAT}"
-echo -e "${GREEN_TEXT}${BOLD_TEXT}Check out our Channel: \e]8;;https://www.youtube.com/@Arcade61432\e\\https://www.youtube.com/@Arcade61432\e]8;;\e\\${RESET_FORMAT}"
+# --- Final Message ---
+echo
+echo "${MAGENTA_TEXT}${BOLD_TEXT}💖 Enjoyed the video? Consider subscribing to Arcade Crew! 👇${RESET_FORMAT}"
+echo "${BLUE_TEXT}${BOLD_TEXT}${UNDERLINE_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
+echo
+
