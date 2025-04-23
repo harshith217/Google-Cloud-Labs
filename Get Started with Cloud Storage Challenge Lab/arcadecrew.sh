@@ -30,7 +30,7 @@ echo
 run_form_1() {
     export BUCKET="$(gcloud config get-value project)"        
 
-    gsutil mb -p $BUCKET gs://$Bucket_1
+    gsutil mb -p "$BUCKET" -c coldline gs://$Bucket_1
     gsutil retention set 30s gs://$Bucket_2
     echo "Arcade Crew" > sample.txt
     gsutil cp sample.txt gs://$Bucket_3/
