@@ -172,7 +172,7 @@ for (( i=1; i<=$total_seconds; i++ )); do
     bar+="]"
 
     # Print the progress bar with percentage, using carriage return \r
-    printf "\r${GREEN_TEXT}${BOLD_TEXT}%s %d%%%${RESET_FORMAT}" "$bar" "$percentage"
+    printf "\r${GREEN_TEXT}${BOLD_TEXT}%s %d%%${RESET_FORMAT}" "$bar" "$percentage"
 
     # Wait for 1 second
     sleep 1
@@ -232,7 +232,7 @@ for (( i=1; i<=$total_seconds; i++ )); do
     bar+="]"
 
     # Print the progress bar with percentage, using carriage return \r
-    printf "\r${BLUE_TEXT}${BOLD_TEXT}%s %d%%%${RESET_FORMAT}" "$bar" "$percentage"
+    printf "\r${BLUE_TEXT}${BOLD_TEXT}%s %d%%${RESET_FORMAT}" "$bar" "$percentage"
 
     # Wait for 1 second
     sleep 1
