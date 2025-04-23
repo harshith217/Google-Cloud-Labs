@@ -51,6 +51,11 @@ echo -e "${BLUE_TEXT}${BOLD_TEXT}🔑 Generating service account key file...${RE
 gcloud iam service-accounts keys create sample-sa-key.json --iam-account sample-sa@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com
 export GOOGLE_APPLICATION_CREDENTIALS=${PWD}/sample-sa-key.json
 echo -e "${GREEN_TEXT}✅ Key generated and GOOGLE_APPLICATION_CREDENTIALS set.${RESET_FORMAT}"
+
+# Add verification step
+echo -e "${BLUE_TEXT}${BOLD_TEXT}🔍 Verifying service account authentication...${RESET_FORMAT}"
+gcloud auth activate-service-account --key-file=${PWD}/sample-sa-key.json
+echo -e "${GREEN_TEXT}✅ Service account activated.${RESET_FORMAT}"
 echo
 
 echo -e "${BLUE_TEXT}${BOLD_TEXT}📥 Downloading the image analysis Python script...${RESET_FORMAT}"
@@ -63,10 +68,15 @@ sed -i "s/'en'/'${LOCAL}'/g" analyze-images-v2.py
 echo -e "${GREEN_TEXT}✅ Locale successfully updated in the script.${RESET_FORMAT}"
 echo
 
+echo -e "${BLUE_TEXT}${BOLD_TEXT}📦 Ensuring storage bucket exists...${RESET_FORMAT}"
+gsutil ls -b gs://$DEVSHELL_PROJECT_ID || gsutil mb -l us-central1 gs://$DEVSHELL_PROJECT_ID
+echo -e "${GREEN_TEXT}✅ Bucket ready.${RESET_FORMAT}"
+echo
+
 echo -e "${BLUE_TEXT}${BOLD_TEXT}🤖 Executing the image analysis script...${RESET_FORMAT}"
-python3 analyze-images-v2.py
+# Remove the first call without parameters
 python3 analyze-images-v2.py $DEVSHELL_PROJECT_ID $DEVSHELL_PROJECT_ID
-echo -e "${GREEN_TEXT}✅ Image analysis script finished.${RESET_FORMAT}"
+echo -e "${GREEN_TEXT}✅ Image analysis complete.${RESET_FORMAT}"
 echo
 
 echo -e "${BOLD_CYAN}🔍 Querying BigQuery for locale distribution...${RESET_FORMAT}"
