@@ -315,19 +315,31 @@ gcloud builds list --region=$REGION
 echo
 
 # Step 27: Fetch and display logs for the latest build triggered by the last commit
-echo "${BLUE_TEXT}${BOLD_TEXT}📜 Step 27: Attempting to fetch logs for the Cloud Build triggered by the latest commit...${RESET_FORMAT}"
-gcloud builds log --region=$REGION $(gcloud builds list --format='value(ID)' --filter=$(git rev-parse HEAD) --region=$REGION)
+echo "${BLUE_TEXT}${BOLD_TEXT}📜 Step 27: Checking for Cloud Build logs...${RESET_FORMAT}"
+# First check if any builds exist
+BUILD_COUNT=$(gcloud builds list --region=$REGION --limit=5 | grep -c "SUCCESS\|WORKING\|FAILURE\|QUEUED" || echo "0")
+
+if [ "$BUILD_COUNT" -gt 0 ]; then
+  LATEST_BUILD_ID=$(gcloud builds list --limit=1 --format="value(id)" --region=$REGION)
+  echo "${BLUE_TEXT}Found build with ID: $LATEST_BUILD_ID${RESET_FORMAT}"
+  gcloud builds log "$LATEST_BUILD_ID" --region=$REGION
+else
+  echo "${YELLOW_TEXT}${BOLD_TEXT}⚠️ No builds found yet. This is normal if the trigger was just created.${RESET_FORMAT}"
+  echo "${YELLOW_TEXT}It may take a few minutes for the build to start after pushing changes.${RESET_FORMAT}"
+  echo "${BLUE_TEXT}You can check builds manually at:${RESET_FORMAT}"
+  echo "${WHITE_TEXT}${UNDERLINE_TEXT}https://console.cloud.google.com/cloud-build/builds?project=$PROJECT_ID${RESET_FORMAT}"
+fi
 echo
 
-# Step 28: Sleep for 15 seconds to allow build logs to update further
-echo "${MAGENTA_TEXT}${BOLD_TEXT}⏱️ Step 28: Pausing briefly again to allow build logs to fully populate...${RESET_FORMAT}"
-show_progress 15 "Allowing logs to update"
-echo
+# # Step 28: Sleep for 15 seconds to allow build logs to update further
+# echo "${MAGENTA_TEXT}${BOLD_TEXT}⏱️ Step 28: Pausing briefly again to allow build logs to fully populate...${RESET_FORMAT}"
+# show_progress 15 "Allowing logs to update"
+# echo
 
-# Step 29: Extract and display the Hosting URL from Cloud Build logs (if build found)
-echo "${CYAN_TEXT}${BOLD_TEXT}🔗 Step 29: Attempting to extract the Firebase Hosting URL from the build logs...${RESET_FORMAT}"
-gcloud builds log "$(gcloud builds list --format='value(ID)' --filter=$(git rev-parse HEAD) --region=$REGION)" --region=$REGION | grep "Hosting URL"
-echo
+# # Step 29: Extract and display the Hosting URL from Cloud Build logs (if build found)
+# echo "${CYAN_TEXT}${BOLD_TEXT}🔗 Step 29: Attempting to extract the Firebase Hosting URL from the build logs...${RESET_FORMAT}"
+# gcloud builds log "$(gcloud builds list --format='value(ID)' --filter=$(git rev-parse HEAD) --region=$REGION)" --region=$REGION | grep "Hosting URL"
+# echo
 
 
 echo
