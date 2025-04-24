@@ -326,8 +326,13 @@ if [ "$BUILD_COUNT" -gt 0 ]; then
 else
   echo "${YELLOW_TEXT}${BOLD_TEXT}⚠️ No builds found yet. This is normal if the trigger was just created.${RESET_FORMAT}"
   echo "${YELLOW_TEXT}It may take a few minutes for the build to start after pushing changes.${RESET_FORMAT}"
-  echo "${BLUE_TEXT}You can check builds manually at:${RESET_FORMAT}"
+  echo "${BLUE_TEXT}${BOLD_TEXT}You can check builds manually at:${RESET_FORMAT}"
   echo "${WHITE_TEXT}${UNDERLINE_TEXT}https://console.cloud.google.com/cloud-build/builds?project=$PROJECT_ID${RESET_FORMAT}"
+  echo
+  echo "${CYAN_TEXT}${BOLD_TEXT}************************************${RESET_FORMAT}"
+  echo "${CYAN_TEXT}${BOLD_TEXT}       NOW FOLLOW VIDEO STEPS ${RESET_FORMAT}"
+  echo "${CYAN_TEXT}${BOLD_TEXT}************************************${RESET_FORMAT}"
+  echo
 fi
 echo
 
@@ -345,6 +350,4 @@ echo
 echo
 echo "${MAGENTA_TEXT}${BOLD_TEXT}💖 Enjoyed the setup? Consider subscribing to Arcade Crew! 👇${RESET_FORMAT}"
 echo "${BLUE_TEXT}${BOLD_TEXT}${UNDERLINE_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
-echo
-echo "${GREEN_TEXT}${BOLD_TEXT}🎉 Script execution finished! 🎉${RESET_FORMAT}"
 echo
