@@ -245,7 +245,7 @@ echo
 echo "${CYAN_TEXT}${BOLD_TEXT}🔄 Replacing default Cloud Build config with environment-specific 'env-cloudbuild.yaml'...${RESET_FORMAT}"
 rm cloudbuild.yaml
 
-wget env-cloudbuild.yaml
+wget https://raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Google%20Kubernetes%20Engine%20Pipeline%20using%20Cloud%20Build/env-cloudbuild.yaml
 
 mv env-cloudbuild.yaml cloudbuild.yaml
 echo "${GREEN_TEXT}${BOLD_TEXT}✅ Cloud Build config updated for environment repo.${RESET_FORMAT}"
@@ -300,7 +300,7 @@ echo "${GREEN_TEXT}${BOLD_TEXT}✅ Changes pushed to master branch.${RESET_FORMA
 echo
 echo "${CYAN_TEXT}${BOLD_TEXT}🔄 Replacing default Cloud Build config with application-specific 'app-cloudbuild.yaml'...${RESET_FORMAT}"
 rm cloudbuild.yaml
-wget app-cloudbuild.yaml
+wget https://raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Google%20Kubernetes%20Engine%20Pipeline%20using%20Cloud%20Build/app-cloudbuild.yaml
 mv app-cloudbuild.yaml cloudbuild.yaml
 echo "${GREEN_TEXT}${BOLD_TEXT}✅ Cloud Build config updated for application repo.${RESET_FORMAT}"
 
