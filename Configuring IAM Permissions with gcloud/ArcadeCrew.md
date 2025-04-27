@@ -32,7 +32,7 @@ gcloud compute ssh centos-clean --zone=$(gcloud compute project-info describe --
 ```
 
 ```bash
-curl -LO 
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Configuring%20IAM%20Permissions%20with%20gcloud/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
