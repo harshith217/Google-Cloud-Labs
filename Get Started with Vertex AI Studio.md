@@ -19,7 +19,7 @@
 
 ### Open Vertex AI from [here](https://console.cloud.google.com/vertex-ai/studio/saved-prompts?project=)
 
-### Download Files From [here](https://gourav8959-my.sharepoint.com/:f:/g/personal/gourav8959_gourav8959_onmicrosoft_com/EklAVR-m2NRGi81mnu4gifABCA8sFN8LvTzxtcmOJXKGWA?e=E0YPRX)
+### Download Files From [here](https://drive.google.com/drive/folders/1fZuV1Da6wvFjzdJ965onuPdHDf0cTWsg?usp=sharing)
 
 ---
 
