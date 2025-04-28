@@ -190,7 +190,7 @@ echo "${GREEN_TEXT}${BOLD_TEXT}✅ Alert policy created successfully.${RESET_FOR
 echo
 
 echo "${CYAN_TEXT}${BOLD_TEXT}🔗 Monitoring Dashboard Link:${RESET_FORMAT}"
-echo "${BLUE_TEXT}${BOLD_TEXT}""https://console.cloud.google.com/monitoring/dashboards?project=$DEVSHELL_PROJECT_ID"""${RESET_FORMAT}"
+echo "${BLUE_TEXT}${BOLD_TEXT}https://console.cloud.google.com/monitoring/dashboards?project=$DEVSHELL_PROJECT_ID${RESET_FORMAT}"
 echo
 
 echo "${YELLOW_TEXT}${BOLD_TEXT}📈 Expected Metrics: input_queue_size, ${METRIC}${RESET_FORMAT}"
