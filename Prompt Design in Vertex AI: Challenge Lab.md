@@ -17,7 +17,7 @@
 
 ### Open in Incognito Window: [Click Here](https://console.cloud.google.com/vertex-ai/studio/saved-prompts?project=)
 
-### Download Files From [here](https://gourav8959-my.sharepoint.com/:f:/g/personal/gourav8959_gourav8959_onmicrosoft_com/En7l6VugWZRIhnpl7LKuLa4B4bdfzQJFacQ6jW4wpGGJWw?e=IfCMWP)
+### Download Files From [here](https://drive.google.com/drive/folders/1ymt1FLPI2s9u0Ls7HAFzdBuqE0SEpCmQ?usp=sharing)
 
 ---
 
