@@ -32,7 +32,7 @@
 ## <ins>⚙️ Task 2: Add an automation to an AppSheet app</ins>
 
 1.  Open **My Drive** from **[this link](https://drive.google.com/drive/my-drive)**.
-2.  Download the required file **[here 📥](https://gourav8959-my.sharepoint.com/:f:/g/personal/gourav8959_gourav8959_onmicrosoft_com/Ejr59_zDiNRGko-iuLIritwBBmt-46CjuTLVqWpfzy9QeA?e=icLCtw)**.
+2.  Download the required file **[here 📥](https://drive.google.com/drive/folders/1M2BF3Tm3r5c7CXZAkJzVfMM6IAryMyvm?usp=sharing)**.
 
 ---
 
