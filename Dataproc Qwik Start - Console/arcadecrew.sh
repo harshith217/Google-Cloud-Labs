@@ -57,6 +57,43 @@ gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID \
 echo "${GREEN_TEXT}${BOLD_TEXT}✅ Role 'roles/dataproc.worker' granted.${RESET_FORMAT}"
 echo
 
+echo "${YELLOW_TEXT}${BOLD_TEXT}⏳ Waiting for IAM permissions to propagate...${RESET_FORMAT}"
+sleep 30
+echo "${GREEN_TEXT}${BOLD_TEXT}✅ Permissions should now be active.${RESET_FORMAT}"
+echo
+
+echo "${YELLOW_TEXT}${BOLD_TEXT} @ [${REGION}] ... ${RESET_FORMAT}"
+
+# Check if the default network exists
+if ! gcloud compute networks describe default --project "$DEVSHELL_PROJECT_ID" &>/dev/null; then
+  echo "${YELLOW_TEXT}A Default network not found. Creating default network with auto-subnets ... ${RESET_FORMAT}"
+  
+  gcloud compute networks create default --subnet-mode=auto --project "$DEVSHELL_PROJECT_ID"
+  
+  if [[ $? -eq 0 ]]; then
+    echo "${GREEN_TEXT}✔️ Default network created successfully.${RESET_FORMAT}"
+    echo "${YELLOW_TEXT}Waiting a bit for network resources to propagate ...${RESET_FORMAT}"
+    sleep 20 # Wait for network creation and subnet propagation
+  else
+    echo "${RED_TEXT}❌ Failed to create default network. Cluster creation might fail. Exiting.${RESET_FORMAT}"
+    exit 1
+  fi
+else
+  echo "${GREEN_TEXT}✔️ Default network found.${RESET_FORMAT}"
+fi
+
+# Network exists, verify subnetwork in the specific region
+echo "${YELLOW_TEXT}Verifying default subnetwork in region ${REGION} ...${RESET_FORMAT}"
+if ! gcloud compute networks subnets describe default --region "$REGION" --project "$DEVSHELL_PROJECT_ID" &>/dev/null; then
+  echo "${RED_TEXT}❌ Default network exists, but default subnetwork in region ${REGION} is missing or not ready. Cluster creation might fail.${RESET_FORMAT}"
+  echo "${YELLOW_TEXT}Waiting longer for potential propagation ...${RESET_FORMAT}"
+  sleep 30
+else
+  echo "${GREEN_TEXT}✔️ Default subnetwork found in region ${REGION}.${RESET_FORMAT}"
+fi
+
+echo
+
 echo "${CYAN_TEXT}${BOLD_TEXT}⚙️ Creating a new Dataproc cluster named 'example-cluster'. This might take a few minutes...${RESET_FORMAT}"
 gcloud dataproc clusters create example-cluster --region $REGION --zone $ZONE --master-machine-type e2-standard-2 --master-boot-disk-type pd-standard --master-boot-disk-size 30 --num-workers 2 --worker-machine-type e2-standard-2 --worker-boot-disk-type pd-standard --worker-boot-disk-size 30 --image-version 2.2-debian12 --project $DEVSHELL_PROJECT_ID
 echo "${GREEN_TEXT}${BOLD_TEXT}✅ Dataproc cluster 'example-cluster' created successfully!${RESET_FORMAT}"
@@ -83,4 +120,3 @@ echo
 echo "${MAGENTA_TEXT}${BOLD_TEXT}💖 Enjoyed the video? Consider subscribing to Arcade Crew! 👇${RESET_FORMAT}"
 echo "${BLUE_TEXT}${BOLD_TEXT}${UNDERLINE_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
 echo
-
