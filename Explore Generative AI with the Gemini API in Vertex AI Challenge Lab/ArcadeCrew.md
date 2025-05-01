@@ -36,7 +36,7 @@ pip3 install --upgrade --user google-cloud-aiplatform && gcloud auth list && gcl
 ```bash
 rm gemini-explorer-challenge-v1.0.0.ipynb
 
-curl -LO gemini-explorer-challenge-v1.0.0.ipynb
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Explore%20Generative%20AI%20with%20the%20Gemini%20API%20in%20Vertex%20AI%20Challenge%20Lab/gemini-explorer-challenge-v1.0.0.ipynb
 ```
 </div>
 
