@@ -28,7 +28,7 @@
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
 ```bash
-curl -LO 
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Process%20Documents%20with%20Python%20Using%20the%20Document%20AI%20API/arcadecrew1.sh
 sudo chmod +x arcadecrew1.sh
 ./arcadecrew1.sh
 ```
@@ -36,7 +36,7 @@ sudo chmod +x arcadecrew1.sh
 <p><strong>☁️ Run in NoteBook Terminal:</strong></p>
 
 ```bash
-curl -LO 
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Process%20Documents%20with%20Python%20Using%20the%20Document%20AI%20API/arcadecrew2.sh
 sudo chmod +x arcadecrew2.sh
 ./arcadecrew2.sh
 ```
