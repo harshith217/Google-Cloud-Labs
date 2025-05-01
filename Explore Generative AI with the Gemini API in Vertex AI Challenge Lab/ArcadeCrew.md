@@ -1,9 +1,9 @@
 <h1 align="center">
-✨  Explore Generative AI with the Gemini API in Vertex AI: Challenge Lab || GSP515 ✨
+✨  Process Documents with Python Using the Document AI API || GSP925 ✨
 </h1>
 
 <div align="center">
-  <a href="https://www.cloudskillsboost.google/focuses/85653?parent=catalog" target="_blank" rel="noopener noreferrer">
+  <a href="https://www.cloudskillsboost.google/focuses/21026?parent=catalog" target="_blank" rel="noopener noreferrer">
     <img src="https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white&labelColor=34A853" alt="Open Lab Badge">
   </a>
 </div>
@@ -28,15 +28,17 @@
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
 ```bash
-pip3 install --upgrade --user google-cloud-aiplatform && gcloud auth list && gcloud services enable compute.googleapis.com iam.googleapis.com iamcredentials.googleapis.com monitoring.googleapis.com logging.googleapis.com notebooks.googleapis.com aiplatform.googleapis.com bigquery.googleapis.com artifactregistry.googleapis.com cloudbuild.googleapis.com container.googleapis.com
+curl -LO 
+sudo chmod +x arcadecrew1.sh
+./arcadecrew1.sh
 ```
 
 <p><strong>☁️ Run in NoteBook Terminal:</strong></p>
 
 ```bash
-rm gemini-explorer-challenge-v1.0.0.ipynb
-
-curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Explore%20Generative%20AI%20with%20the%20Gemini%20API%20in%20Vertex%20AI%20Challenge%20Lab/gemini-explorer-challenge-v1.0.0.ipynb
+curl -LO 
+sudo chmod +x arcadecrew2.sh
+./arcadecrew2.sh
 ```
 </div>
 
