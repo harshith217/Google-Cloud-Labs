@@ -38,7 +38,7 @@ echo
 # Instruction before countdown
 echo "${BLUE_TEXT}${BOLD_TEXT}⏳ Waiting for 15 seconds to allow services to propagate...${RESET_FORMAT}"
 for i in $(seq 15 -1 1); do
-  echo -ne "${YELLOW_TEXT}${BOLD_TEXT} $i seconds remaining...${RESET_FORMAT}\r"
+  echo -ne "${YELLOW_TEXT}${BOLD_TEXT}$i seconds remaining...${RESET_FORMAT}\r"
   sleep 1
 done
 echo -ne "\n" 
@@ -149,10 +149,12 @@ echo "${YELLOW_TEXT}${BOLD_TEXT}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${R
 echo "${YELLOW_TEXT}${BOLD_TEXT}🎥         NOW FOLLOW VIDEO STEPS         🎥${RESET_FORMAT}"
 echo "${YELLOW_TEXT}${BOLD_TEXT}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${RESET_FORMAT}"
 
-echo
-echo "${BLUE_TEXT}${BOLD_TEXT} OPEN OAuth CONSENT SCREEN FROM HERE: ${UNDERLINE_TEXT}https://console.cloud.google.com/iam-admin/consent? ${RESET_FORMAT}"
+PROJECT_ID=$(gcloud config get-value project)
 
-echo "${BLUE_TEXT}${BOLD_TEXT} OPEN IDENTITY-AWARE PROXY FROM HERE: ${UNDERLINE_TEXT}https://console.cloud.google.com/security/iap? ${RESET_FORMAT}"
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT} OPEN OAuth CONSENT SCREEN FROM HERE: ${UNDERLINE_TEXT} https://console.cloud.google.com/auth/overview?project=$PROJECT_ID ${RESET_FORMAT}"
+
+echo "${BLUE_TEXT}${BOLD_TEXT} OPEN IDENTITY-AWARE PROXY FROM HERE: ${UNDERLINE_TEXT} https://console.cloud.google.com/security/iap?project=$PROJECT_ID ${RESET_FORMAT}"
 
 
 # Final message
