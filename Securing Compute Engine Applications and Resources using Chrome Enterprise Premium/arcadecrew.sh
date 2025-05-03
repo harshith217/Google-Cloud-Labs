@@ -316,9 +316,6 @@ echo "${MAGENTA_TEXT}   Configure the OAuth consent screen here:${RESET_FORMAT} 
 echo
 echo "${CYAN_TEXT}   Set up Identity-Aware Proxy (IAP) here:${RESET_FORMAT} ${UNDERLINE_TEXT}https://console.cloud.google.com/security/iap?tab=applications&project=$DEVSHELL_PROJECT_ID${RESET_FORMAT}"
 echo
-echo
-echo -e "${CYAN_TEXT}${BOLD_TEXT}👤 Service Account Email: $PROJECT_NUMBER-compute@developer.gserviceaccount.com${RESET_FORMAT}"
-echo
 
 echo "${MAGENTA_TEXT}${BOLD_TEXT}💖 If you found this helpful, please subscribe to Arcade Crew! 👇${RESET_FORMAT}"
 echo "${BLUE_TEXT}${BOLD_TEXT}${UNDERLINE_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
