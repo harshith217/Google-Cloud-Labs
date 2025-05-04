@@ -191,39 +191,43 @@ view: order_items {
 ```lookml
 connection: "bigquery_public_data_looker"
 
-# include all the views
+# Include all the views
 include: "/views/*.view"
 include: "/z_tests/*.lkml"
 include: "/**/*.dashboard"
 
+# Define the default datagroup for caching
 datagroup: training_ecommerce_default_datagroup {
-  # sql_trigger: SELECT MAX(id) FROM etl_log;;
+  sql_trigger: SELECT MAX(id) FROM etl_log;;
   max_cache_age: "1 hour"
 }
 
+# Set the default datagroup for persistence
 persist_with: training_ecommerce_default_datagroup
 
+# Label for the model
 label: "E-Commerce Training"
 
+# Explore for order_items with necessary joins
 explore: order_items {
   join: users {
     type: left_outer
     sql_on: ${order_items.user_id} = ${users.id} ;;
     relationship: many_to_one
   }
-
+  
   join: inventory_items {
     type: left_outer
     sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;
     relationship: many_to_one
   }
-
+  
   join: products {
     type: left_outer
     sql_on: ${inventory_items.product_id} = ${products.id} ;;
     relationship: many_to_one
   }
-
+  
   join: distribution_centers {
     type: left_outer
     sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
@@ -231,6 +235,7 @@ explore: order_items {
   }
 }
 
+# Explore for events with necessary joins
 explore: events {
   join: event_session_facts {
     type: left_outer
@@ -246,15 +251,19 @@ explore: events {
     type: left_outer
     sql_on: ${events.user_id} = ${users.id} ;;
     relationship: many_to_one
-  }
+  } 
 }
 
+# Define the weekly datagroup for caching with a trigger
 datagroup: NAME_DATAGROUP {
+  sql_trigger: SELECT DATE_TRUNC(CURRENT_DATE(), WEEK);;
   max_cache_age: "168 hours"
 }
 
+# Use the weekly datagroup for persistence
 persist_with: NAME_DATAGROUP
 
+# Explore for order_items with an aggregate table
 explore: +order_items {
   label: ""
   aggregate_table: weekly_aggregate_revenue_profit {
