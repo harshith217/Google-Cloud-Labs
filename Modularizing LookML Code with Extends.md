@@ -22,6 +22,8 @@
 
 ## ⚙️ <ins>Lab Environment Setup</ins>
 
+* Remember to Turn ON Developer Mode.
+
 > ✅ **NOTE:** *Watch Full Video to get Full Scores on Check My Progress.*
 
 ### 1. Create View Named **`location`** and add the following LookML code:
