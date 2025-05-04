@@ -260,6 +260,7 @@ explore: events {
   
 }
 ```
+* Save **Task 3** Look as **`Top 10 Users With Highest Average Sales`**
 
 ## NOW FOLLOW VIDEO STEPS
 
