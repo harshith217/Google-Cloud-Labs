@@ -1,9 +1,9 @@
 <h1 align="center">
-✨  Arcade Hero: Building Blocks Artifact Registry II || ARC1208 ✨
+✨  Arcade Hero: Building Blocks Artifact Registry II || arc1208 ✨
 </h1>
 
 <!-- <div align="center">
-  <a href="https://www.cloudskillsboost.google/focuses/21218?parent=catalog" target="_blank" rel="noopener noreferrer">
+  <a href="https://www.cloudskillsboost.google/focuses/1833?parent=catalog" target="_blank" rel="noopener noreferrer">
     <img src="https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white&labelColor=34A853" alt="Open Lab Badge">
   </a>
 </div> -->
@@ -24,14 +24,17 @@
 
 > ✅ **NOTE:** *Watch Full Video to get Full Scores on Check My Progress.*
 
+* OPEN Cloud Run from [HERE](https://console.cloud.google.com/run?)
+
 <div style="padding: 15px; margin: 10px 0;">
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
 ```bash
-curl -LO https://raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Arcade%20Hero%20Building%20Blocks%20Artifact%20Registry%20II/arcadecrew.sh
+curl -LO 
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
+
 </div>
 
 ---
