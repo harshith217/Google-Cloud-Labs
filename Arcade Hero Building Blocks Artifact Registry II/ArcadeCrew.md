@@ -2,11 +2,11 @@
 ✨  Arcade Hero: Building Blocks Artifact Registry II || arc1208 ✨
 </h1>
 
-<!-- <div align="center">
-  <a href="https://www.cloudskillsboost.google/focuses/1833?parent=catalog" target="_blank" rel="noopener noreferrer">
+<div align="center">
+  <a href="https://www.cloudskillsboost.google/focuses/124583?parent=catalog" target="_blank" rel="noopener noreferrer">
     <img src="https://img.shields.io/badge/Open_Lab-Cloud_Skills_Boost-4285F4?style=for-the-badge&logo=google&logoColor=white&labelColor=34A853" alt="Open Lab Badge">
   </a>
-</div> -->
+</div>
 
 ---
 
