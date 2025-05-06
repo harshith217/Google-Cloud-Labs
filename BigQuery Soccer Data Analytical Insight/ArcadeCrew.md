@@ -28,25 +28,9 @@
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
 ```bash
-curl -LO 
+curl -LO https://raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/BigQuery%20Soccer%20Data%20Analytical%20Insight/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
-```
-
-<p><strong>Paste this schema::</strong></p>
-```
-[   
-  {
-    "mode": "NULLABLE",
-    "name": "resource",
-    "type": "JSON"
-  },   
-  {
-    "mode": "NULLABLE",
-    "name": "finding",
-    "type": "JSON"
-  }
-]
 ```
 
 </div>
