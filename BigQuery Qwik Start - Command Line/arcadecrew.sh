@@ -51,7 +51,7 @@ bq mk babynames
 echo 
 
 echo "${MAGENTA_TEXT}${BOLD_TEXT}🌐 Downloading the baby names data archive...${RESET_FORMAT}"
-wget names.zip
+wget https://github.com/ArcadeCrew/Google-Cloud-Labs/raw/refs/heads/main/BigQuery%20Qwik%20Start%20-%20Command%20Line/names.zip
 echo 
 
 echo "${MAGENTA_TEXT}${BOLD_TEXT}📦 Extracting the downloaded baby names data...${RESET_FORMAT}"
