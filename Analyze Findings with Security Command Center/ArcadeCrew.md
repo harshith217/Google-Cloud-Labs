@@ -34,6 +34,7 @@ sudo chmod +x arcadecrew.sh
 ```
 
 <p><strong>Paste this schema::</strong></p>
+
 ```
 [   
   {
