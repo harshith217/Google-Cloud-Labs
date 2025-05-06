@@ -33,22 +33,6 @@ sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
 
-<p><strong>Paste this schema::</strong></p>
-```
-[   
-  {
-    "mode": "NULLABLE",
-    "name": "resource",
-    "type": "JSON"
-  },   
-  {
-    "mode": "NULLABLE",
-    "name": "finding",
-    "type": "JSON"
-  }
-]
-```
-
 </div>
 
 ---
