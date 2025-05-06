@@ -215,5 +215,3 @@ echo
 echo "${MAGENTA_TEXT}${BOLD_TEXT}💖 Enjoyed this script and the video? Consider subscribing to Arcade Crew! 👇${RESET_FORMAT}"
 echo "${BLUE_TEXT}${BOLD_TEXT}${UNDERLINE_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
 echo
-echo "${GREEN_TEXT}${BOLD_TEXT}🎉 Script execution complete! Well done! 🎉${RESET_FORMAT}"
-echo
