@@ -24,13 +24,11 @@
 
 > ✅ **NOTE:** *Watch Full Video to get Full Scores on Check My Progress.*
 
-* OPEN Cloud Run from [HERE](https://console.cloud.google.com/run?)
-
 <div style="padding: 15px; margin: 10px 0;">
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
 ```bash
-curl -LO 
+curl -LO https://raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Arcade%20Hero%20Building%20Blocks%20Artifact%20Registry%20II/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
