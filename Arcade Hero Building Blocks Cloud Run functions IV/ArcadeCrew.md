@@ -1,5 +1,5 @@
 <h1 align="center">
-✨  Arcade Hero: Building Blocks Cloud Run functions IV || arc1223 ✨
+✨  Arcade Hero: Building Blocks Cloud Run functions IV || ARC1223 ✨
 </h1>
 
 <div align="center">
