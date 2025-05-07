@@ -306,6 +306,7 @@ done
 echo "${GREEN_TEXT}${BOLD_TEXT}✅ Cloud Deploy targets configured and applied.${RESET_FORMAT}"
 echo
 echo
+sleep 10
 
 test_rollout_succeeded=false
 echo "${BLUE_TEXT}${BOLD_TEXT}⏳ Waiting for the initial rollout to 'test' target to complete...${RESET_FORMAT}"
