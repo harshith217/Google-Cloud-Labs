@@ -262,12 +262,38 @@ echo "${GREEN_TEXT}${BOLD_TEXT}✅ Credentials fetched and contexts renamed.${RE
 echo
 
 echo "${BLUE_TEXT}${BOLD_TEXT}🏠 Applying Kubernetes namespace 'web-app' to all contexts...${RESET_FORMAT}"
-for CONTEXT in ${CONTEXTS[@]}
+for CONTEXT_NAME in ${CONTEXTS[@]} # Renamed CONTEXT to CONTEXT_NAME
 do
-    echo "${CYAN_TEXT}${BOLD_TEXT}Applying namespace to context: ${CONTEXT}...${RESET_FORMAT}"
-    kubectl --context ${CONTEXT} apply -f kubernetes-config/web-app-namespace.yaml
+    echo "${CYAN_TEXT}${BOLD_TEXT}Applying namespace to context: ${CONTEXT_NAME}...${RESET_FORMAT}"
+    MAX_RETRIES=3
+    RETRY_COUNT=0
+    SUCCESS=false
+    while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+        if kubectl --context ${CONTEXT_NAME} apply -f kubernetes-config/web-app-namespace.yaml; then
+            echo "${GREEN_TEXT}${BOLD_TEXT}✅ Namespace applied to ${CONTEXT_NAME} successfully.${RESET_FORMAT}"
+            SUCCESS=true
+            break
+        else
+            RETRY_COUNT=$((RETRY_COUNT+1))
+            echo "${YELLOW_TEXT}${BOLD_TEXT}⚠️ Failed to apply namespace to ${CONTEXT_NAME} (attempt ${RETRY_COUNT}/${MAX_RETRIES}). Will retry after delay.${RESET_FORMAT}"
+            
+            RETRY_WAIT_SECONDS=5
+            for i in $(seq $RETRY_WAIT_SECONDS -1 1); do
+          # \r moves cursor to beginning of line, -n prevents newline.
+          # Extra spaces at the end ensure previous (potentially longer) line is overwritten.
+          echo -ne "${YELLOW_TEXT}${BOLD_TEXT}\r⏳ $i seconds remaining...                                 ${RESET_FORMAT}"
+          sleep 1
+            done
+            # Overwrite the last countdown message with "Retrying now..." and add a newline.
+            echo -e "\r${YELLOW_TEXT}${BOLD_TEXT}⏳ Retrying now...                                               ${RESET_FORMAT}"
+        fi
+    done
+    if [ "$SUCCESS" != true ]; then
+        echo "${RED_TEXT}${BOLD_TEXT}❌ Failed to apply namespace to ${CONTEXT_NAME} after ${MAX_RETRIES} attempts. This might cause subsequent steps to fail.${RESET_FORMAT}"
+        # Consider exiting if this is critical: exit 1
+    fi
 done
-echo "${GREEN_TEXT}${BOLD_TEXT}✅ Namespaces applied to all contexts.${RESET_FORMAT}"
+echo "${GREEN_TEXT}${BOLD_TEXT}✅ Namespace application process completed for all contexts.${RESET_FORMAT}"
 echo
 
 echo "${BLUE_TEXT}${BOLD_TEXT}🎯 Configuring Cloud Deploy targets for each context...${RESET_FORMAT}"
@@ -279,40 +305,25 @@ do
 done
 echo "${GREEN_TEXT}${BOLD_TEXT}✅ Cloud Deploy targets configured and applied.${RESET_FORMAT}"
 echo
-
-echo "${BLUE_TEXT}${BOLD_TEXT}📋 Listing all configured Cloud Deploy targets...${RESET_FORMAT}"
-gcloud beta deploy targets list --region=${REGION} --project=${PROJECT_ID}
-echo
-echo "${BLUE_TEXT}${BOLD_TEXT}🚀 Creating a new Cloud Deploy release 'web-app-001'...${RESET_FORMAT}"
-gcloud beta deploy releases create web-app-001 \
---delivery-pipeline web-app \
---build-artifacts web/artifacts.json \
---source web/ \
---region=${REGION} --project=${PROJECT_ID}
-echo "${GREEN_TEXT}${BOLD_TEXT}✅ Release 'web-app-001' created.${RESET_FORMAT}"
 echo
 
-echo "${BLUE_TEXT}${BOLD_TEXT}📊 Listing rollouts for the 'web-app-001' release...${RESET_FORMAT}"
-gcloud beta deploy rollouts list \
---delivery-pipeline web-app \
---release web-app-001
-echo
-
+test_rollout_succeeded=false
 echo "${BLUE_TEXT}${BOLD_TEXT}⏳ Waiting for the initial rollout to 'test' target to complete...${RESET_FORMAT}"
 while true; do
-  status=$(gcloud beta deploy rollouts list --delivery-pipeline web-app --release web-app-001 --format="value(state)" | head -n 1)
+  status=$(gcloud beta deploy rollouts list --delivery-pipeline web-app --release web-app-001 --filter="targetId=test" --format="value(state)" | head -n 1)
 
   if [ "$status" == "SUCCEEDED" ]; then
     echo -e "\r${GREEN_TEXT}${BOLD_TEXT}🎉 Rollout to 'test' SUCCEEDED!                                        ${RESET_FORMAT}"
+    test_rollout_succeeded=true
     break
   elif [[ "$status" == "FAILED" || "$status" == "CANCELLED" || "$status" == "HALTED" ]]; then
     echo -e "\r${RED_TEXT}${BOLD_TEXT}❌ Rollout to 'test' is ${status}. Please check logs.                 ${RESET_FORMAT}"
-    break 
+    test_rollout_succeeded=false
+    break
   fi
-  
-  current_status_display=${status:-"UNKNOWN"}
 
-  WAIT_DURATION=10 
+  current_status_display=${status:-"UNKNOWN"}
+  WAIT_DURATION=10
   for i in $(seq $WAIT_DURATION -1 1); do
     echo -ne "${YELLOW_TEXT}${BOLD_TEXT}\r⏳ 'Test' rollout status: ${current_status_display}. $i seconds remaining... ${RESET_FORMAT}            "
     sleep 1
@@ -321,98 +332,136 @@ while true; do
 done
 echo
 
-echo "${BLUE_TEXT}${BOLD_TEXT}🔬 Switching to 'test' Kubernetes context and verifying deployed resources...${RESET_FORMAT}"
-kubectx test
-kubectl get all -n web-app
-echo
+if [ "$test_rollout_succeeded" = true ]; then
+  echo "${BLUE_TEXT}${BOLD_TEXT}🔬 Switching to 'test' Kubernetes context and verifying deployed resources...${RESET_FORMAT}"
+  kubectx test
+  kubectl get all -n web-app
+  echo
 
-echo "${BLUE_TEXT}${BOLD_TEXT}➡️ Promoting release 'web-app-001' to the 'staging' target...${RESET_FORMAT}"
-gcloud beta deploy releases promote \
---delivery-pipeline web-app \
---release web-app-001 \
---quiet
-echo
+  echo "${BLUE_TEXT}${BOLD_TEXT}➡️ Promoting release 'web-app-001' to the 'staging' target...${RESET_FORMAT}"
+  gcloud beta deploy releases promote \
+  --delivery-pipeline web-app \
+  --release web-app-001 \
+  --quiet
+  echo
 
-echo "${BLUE_TEXT}${BOLD_TEXT}⏳ Waiting for the rollout to 'staging' target to complete...${RESET_FORMAT}"
-while true; do
-  status=$(gcloud beta deploy rollouts list --delivery-pipeline web-app --release web-app-001 --format="value(state)" | head -n 1)
+  staging_rollout_succeeded=false
+  echo "${BLUE_TEXT}${BOLD_TEXT}⏳ Waiting for the rollout to 'staging' target to complete...${RESET_FORMAT}"
+  while true; do
+    status=$(gcloud beta deploy rollouts list --delivery-pipeline web-app --release web-app-001 --filter="targetId=staging" --format="value(state)" | head -n 1)
 
-  if [ "$status" == "SUCCEEDED" ]; then
-    echo -e "\r${GREEN_TEXT}${BOLD_TEXT}🎉 Rollout to 'staging' SUCCEEDED!                                        ${RESET_FORMAT}"
-    break
-  elif [[ "$status" == "FAILED" || "$status" == "CANCELLED" || "$status" == "HALTED" ]]; then
-    echo -e "\r${RED_TEXT}${BOLD_TEXT}❌ Rollout to 'staging' is ${status}. Please check logs.                 ${RESET_FORMAT}"
-    break 
-  fi
-  
-  current_status_display=${status:-"UNKNOWN"} 
+    if [ "$status" == "SUCCEEDED" ]; then
+      echo -e "\r${GREEN_TEXT}${BOLD_TEXT}🎉 Rollout to 'staging' SUCCEEDED!                                        ${RESET_FORMAT}"
+      staging_rollout_succeeded=true
+      break
+    elif [[ "$status" == "FAILED" || "$status" == "CANCELLED" || "$status" == "HALTED" ]]; then
+      echo -e "\r${RED_TEXT}${BOLD_TEXT}❌ Rollout to 'staging' is ${status}. Please check logs.                 ${RESET_FORMAT}"
+      staging_rollout_succeeded=false
+      break
+    fi
 
-  WAIT_DURATION=10 
-  for i in $(seq $WAIT_DURATION -1 1); do
-    echo -ne "${YELLOW_TEXT}${BOLD_TEXT}\r⏳ 'Staging' rollout status: ${current_status_display}. $i seconds remaining... ${RESET_FORMAT}            "
-    sleep 1
+    current_status_display=${status:-"UNKNOWN"}
+    WAIT_DURATION=10
+    for i in $(seq $WAIT_DURATION -1 1); do
+      echo -ne "${YELLOW_TEXT}${BOLD_TEXT}\r⏳ 'Staging' rollout status: ${current_status_display}. $i seconds remaining... ${RESET_FORMAT}            "
+      sleep 1
+    done
+    echo -ne "\r${YELLOW_TEXT}${BOLD_TEXT}⏳ 'Staging' rollout status: ${current_status_display}. Re-checking now... ${RESET_FORMAT}            "
   done
-  echo -ne "\r${YELLOW_TEXT}${BOLD_TEXT}⏳ 'Staging' rollout status: ${current_status_display}. Re-checking now... ${RESET_FORMAT}            "
-done
-echo
+  echo
 
-echo "${BLUE_TEXT}${BOLD_TEXT}➡️ Promoting release 'web-app-001' to the 'prod' target (this will require approval)...${RESET_FORMAT}"
-gcloud beta deploy releases promote \
---delivery-pipeline web-app \
---release web-app-001 \
---quiet
-echo
+  if [ "$staging_rollout_succeeded" = true ]; then
+    echo "${BLUE_TEXT}${BOLD_TEXT}➡️ Promoting release 'web-app-001' to the 'prod' target (this will require approval)...${RESET_FORMAT}"
+    gcloud beta deploy releases promote \
+    --delivery-pipeline web-app \
+    --release web-app-001 \
+    --quiet
+    echo
 
-echo "${BLUE_TEXT}${BOLD_TEXT}⏳ Waiting for the rollout to 'prod' to reach 'PENDING_APPROVAL' state...${RESET_FORMAT}"
-while true; do
-  status=$(gcloud beta deploy rollouts list --delivery-pipeline web-app --release web-app-001 --format="value(state)" | head -n 1)
+    prod_rollout_pending_approval=false
+    echo "${BLUE_TEXT}${BOLD_TEXT}⏳ Waiting for the rollout to 'prod' to reach 'PENDING_APPROVAL' state...${RESET_FORMAT}"
+    while true; do
+      status=$(gcloud beta deploy rollouts list --delivery-pipeline web-app --release web-app-001 --filter="targetId=prod" --format="value(state)" | head -n 1)
 
-  if [ "$status" == "PENDING_APPROVAL" ]; then
-    echo -e "\r${GREEN_TEXT}${BOLD_TEXT}👍 Rollout to 'prod' is now PENDING_APPROVAL!                                 ${RESET_FORMAT}"
-    break
-  elif [[ "$status" == "FAILED" || "$status" == "CANCELLED" || "$status" == "HALTED" || "$status" == "SUCCEEDED" ]]; then
-    echo -e "\r${RED_TEXT}${BOLD_TEXT}❌ Rollout to 'prod' is ${status} instead of PENDING_APPROVAL. Please check logs. ${RESET_FORMAT}"
+      if [ "$status" == "PENDING_APPROVAL" ]; then
+        echo -e "\r${GREEN_TEXT}${BOLD_TEXT}👍 Rollout to 'prod' is now PENDING_APPROVAL!                                 ${RESET_FORMAT}"
+        prod_rollout_pending_approval=true
+        break
+      elif [[ "$status" == "FAILED" || "$status" == "CANCELLED" || "$status" == "HALTED" || "$status" == "SUCCEEDED" ]]; then
+        echo -e "\r${RED_TEXT}${BOLD_TEXT}❌ Rollout to 'prod' is ${status} instead of PENDING_APPROVAL. Please check logs. ${RESET_FORMAT}"
+        prod_rollout_pending_approval=false
+        break
+      fi
+
+      current_status_display=${status:-"UNKNOWN"}
+      WAIT_DURATION=10
+      for i in $(seq $WAIT_DURATION -1 1); do
+        echo -ne "${YELLOW_TEXT}${BOLD_TEXT}\r⏳ 'Prod' rollout status: ${current_status_display}. Waiting for PENDING_APPROVAL. $i seconds remaining... ${RESET_FORMAT}            "
+        sleep 1
+      done
+      echo -ne "\r${YELLOW_TEXT}${BOLD_TEXT}⏳ 'Prod' rollout status: ${current_status_display}. Re-checking now...                                           ${RESET_FORMAT}"
+    done
+    echo
+
+    if [ "$prod_rollout_pending_approval" = true ]; then
+      prod_rollout_name=$(gcloud beta deploy rollouts list \
+        --delivery-pipeline web-app \
+        --release web-app-001 \
+        --filter="targetId=prod AND state=PENDING_APPROVAL" \
+        --format="value(name)" | head -n 1)
+
+      if [ -n "$prod_rollout_name" ]; then
+        echo "${BLUE_TEXT}${BOLD_TEXT}👍 Approving the rollout '${prod_rollout_name##*/}' for the 'prod' target...${RESET_FORMAT}"
+        gcloud beta deploy rollouts approve "$prod_rollout_name" \
+        --delivery-pipeline web-app \
+        --release web-app-001 \
+        --quiet
+        echo
+
+        prod_rollout_succeeded=false
+        echo "${BLUE_TEXT}${BOLD_TEXT}⏳ Waiting for the rollout to 'prod' target to complete after approval...${RESET_FORMAT}"
+        while true; do
+          status=$(gcloud beta deploy rollouts list --delivery-pipeline web-app --release web-app-001 --filter="targetId=prod" --format="value(state)" | head -n 1)
+
+          if [ "$status" == "SUCCEEDED" ]; then
+            echo -e "\r${GREEN_TEXT}${BOLD_TEXT}🎉 Rollout to 'prod' SUCCEEDED!                                        ${RESET_FORMAT}"
+            prod_rollout_succeeded=true
+            break
+          elif [[ "$status" == "FAILED" || "$status" == "CANCELLED" || "$status" == "HALTED" ]]; then
+            echo -e "\r${RED_TEXT}${BOLD_TEXT}❌ Rollout to 'prod' is ${status}. Please check logs.                 ${RESET_FORMAT}"
+            prod_rollout_succeeded=false
+            break
+          fi
+
+          current_status_display=${status:-"UNKNOWN"}
+          WAIT_DURATION=10
+          for i in $(seq $WAIT_DURATION -1 1); do
+            echo -ne "${YELLOW_TEXT}${BOLD_TEXT}\r⏳ 'Prod' rollout status: ${current_status_display}. $i seconds remaining... ${RESET_FORMAT}            "
+            sleep 1
+          done
+          echo -ne "\r${YELLOW_TEXT}${BOLD_TEXT}⏳ 'Prod' rollout status: ${current_status_display}. Re-checking now... ${RESET_FORMAT}            "
+        done
+        echo
+
+        if [ "$prod_rollout_succeeded" = true ]; then
+          echo "${BLUE_TEXT}${BOLD_TEXT}🔬 Switching to 'prod' Kubernetes context and verifying deployed resources...${RESET_FORMAT}"
+          kubectx prod
+          kubectl get all -n web-app
+        else
+          echo "${RED_TEXT}${BOLD_TEXT}❌ Prod rollout failed after approval. Skipping final verification.${RESET_FORMAT}"
+        fi
+      else
+        echo "${RED_TEXT}${BOLD_TEXT}❌ Could not find a 'prod' rollout in PENDING_APPROVAL state to approve.${RESET_FORMAT}"
+      fi
+    else
+      echo "${RED_TEXT}${BOLD_TEXT}❌ Prod rollout did not reach PENDING_APPROVAL state. Skipping approval and final rollout monitoring.${RESET_FORMAT}"
+    fi
+  else
+    echo "${RED_TEXT}${BOLD_TEXT}❌ Staging rollout failed. Skipping promotion to prod and subsequent steps.${RESET_FORMAT}"
   fi
-  
-  current_status_display=${status:-"UNKNOWN"} 
-
-  WAIT_DURATION=10 # seconds
-  for i in $(seq $WAIT_DURATION -1 1); do
-    echo -ne "${YELLOW_TEXT}${BOLD_TEXT}\r⏳ 'Prod' rollout status: ${current_status_display}. Waiting for PENDING_APPROVAL. $i seconds remaining... ${RESET_FORMAT}            "
-    sleep 1
-  done
-  echo -ne "\r${YELLOW_TEXT}${BOLD_TEXT}⏳ 'Prod' rollout status: ${current_status_display}. Re-checking now...                                           ${RESET_FORMAT}" 
-done
-echo
-
-echo "${BLUE_TEXT}${BOLD_TEXT}👍 Approving the rollout 'web-app-001-to-prod-0001' for the 'prod' target...${RESET_FORMAT}"
-gcloud beta deploy rollouts approve web-app-001-to-prod-0001 \
---delivery-pipeline web-app \
---release web-app-001 \
---quiet
-echo
-
-echo "${BLUE_TEXT}${BOLD_TEXT}⏳ Waiting for the rollout to 'prod' target to complete after approval...${RESET_FORMAT}"
-while true; do
-  status=$(gcloud beta deploy rollouts list --delivery-pipeline web-app --release web-app-001 --format="value(state)" | head -n 1)
-
-  if [ "$status" == "SUCCEEDED" ]; then
-    echo -e "\r${GREEN_TEXT}${BOLD_TEXT}🎉 Rollout to 'prod' SUCCEEDED!                                        ${RESET_FORMAT}"
-    break
-  elif [[ "$status" == "FAILED" || "$status" == "CANCELLED" || "$status" == "HALTED" ]]; then
-    echo -e "\r${RED_TEXT}${BOLD_TEXT}❌ Rollout to 'prod' is ${status}. Please check logs.                 ${RESET_FORMAT}"
-    break 
-  fi
-  
-  current_status_display=${status:-"UNKNOWN"} 
-
-  WAIT_DURATION=10 
-  for i in $(seq $WAIT_DURATION -1 1); do
-    echo -ne "${YELLOW_TEXT}${BOLD_TEXT}\r⏳ 'Prod' rollout status: ${current_status_display}. $i seconds remaining... ${RESET_FORMAT}            "
-    sleep 1
-  done
-  echo -ne "\r${YELLOW_TEXT}${BOLD_TEXT}⏳ 'Prod' rollout status: ${current_status_display}. Re-checking now... ${RESET_FORMAT}            "
-done
+else
+  echo "${RED_TEXT}${BOLD_TEXT}❌ Test rollout failed. Skipping promotion to staging, prod, and subsequent steps.${RESET_FORMAT}"
+fi
 echo
 
 echo "${BLUE_TEXT}${BOLD_TEXT}🔬 Switching to 'prod' Kubernetes context and verifying deployed resources...${RESET_FORMAT}"
