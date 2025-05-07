@@ -123,8 +123,35 @@ echo
 
 echo "${BLUE_TEXT}${BOLD_TEXT}📝 Generating Skaffold configuration from template...${RESET_FORMAT}"
 envsubst < clouddeploy-config/skaffold.yaml.template > web/skaffold.yaml
+
+
+if grep -q "{{project-id}}" web/skaffold.yaml; then
+  echo "${YELLOW_TEXT}${BOLD_TEXT}⚠️ Detected '{{project-id}}' placeholder in skaffold.yaml. Attempting substitution...${RESET_FORMAT}"
+  cp web/skaffold.yaml web/skaffold.yaml.bak
+  sed -i "s/{{project-id}}/$PROJECT_ID/g" web/skaffold.yaml
+  echo "${GREEN_TEXT}${BOLD_TEXT}✅ Placeholder substitution complete.${RESET_FORMAT}"
+fi
+
 echo "${GREEN_TEXT}${BOLD_TEXT}✅ Skaffold configuration generated. Displaying content:${RESET_FORMAT}"
 cat web/skaffold.yaml
+echo
+
+echo "${BLUE_TEXT}${BOLD_TEXT}🛠️ Ensuring Cloud Build GCS bucket (gs://${PROJECT_ID}_cloudbuild) exists...${RESET_FORMAT}"
+# Check if the bucket already exists
+if ! gsutil ls "gs://${PROJECT_ID}_cloudbuild/" &>/dev/null; then
+  echo "${YELLOW_TEXT}${BOLD_TEXT}Bucket gs://${PROJECT_ID}_cloudbuild/ not found. Attempting to create in region ${REGION}...${RESET_FORMAT}"
+  # Create the bucket. Using -l for region. -b on for uniform bucket-level access is good practice.
+  if gsutil mb -p "${PROJECT_ID}" -l "${REGION}" -b on "gs://${PROJECT_ID}_cloudbuild/"; then
+    echo "${GREEN_TEXT}${BOLD_TEXT}✅ Bucket gs://${PROJECT_ID}_cloudbuild/ created successfully.${RESET_FORMAT}"
+    # Add a small delay for bucket creation to propagate if it was just created.
+    sleep 5
+  else
+    echo "${RED_TEXT}${BOLD_TEXT}❌ Failed to create bucket gs://${PROJECT_ID}_cloudbuild/.${RESET_FORMAT}"
+    echo "${RED_TEXT}${BOLD_TEXT}This may cause the Skaffold build to fail. Please check permissions or create it manually.${RESET_FORMAT}"
+  fi
+else
+  echo "${GREEN_TEXT}${BOLD_TEXT}✅ Bucket gs://${PROJECT_ID}_cloudbuild/ already exists.${RESET_FORMAT}"
+fi
 echo
 
 echo "${BLUE_TEXT}${BOLD_TEXT}🧱 Building the application using Skaffold. This may take some time...${RESET_FORMAT}"
@@ -134,6 +161,24 @@ skaffold build --interactive=false \
 --file-output artifacts.json
 cd ..
 echo "${GREEN_TEXT}${BOLD_TEXT}✅ Application build complete. Artifacts metadata saved to artifacts.json.${RESET_FORMAT}"
+echo
+
+echo "${BLUE_TEXT}${BOLD_TEXT}ℹ️ Using 'web/artifacts.json' directly for Cloud Deploy release.${RESET_FORMAT}"
+# The jq transformation of artifacts.json to transformed_artifacts.json has been removed.
+# The original web/artifacts.json produced by 'skaffold build' contains the
+# {"builds":[{"imageName":"...","tag":"..."}]} structure, which is expected by
+# Cloud Deploy when Skaffold is used for rendering manifests.
+# This approach avoids potential 'KeyError: tag' issues during 'gcloud deploy releases create'.
+
+# Verify web/artifacts.json exists
+if [ ! -f web/artifacts.json ]; then
+    echo "${RED_TEXT}${BOLD_TEXT}❌ Error: web/artifacts.json not found. 'skaffold build' might have failed or did not produce the artifact list. Cannot proceed with release creation.${RESET_FORMAT}"
+    # exit 1 # Consider exiting if this is a critical failure
+fi
+echo "${GREEN_TEXT}${BOLD_TEXT}✅ Proceeding with web/artifacts.json for the release.${RESET_FORMAT}"
+# Optional: Display content of artifacts.json for verification
+# echo "Using artifacts content from web/artifacts.json:"
+# cat web/artifacts.json
 echo
 
 echo "${BLUE_TEXT}${BOLD_TEXT}🖼️ Listing Docker images in the Artifact Registry repository...${RESET_FORMAT}"
@@ -161,28 +206,49 @@ echo
 echo "${BLUE_TEXT}${BOLD_TEXT}⏳ Monitoring GKE cluster statuses. Waiting for all clusters to be in 'RUNNING' state...${RESET_FORMAT}"
 while true; do
   cluster_statuses=$(gcloud container clusters list --format="csv(name,status)" | tail -n +2)
-  all_running=true
-  echo "${YELLOW_TEXT}${BOLD_TEXT}🔄 Checking cluster statuses...${RESET_FORMAT}"
-  while IFS=, read -r cluster_name cluster_status; do
-    echo "${CYAN_TEXT}Cluster: ${cluster_name}, Status: ${cluster_status}${RESET_FORMAT}"
-    if [[ "$cluster_status" != "RUNNING" ]]; then
-      all_running=false
-    fi
-  done <<< "$cluster_statuses"
+  all_running=true # Reset for each iteration of the outer loop
 
-  if $all_running; then
-    echo "${GREEN_TEXT}${BOLD_TEXT}🎉 All clusters are now in RUNNING state!${RESET_FORMAT}"
-    break
+  if [ -z "$cluster_statuses" ]; then
+    echo "${YELLOW_TEXT}${BOLD_TEXT}🤔 No clusters found by gcloud list yet. Will retry.${RESET_FORMAT}"
+    all_running=false
+  else
+    echo "${YELLOW_TEXT}${BOLD_TEXT}🔄 Checking cluster statuses...${RESET_FORMAT}"
+    # Correctly pipe cluster_statuses to the inner loop
+    echo "$cluster_statuses" | while IFS=, read -r cluster_name cluster_status; do
+      # Trim whitespace which can affect comparisons
+      cluster_name_trimmed=$(echo "$cluster_name" | tr -d '[:space:]')
+      cluster_status_trimmed=$(echo "$cluster_status" | tr -d '[:space:]')
+
+      if [ -z "$cluster_name_trimmed" ]; then # Skip empty lines that might result from gcloud output processing
+          continue
+      fi
+
+      echo "${CYAN_TEXT}Cluster: ${cluster_name_trimmed}, Status: ${cluster_status_trimmed}${RESET_FORMAT}"
+      if [[ "$cluster_status_trimmed" != "RUNNING" ]]; then
+        all_running=false
+      fi
+      # The misplaced 'for CONTEXT...' loop and its echo have been removed from here.
+      # The misplaced delay logic (echo "Not all clusters...", for loop sleep) has also been removed from here.
+    done
   fi
 
-  echo "${YELLOW_TEXT}${BOLD_TEXT}🕒 Not all clusters are running yet. Re-checking in 10 seconds...${RESET_FORMAT}"
+  # Now, after checking all clusters (if any were found and processed)
+  if [ "$all_running" = true ] && [ -n "$cluster_statuses" ]; then
+    # This condition ensures that clusters were found AND all of them are running.
+    echo "${GREEN_TEXT}${BOLD_TEXT}✅ All detected GKE clusters are RUNNING.${RESET_FORMAT}"
+    break # Exit the outer 'while true' loop
+  fi
+  
+  # This delay logic is now correctly placed:
+  # outside the inner cluster-processing loop, but inside the outer 'while true' retry loop.
+  echo "${YELLOW_TEXT}${BOLD_TEXT}🕒 Not all clusters are RUNNING yet or no clusters detected. Re-checking in 10 seconds...${RESET_FORMAT}"
   for i in $(seq 10 -1 1); do
     echo -ne "${YELLOW_TEXT}${BOLD_TEXT}\r⏳ $i seconds remaining before next check... ${RESET_FORMAT}"
     sleep 1
   done
   echo -e "\r${YELLOW_TEXT}${BOLD_TEXT}⏳ Re-checking now...                               ${RESET_FORMAT}" # Extra spaces to clear the line
-done
-echo
+done # This 'done' closes the outer 'while true' loop.
+echo # This 'echo' is after the outer 'while true' loop.
 
 echo "${BLUE_TEXT}${BOLD_TEXT}🔑 Fetching GKE cluster credentials and renaming kubectl contexts for easier access...${RESET_FORMAT}"
 CONTEXTS=("test" "staging" "prod")
@@ -201,28 +267,28 @@ do
     echo "${CYAN_TEXT}${BOLD_TEXT}Applying namespace to context: ${CONTEXT}...${RESET_FORMAT}"
     kubectl --context ${CONTEXT} apply -f kubernetes-config/web-app-namespace.yaml
 done
-echo "${GREEN_TEXT}${BOLD_TEXT}✅ Namespace applied to all contexts.${RESET_FORMAT}"
+echo "${GREEN_TEXT}${BOLD_TEXT}✅ Namespaces applied to all contexts.${RESET_FORMAT}"
 echo
 
-echo "${BLUE_TEXT}${BOLD_TEXT}🎯 Configuring and applying Cloud Deploy targets for each environment...${RESET_FORMAT}"
+echo "${BLUE_TEXT}${BOLD_TEXT}🎯 Configuring Cloud Deploy targets for each context...${RESET_FORMAT}"
 for CONTEXT in ${CONTEXTS[@]}
 do
     echo "${CYAN_TEXT}${BOLD_TEXT}Processing target: ${CONTEXT}...${RESET_FORMAT}"
     envsubst < clouddeploy-config/target-$CONTEXT.yaml.template > clouddeploy-config/target-$CONTEXT.yaml
-    gcloud beta deploy apply --file=clouddeploy-config/target-$CONTEXT.yaml
+    gcloud beta deploy apply --file=clouddeploy-config/target-$CONTEXT.yaml --region=${REGION} --project=${PROJECT_ID}
 done
 echo "${GREEN_TEXT}${BOLD_TEXT}✅ Cloud Deploy targets configured and applied.${RESET_FORMAT}"
 echo
 
 echo "${BLUE_TEXT}${BOLD_TEXT}📋 Listing all configured Cloud Deploy targets...${RESET_FORMAT}"
-gcloud beta deploy targets list
+gcloud beta deploy targets list --region=${REGION} --project=${PROJECT_ID}
 echo
-
 echo "${BLUE_TEXT}${BOLD_TEXT}🚀 Creating a new Cloud Deploy release 'web-app-001'...${RESET_FORMAT}"
 gcloud beta deploy releases create web-app-001 \
 --delivery-pipeline web-app \
 --build-artifacts web/artifacts.json \
---source web/
+--source web/ \
+--region=${REGION} --project=${PROJECT_ID}
 echo "${GREEN_TEXT}${BOLD_TEXT}✅ Release 'web-app-001' created.${RESET_FORMAT}"
 echo
 
