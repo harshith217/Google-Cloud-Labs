@@ -227,28 +227,22 @@ while true; do
       if [[ "$cluster_status_trimmed" != "RUNNING" ]]; then
         all_running=false
       fi
-      # The misplaced 'for CONTEXT...' loop and its echo have been removed from here.
-      # The misplaced delay logic (echo "Not all clusters...", for loop sleep) has also been removed from here.
     done
   fi
 
-  # Now, after checking all clusters (if any were found and processed)
   if [ "$all_running" = true ] && [ -n "$cluster_statuses" ]; then
-    # This condition ensures that clusters were found AND all of them are running.
     echo "${GREEN_TEXT}${BOLD_TEXT}✅ All detected GKE clusters are RUNNING.${RESET_FORMAT}"
-    break # Exit the outer 'while true' loop
+    break 
   fi
   
-  # This delay logic is now correctly placed:
-  # outside the inner cluster-processing loop, but inside the outer 'while true' retry loop.
   echo "${YELLOW_TEXT}${BOLD_TEXT}🕒 Not all clusters are RUNNING yet or no clusters detected. Re-checking in 10 seconds...${RESET_FORMAT}"
   for i in $(seq 10 -1 1); do
     echo -ne "${YELLOW_TEXT}${BOLD_TEXT}\r⏳ $i seconds remaining before next check... ${RESET_FORMAT}"
     sleep 1
   done
-  echo -e "\r${YELLOW_TEXT}${BOLD_TEXT}⏳ Re-checking now...                               ${RESET_FORMAT}" # Extra spaces to clear the line
-done # This 'done' closes the outer 'while true' loop.
-echo # This 'echo' is after the outer 'while true' loop.
+  echo -e "\r${YELLOW_TEXT}${BOLD_TEXT}⏳ Re-checking now...                               ${RESET_FORMAT}" 
+done 
+echo 
 
 echo "${BLUE_TEXT}${BOLD_TEXT}🔑 Fetching GKE cluster credentials and renaming kubectl contexts for easier access...${RESET_FORMAT}"
 CONTEXTS=("test" "staging" "prod")
@@ -262,7 +256,7 @@ echo "${GREEN_TEXT}${BOLD_TEXT}✅ Credentials fetched and contexts renamed.${RE
 echo
 
 echo "${BLUE_TEXT}${BOLD_TEXT}🏠 Applying Kubernetes namespace 'web-app' to all contexts...${RESET_FORMAT}"
-for CONTEXT_NAME in ${CONTEXTS[@]} # Renamed CONTEXT to CONTEXT_NAME
+for CONTEXT_NAME in ${CONTEXTS[@]} 
 do
     echo "${CYAN_TEXT}${BOLD_TEXT}Applying namespace to context: ${CONTEXT_NAME}...${RESET_FORMAT}"
     MAX_RETRIES=3
@@ -279,18 +273,14 @@ do
             
             RETRY_WAIT_SECONDS=5
             for i in $(seq $RETRY_WAIT_SECONDS -1 1); do
-          # \r moves cursor to beginning of line, -n prevents newline.
-          # Extra spaces at the end ensure previous (potentially longer) line is overwritten.
           echo -ne "${YELLOW_TEXT}${BOLD_TEXT}\r⏳ $i seconds remaining...                                 ${RESET_FORMAT}"
           sleep 1
             done
-            # Overwrite the last countdown message with "Retrying now..." and add a newline.
             echo -e "\r${YELLOW_TEXT}${BOLD_TEXT}⏳ Retrying now...                                               ${RESET_FORMAT}"
         fi
     done
     if [ "$SUCCESS" != true ]; then
         echo "${RED_TEXT}${BOLD_TEXT}❌ Failed to apply namespace to ${CONTEXT_NAME} after ${MAX_RETRIES} attempts. This might cause subsequent steps to fail.${RESET_FORMAT}"
-        # Consider exiting if this is critical: exit 1
     fi
 done
 echo "${GREEN_TEXT}${BOLD_TEXT}✅ Namespace application process completed for all contexts.${RESET_FORMAT}"
@@ -307,6 +297,27 @@ echo "${GREEN_TEXT}${BOLD_TEXT}✅ Cloud Deploy targets configured and applied.$
 echo
 echo
 sleep 10
+
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}🚀 Creating Cloud Deploy release 'web-app-001'...${RESET_FORMAT}"
+gcloud beta deploy releases create web-app-001 \
+  --delivery-pipeline web-app \
+  --build-artifacts web/artifacts.json \
+  --source web/ \
+  --project=${PROJECT_ID} \
+  --region=${REGION}
+
+RELEASE_CREATION_STATUS=$?
+
+if [ $RELEASE_CREATION_STATUS -eq 0 ]; then
+  echo "${GREEN_TEXT}${BOLD_TEXT}✅ Release 'web-app-001' creation initiated successfully.${RESET_FORMAT}"
+  echo "${BLUE_TEXT}${BOLD_TEXT}Cloud Deploy will now automatically roll out this release to the first target ('test').${RESET_FORMAT}"
+else
+  echo "${RED_TEXT}${BOLD_TEXT}❌ Failed to create Cloud Deploy release 'web-app-001' (Exit Code: $RELEASE_CREATION_STATUS).${RESET_FORMAT}"
+  echo "${RED_TEXT}${BOLD_TEXT}Please check the gcloud logs above for details. Aborting further deployment steps.${RESET_FORMAT}"
+  exit 1 # Exit if release creation fails, as subsequent steps depend on it.
+fi
+echo
 
 test_rollout_succeeded=false
 echo "${BLUE_TEXT}${BOLD_TEXT}⏳ Waiting for the initial rollout to 'test' target to complete...${RESET_FORMAT}"
@@ -345,7 +356,6 @@ if [ "$test_rollout_succeeded" = true ]; then
   --release web-app-001 \
   --quiet
   echo
-
   staging_rollout_succeeded=false
   echo "${BLUE_TEXT}${BOLD_TEXT}⏳ Waiting for the rollout to 'staging' target to complete...${RESET_FORMAT}"
   while true; do
@@ -379,14 +389,14 @@ if [ "$test_rollout_succeeded" = true ]; then
     --quiet
     echo
 
-    prod_rollout_pending_approval=false
+    prod_rollout_pending_approval=false # Initialize correctly
     echo "${BLUE_TEXT}${BOLD_TEXT}⏳ Waiting for the rollout to 'prod' to reach 'PENDING_APPROVAL' state...${RESET_FORMAT}"
     while true; do
-      status=$(gcloud beta deploy rollouts list --delivery-pipeline web-app --release web-app-001 --filter="targetId=prod" --format="value(state)" | head -n 1)
+      status=$(gcloud beta deploy rollouts list --delivery-pipeline web-app --release web-app-001 --filter="targetId=prod" --format="value(state)" | head -n 1) # Corrected filter to targetId
 
       if [ "$status" == "PENDING_APPROVAL" ]; then
         echo -e "\r${GREEN_TEXT}${BOLD_TEXT}👍 Rollout to 'prod' is now PENDING_APPROVAL!                                 ${RESET_FORMAT}"
-        prod_rollout_pending_approval=true
+        prod_rollout_pending_approval=true # Set to true when condition met
         break
       elif [[ "$status" == "FAILED" || "$status" == "CANCELLED" || "$status" == "HALTED" || "$status" == "SUCCEEDED" ]]; then
         echo -e "\r${RED_TEXT}${BOLD_TEXT}❌ Rollout to 'prod' is ${status} instead of PENDING_APPROVAL. Please check logs. ${RESET_FORMAT}"
@@ -412,21 +422,21 @@ if [ "$test_rollout_succeeded" = true ]; then
         --format="value(name)" | head -n 1)
 
       if [ -n "$prod_rollout_name" ]; then
-        echo "${BLUE_TEXT}${BOLD_TEXT}👍 Approving the rollout '${prod_rollout_name##*/}' for the 'prod' target...${RESET_FORMAT}"
+        echo "${BLUE_TEXT}${BOLD_TEXT}✅ Approving rollout '$prod_rollout_name' for 'prod' target...${RESET_FORMAT}" # Added approval message
         gcloud beta deploy rollouts approve "$prod_rollout_name" \
         --delivery-pipeline web-app \
         --release web-app-001 \
         --quiet
         echo
 
-        prod_rollout_succeeded=false
+        prod_rollout_succeeded=false # Initialize correctly
         echo "${BLUE_TEXT}${BOLD_TEXT}⏳ Waiting for the rollout to 'prod' target to complete after approval...${RESET_FORMAT}"
         while true; do
-          status=$(gcloud beta deploy rollouts list --delivery-pipeline web-app --release web-app-001 --filter="targetId=prod" --format="value(state)" | head -n 1)
+          status=$(gcloud beta deploy rollouts list --delivery-pipeline web-app --release web-app-001 --filter="targetId=prod" --format="value(state)" | head -n 1) # Corrected filter to targetId
 
           if [ "$status" == "SUCCEEDED" ]; then
             echo -e "\r${GREEN_TEXT}${BOLD_TEXT}🎉 Rollout to 'prod' SUCCEEDED!                                        ${RESET_FORMAT}"
-            prod_rollout_succeeded=true
+            prod_rollout_succeeded=true # Set to true on success
             break
           elif [[ "$status" == "FAILED" || "$status" == "CANCELLED" || "$status" == "HALTED" ]]; then
             echo -e "\r${RED_TEXT}${BOLD_TEXT}❌ Rollout to 'prod' is ${status}. Please check logs.                 ${RESET_FORMAT}"
@@ -474,3 +484,4 @@ echo
 echo "${MAGENTA_TEXT}${BOLD_TEXT}💖 Enjoyed the video? Consider subscribing to Arcade Crew! 👇${RESET_FORMAT}"
 echo "${BLUE_TEXT}${BOLD_TEXT}${UNDERLINE_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
 echo
+
