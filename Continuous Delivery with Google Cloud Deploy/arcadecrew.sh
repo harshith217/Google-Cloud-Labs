@@ -259,7 +259,7 @@ echo "${BLUE_TEXT}${BOLD_TEXT}🏠 Applying Kubernetes namespace 'web-app' to al
 for CONTEXT_NAME in ${CONTEXTS[@]} 
 do
     echo "${CYAN_TEXT}${BOLD_TEXT}Applying namespace to context: ${CONTEXT_NAME}...${RESET_FORMAT}"
-    MAX_RETRIES=10
+    MAX_RETRIES=20
     RETRY_COUNT=0
     SUCCESS=false
     while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
