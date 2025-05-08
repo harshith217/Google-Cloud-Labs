@@ -29,7 +29,7 @@
 
 
 ```bash
-curl -LO 
+curl -LO https://raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Analytics%20as%20a%20Service%20for%20Data%20Sharing%20Partners/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
@@ -91,7 +91,7 @@ If you have any incognito windows open from previous lab activity, close them.
 In the Project A Cloud Shell, first set an environment variable for your **Main Lab Project ID** (the one you copied in step 1.2):
 
 ```bash
-curl -LO 
+curl -LO https://raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Analytics%20as%20a%20Service%20for%20Data%20Sharing%20Partners/arcadecrew1.sh
 sudo chmod +x arcadecrew1.sh
 ./arcadecrew1.sh
 ```
@@ -130,7 +130,7 @@ Close the Incognito window used for Project A's Looker Studio.
 In the Project B Cloud Shell, set the environment variable for your **Main Lab Project ID** again:
 
 ```bash
-curl -LO 
+curl -LO https://raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Analytics%20as%20a%20Service%20for%20Data%20Sharing%20Partners/arcadecrew2.sh
 sudo chmod +x arcadecrew2.sh
 ./arcadecrew2.sh
 ```
