@@ -23,8 +23,10 @@ echo "${YELLOW_TEXT}${BOLD_TEXT}👉 Please enter the Region.${RESET_FORMAT}"
 read -p "${MAGENTA_TEXT}REGION: ${RESET_FORMAT}" REGION
 echo
 
+echo "${GREEN_TEXT}${BOLD_TEXT}🛠️  Setting up the project workspace...${RESET_FORMAT}"
 mkdir ~/hello-go && cd ~/hello-go
 
+echo "${BLUE_TEXT}${BOLD_TEXT}📝 Creating the Go source file for our HTTP function...${RESET_FORMAT}"
 cat > main.go <<EOF_END
 package function
 
@@ -39,12 +41,14 @@ func HelloGo(w http.ResponseWriter, r *http.Request) {
 }
 EOF_END
 
+echo "${BLUE_TEXT}${BOLD_TEXT}📦 Initializing the Go module...${RESET_FORMAT}"
 cat > go.mod <<EOF_END
 module example.com/hellogo
 
 go 1.21
 EOF_END
 
+echo "${MAGENTA_TEXT}${BOLD_TEXT}🚀 Deploying the HTTP-triggered Go Cloud Function...${RESET_FORMAT}"
 gcloud functions deploy cf-go \
   --gen2 \
   --runtime=go121 \
@@ -56,7 +60,7 @@ gcloud functions deploy cf-go \
   --min-instances=5
 
 
-
+echo "${MAGENTA_TEXT}${BOLD_TEXT}📨 Deploying the Pub/Sub-triggered Go Cloud Function...${RESET_FORMAT}"
 echo "n" | gcloud functions deploy cf-pubsub \
   --gen2 \
   --region=$REGION \
@@ -66,6 +70,12 @@ echo "n" | gcloud functions deploy cf-pubsub \
   --entry-point=helloWorld \
   --source=. \
   --allow-unauthenticated
+
+echo
+echo "${CYAN_TEXT}${BOLD_TEXT}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${RESET_FORMAT}"
+echo "${RED_TEXT}${BOLD_TEXT}🔴          IGNORE ERRORS IF ANY          🔴 ${RESET_FORMAT}"
+echo "${CYAN_TEXT}${BOLD_TEXT}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${RESET_FORMAT}"
+echo
 
 echo
 echo "${MAGENTA_TEXT}${BOLD_TEXT}💖 IF YOU FOUND THIS HELPFUL, SUBSCRIBE ARCADE CREW! 👇${RESET_FORMAT}"
