@@ -24,12 +24,12 @@
 > 💡 **Pro Tip:** *Watch the full video to ensure you achieve full scores on all "Check My Progress" steps!*
 
 <div style="padding: 15px; margin: 10px 0;">
-<p><strong>☁️ Run in Cloud Shell:</strong></p>
+<p><strong>☁️ Run in Notebook Terminal:</strong></p>
 
 ```bash
 rm gemini-explorer-challenge-v2.0.0.ipynb
 
-curl -LO gemini-explorer-challenge-v2.0.0.ipynb
+curl -LO raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Explore%20Generative%20AI%20with%20the%20Gemini%20API%20in%20Vertex%20AI%20Challenge%20Lab/gemini-explorer-challenge-v2.0.0.ipynb
 
 ```
 
