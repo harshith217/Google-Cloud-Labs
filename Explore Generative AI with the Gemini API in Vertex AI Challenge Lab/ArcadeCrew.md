@@ -23,6 +23,8 @@
 
 > 💡 **Pro Tip:** *Watch the full video to ensure you achieve full scores on all "Check My Progress" steps!*
 
+* Open **Vertex AI Workbench** from [HERE](https://console.cloud.google.com/vertex-ai/workbench?)
+
 <div style="padding: 15px; margin: 10px 0;">
 <p><strong>☁️ Run in Notebook Terminal:</strong></p>
 
