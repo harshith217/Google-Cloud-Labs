@@ -24,7 +24,7 @@
 > 💡 **Pro Tip:** *Watch the full video to ensure you achieve full scores on all "Check My Progress" steps!*
 
 <div style="padding: 15px; margin: 10px 0;">
-<p><strong>☁️ Run in Cloud Shell:</strong></p>
+<p><strong>☁️ Run in NoteBook Terminal:</strong></p>
 
 ```bash
 rm inspect_rich_documents_w_gemini_multimodality_and_multimodal_rag-v1.0.0.ipynb
