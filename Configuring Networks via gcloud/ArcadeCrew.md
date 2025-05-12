@@ -27,7 +27,7 @@
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
 ```bash
-curl -LO 
+curl -LO https://github.com/ArcadeCrew/Google-Cloud-Labs/raw/refs/heads/main/Configuring%20Networks%20via%20gcloud/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
