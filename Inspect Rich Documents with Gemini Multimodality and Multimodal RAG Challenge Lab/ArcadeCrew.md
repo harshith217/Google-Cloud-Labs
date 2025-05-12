@@ -29,7 +29,7 @@
 ```bash
 rm inspect_rich_documents_w_gemini_multimodality_and_multimodal_rag-v1.0.0.ipynb
 
-curl -LO inspect_rich_documents_w_gemini_multimodality_and_multimodal_rag-v1.0.0.ipynb
+curl -LO https://github.com/ArcadeCrew/Google-Cloud-Labs/raw/refs/heads/main/Inspect%20Rich%20Documents%20with%20Gemini%20Multimodality%20and%20Multimodal%20RAG%20Challenge%20Lab/inspect_rich_documents_w_gemini_multimodality_and_multimodal_rag-v1.0.0.ipynb
 
 
 ```
