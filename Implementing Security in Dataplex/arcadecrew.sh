@@ -19,9 +19,18 @@ echo "${CYAN_TEXT}${BOLD_TEXT}🚀     INITIATING EXECUTION     🚀${RESET_FORM
 echo "${CYAN_TEXT}${BOLD_TEXT}===================================${RESET_FORMAT}"
 echo
 
-echo "${YELLOW_TEXT}${BOLD_TEXT}🌍 Please enter the GCP region:${RESET_FORMAT}"
-read -p "${WHITE_TEXT}${BOLD_TEXT}Enter Region: ${RESET_FORMAT}" REGION
-export REGION
+echo "${YELLOW_TEXT}${BOLD_TEXT}🔍 Detecting GCP region...${RESET_FORMAT}"
+export REGION=$(gcloud compute project-info describe \
+--format="value(commonInstanceMetadata.items[google-compute-default-region])" 2>/dev/null)
+
+if [ -z "$REGION" ]; then
+    echo "${YELLOW_TEXT}${BOLD_TEXT}⚠️  Could not automatically detect GCP region.${RESET_FORMAT}"
+    read -p "${CYAN_TEXT}${BOLD_TEXT}Please enter the GCP region: ${RESET_FORMAT}" REGION
+    export REGION
+fi
+
+echo "${GREEN_TEXT}${BOLD_TEXT}🌍 Region set to: $REGION${RESET_FORMAT}"
+
 
 echo
 echo "${GREEN_TEXT}${BOLD_TEXT}⚙️  Enabling the Dataplex API. This is a necessary step for using Dataplex services.${RESET_FORMAT}"
