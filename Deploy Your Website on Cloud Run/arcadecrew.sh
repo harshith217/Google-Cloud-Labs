@@ -112,7 +112,6 @@ echo "${CYAN_TEXT}${BOLD_TEXT}   Service name: monolith, Region: ${WHITE_TEXT}${
 gcloud run deploy monolith --image $REGION-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/monolith-demo/monolith:2.0.0 --allow-unauthenticated --region $REGION
 
 echo
-echo "${MAGENTA_TEXT}${BOLD_TEXT}🎉 Script execution complete! We hope this was helpful. 🎉${RESET_FORMAT}"
 echo "${MAGENTA_TEXT}${BOLD_TEXT}💖 Consider subscribing to ARCADE CREW for more! 👇${RESET_FORMAT}"
 echo "${BLUE_TEXT}${BOLD_TEXT}${UNDERLINE_TEXT}https://www.youtube.com/@Arcade61432${RESET_FORMAT}"
 echo
