@@ -126,7 +126,7 @@ echo "${CYAN_TEXT}${BOLD_TEXT}🎥         NOW FOLLOW VIDEO STEPS         🎥${
 echo "${BLUE_TEXT}${BOLD_TEXT}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${RESET_FORMAT}"
 echo
 
-echo "${CYAN_TEXT}${BOLD_TEXT}🔗 Click here to navigate to App Engine in the GCP Console:${RESET_FORMAT} ${BLUE_TEXT}https://console.cloud.google.com/appengine?project=${PROJECT_ID}${RESET_FORMAT}"
+echo "${CYAN_TEXT}${BOLD_TEXT}🔗 OPEN THIS LINK:${RESET_FORMAT} ${BLUE_TEXT}https://console.cloud.google.com/appengine?project=${PROJECT_ID}${RESET_FORMAT}"
 echo
 echo "${YELLOW_TEXT}${BOLD_TEXT}📖 Book Details (Test Log Entry):${RESET_FORMAT}"
 echo "${GREEN_TEXT}   Title:${RESET_FORMAT} Test Book"
