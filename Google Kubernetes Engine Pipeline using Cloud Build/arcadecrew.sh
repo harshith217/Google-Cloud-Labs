@@ -246,7 +246,7 @@ git checkout -b production
 echo "${BLUE_TEXT}${BOLD_TEXT}Removing the existing 'cloudbuild.yaml' from the 'production' branch... 🗑️${RESET_FORMAT}"
 rm cloudbuild.yaml
 echo "${BLUE_TEXT}${BOLD_TEXT}Downloading the environment-specific Cloud Build configuration ('ENV-cloudbuild.yaml')... 📥${RESET_FORMAT}"
-curl -LO ENV-cloudbuild.yaml
+curl -LO https://raw.githubusercontent.com/ArcadeCrew/Google-Cloud-Labs/refs/heads/main/Google%20Kubernetes%20Engine%20Pipeline%20using%20Cloud%20Build/ENV-cloudbuild.yaml
 echo "${BLUE_TEXT}${BOLD_TEXT}Renaming 'ENV-cloudbuild.yaml' to 'cloudbuild.yaml' in the 'production' branch... 🔄${RESET_FORMAT}"
 mv ENV-cloudbuild.yaml cloudbuild.yaml
 echo "${BLUE_TEXT}${BOLD_TEXT}Updating region placeholder in 'cloudbuild.yaml' to '$REGION'... 🌍${RESET_FORMAT}"
@@ -281,7 +281,7 @@ git push google master
 echo "${GREEN_TEXT}${BOLD_TEXT}Removing the existing 'cloudbuild.yaml' from the application repository... 🗑️${RESET_FORMAT}"
 rm cloudbuild.yaml
 echo "${GREEN_TEXT}${BOLD_TEXT}Downloading the application-specific Cloud Build configuration ('APP-cloudbuild.yaml')... 📥${RESET_FORMAT}"
-curl -LO APP-cloudbuild.yaml
+curl -LO https://github.com/ArcadeCrew/Google-Cloud-Labs/raw/refs/heads/main/Google%20Kubernetes%20Engine%20Pipeline%20using%20Cloud%20Build/APP-cloudbuild.yaml
 echo "${GREEN_TEXT}${BOLD_TEXT}Renaming 'APP-cloudbuild.yaml' to 'cloudbuild.yaml' in the application repository... 🔄${RESET_FORMAT}"
 mv APP-cloudbuild.yaml cloudbuild.yaml
 echo "${GREEN_TEXT}${BOLD_TEXT}Updating region placeholder in the application 'cloudbuild.yaml' to '$REGION'... 🌍${RESET_FORMAT}"
