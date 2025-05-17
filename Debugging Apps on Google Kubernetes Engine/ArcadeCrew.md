@@ -20,22 +20,6 @@
 
 ---
 
-### 📋 <ins>**Prerequisites**</ins>
-
-✅ If you do not already have a **GitHub** account, you will need to create a  
-👉 [GitHub account](https://github.com/signup)
-
----
-
-### 🔐 <ins>**Recommendations**</ins>
-
-✔️ Use an OLD **GitHub** account if you have.  
-🔒 **GitHub** will likely block a new account as spam.
-
-🛡️ Enable [Two-Factor Authentication](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication) on your **GitHub** to enhance security.
-
----
-
 ## 🛠️ Configuration Steps 🚀
 
 > 💡 **Pro Tip:** *Watch the full video to ensure you achieve full scores on all "Check My Progress" steps!*
@@ -44,7 +28,7 @@
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
 ```bash
-curl -LO 
+curl -LO https://github.com/ArcadeCrew/Google-Cloud-Labs/raw/refs/heads/main/Debugging%20Apps%20on%20Google%20Kubernetes%20Engine/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
