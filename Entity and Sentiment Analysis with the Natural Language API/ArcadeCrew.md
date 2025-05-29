@@ -1,4 +1,4 @@
-# 🌐 [Get Started with Pub/Sub: Challenge Lab | ARC113](https://www.cloudskillsboost.google/focuses/105165?parent=catalog)  
+# 🌐 [Entity and Sentiment Analysis with the Natural Language API | GSP038](https://www.cloudskillsboost.google/focuses/1843?parent=catalog)  
 
 ---
 
