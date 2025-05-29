@@ -19,28 +19,7 @@ echo "${CYAN_TEXT}${BOLD_TEXT}🚀     INITIATING EXECUTION     🚀${RESET_FORM
 echo "${CYAN_TEXT}${BOLD_TEXT}===================================${RESET_FORMAT}"
 echo
 
-bq mk ecommerce
 
-bq query --use_legacy_sql=false \
-'#standardSQL
- CREATE OR REPLACE TABLE ecommerce.all_sessions_raw_dataprep
- OPTIONS(
-   description="Raw data from analyst team to ingest into Cloud Dataprep"
- ) AS
- SELECT * FROM `data-to-insights.ecommerce.all_sessions_raw`
- WHERE date = "20170801";'
-
-echo
-echo "${BLUE_TEXT}${BOLD_TEXT}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${RESET_FORMAT}"
-echo "${CYAN_TEXT}${BOLD_TEXT}🎥         NOW FOLLOW VIDEO STEPS         🎥${RESET_FORMAT}"
-echo "${BLUE_TEXT}${BOLD_TEXT}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~${RESET_FORMAT}"
-echo
-
-echo "${YELLOW_TEXT}${BOLD_TEXT}OPEN DATAPREP FROM THE FOLLOWING LINK:${RESET_FORMAT}"
-echo "${BLUE_TEXT}${BOLD_TEXT}https://console.cloud.google.com/dataprep${RESET_FORMAT}"
-echo
-echo "${YELLOW_TEXT}${BOLD_TEXT}DOWNLOAD FILE FROM THE FOLLOWING LINK:${RESET_FORMAT}"
-echo "${BLUE_TEXT}${BOLD_TEXT}flow_Ecommerce_Analytics_Pipeline.zip${RESET_FORMAT}"
 
 echo
 echo "${MAGENTA_TEXT}${BOLD_TEXT}💖 IF YOU FOUND THIS HELPFUL, SUBSCRIBE ARCADE CREW! 👇${RESET_FORMAT}"
