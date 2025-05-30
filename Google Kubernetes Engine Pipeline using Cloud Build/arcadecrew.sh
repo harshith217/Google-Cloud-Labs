@@ -107,15 +107,15 @@ echo "${BLUE_TEXT}https://console.cloud.google.com/cloud-build/triggers;region=g
 while true; do
     echo
     echo "${CYAN_TEXT}${BOLD_TEXT}┌─────────────────────────────────────────────────────────────┐${RESET_FORMAT}"
-    echo "${CYAN_TEXT}${BOLD_TEXT}│                 TRIGGER CREATION REQUIRED                  │${RESET_FORMAT}"
+    echo "${CYAN_TEXT}${BOLD_TEXT}│                 TRIGGER CREATION REQUIRED                   │${RESET_FORMAT}"
     echo "${CYAN_TEXT}${BOLD_TEXT}├─────────────────────────────────────────────────────────────┤${RESET_FORMAT}"
-    echo "${WHITE_TEXT}${BOLD_TEXT}│  Please create the following triggers:                     │${RESET_FORMAT}"
+    echo "${WHITE_TEXT}${BOLD_TEXT}│  Please create the following triggers:                      │${RESET_FORMAT}"
     echo "${WHITE_TEXT}│                                                             │${RESET_FORMAT}"
-    echo "${YELLOW_TEXT}│  📋 Trigger 1: hello-cloudbuild                            │${RESET_FORMAT}"
+    echo "${YELLOW_TEXT}│  📋 Trigger 1: hello-cloudbuild                              │${RESET_FORMAT}"
     echo "${WHITE_TEXT}│                                                             │${RESET_FORMAT}"
-    echo "${YELLOW_TEXT}│  📋 Trigger 2: hello-cloudbuild-deploy                     │${RESET_FORMAT}"
-    echo "${WHITE_TEXT}│     ├─ Region: ${CYAN_TEXT}${REGION}${WHITE_TEXT}                                    │${RESET_FORMAT}"
-    echo "${WHITE_TEXT}│     └─ Branch Pattern: ${GREEN_TEXT}^candidate$${WHITE_TEXT}                      │${RESET_FORMAT}"
+    echo "${YELLOW_TEXT}│  📋 Trigger 2: hello-cloudbuild-deploy                       │${RESET_FORMAT}"
+    echo "${WHITE_TEXT}│     ├─ Region: ${CYAN_TEXT}${REGION}${WHITE_TEXT}                                     │${RESET_FORMAT}"
+    echo "${WHITE_TEXT}│     └─ Branch Pattern: ${GREEN_TEXT}^candidate$ ${WHITE_TEXT}           │${RESET_FORMAT}"
     echo "${CYAN_TEXT}${BOLD_TEXT}└─────────────────────────────────────────────────────────────┘${RESET_FORMAT}"
     echo
     echo -n "${BOLD_TEXT}${YELLOW_TEXT}Have you completed the trigger creation? (Y/N): ${RESET_FORMAT}"
@@ -212,7 +212,7 @@ git checkout -b production
 
 rm cloudbuild.yaml
 
-curl -LO https://github.com/ArcadeCrew/Google-Cloud-Labs/raw/refs/heads/main/Google%20Kubernetes%20Engine%20Pipeline%20using%20Cloud%20Build/ENV-cloudbuild.yaml
+curl -LO ENV-cloudbuild.yaml
 
 mv ENV-cloudbuild.yaml cloudbuild.yaml
 
@@ -241,7 +241,7 @@ git push google master
 
 rm cloudbuild.yaml
 
-curl -LO https://github.com/ArcadeCrew/Google-Cloud-Labs/raw/refs/heads/main/Google%20Kubernetes%20Engine%20Pipeline%20using%20Cloud%20Build/APP-cloudbuild.yaml
+curl -LO APP-cloudbuild.yaml
 
 mv APP-cloudbuild.yaml cloudbuild.yaml
 
