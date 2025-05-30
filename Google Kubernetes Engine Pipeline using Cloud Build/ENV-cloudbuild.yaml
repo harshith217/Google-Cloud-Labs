@@ -16,7 +16,6 @@
 steps:
 # This step deploys the new version of our container image
 # in the hello-cloudbuild Kubernetes Engine cluster.
-# 'kubernetes.yaml' is expected to be at the root, pushed by the CI pipeline.
 - name: 'gcr.io/cloud-builders/kubectl'
   id: Deploy
   args:
@@ -24,11 +23,10 @@ steps:
   - '-f'
   - 'kubernetes.yaml'
   env:
-  - 'CLOUDSDK_COMPUTE_REGION=REGION-' # This will be replaced by your script
+  - 'CLOUDSDK_COMPUTE_REGION=REGION-'
   - 'CLOUDSDK_CONTAINER_CLUSTER=hello-cloudbuild'
 
-# Access the id_github file from Secret Manager, and setup SSH.
-# This step assumes 'known_hosts.github' is present in the root of the 'hello-cloudbuild-env' repository.
+# Access the id_github file from Secret Manager, and setup SSH
 - name: 'gcr.io/cloud-builders/git'
   secretEnv: ['SSH_KEY']
   entrypoint: 'bash'
@@ -42,55 +40,45 @@ steps:
   - name: 'ssh'
     path: /root/.ssh
 
-# This step copies the applied manifest to the production branch.
-# The COMMIT_SHA variable is automatically replaced by Cloud Build
-# and refers to the commit on the 'candidate' branch that triggered this build.
-- name: 'gcr.io/cloud-builders/git' # Using the git builder for git operations
-  id: Copy to production branch
-  entrypoint: 'bash'
-  volumes: # Mount the SSH volume for git push
-  - name: 'ssh'
+# Clone the repository
+- name: 'gcr.io/cloud-builders/git'
+  args:
+  - clone
+  - --recurse-submodules
+  - git@github.com:GITHUB-USERNAME/hello-cloudbuild-env.git
+  volumes:
+  - name: ssh
     path: /root/.ssh
+
+# This step copies the applied manifest to the production branch
+# The COMMIT_SHA variable is automatically
+# replaced by Cloud Build.
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: Copy to production branch
+  entrypoint: /bin/sh
   args:
   - '-c'
   - |
-    set -x
-    # The current working directory is the root of the 'hello-cloudbuild-env' checkout.
-    # No 'cd' needed as the redundant clone step has been removed.
-    
-    # Configure Git user for the commit.
-    # The user will be the service account running this Cloud Build trigger.
-    git config user.name "Cloud Build"
-    git config user.email "$(gcloud auth list --filter=status:ACTIVE --format='value(account)')"
-
-    # Fetch the latest state of the production branch from the remote repository (GitHub).
-    git fetch origin production
-
-    # Checkout the 'production' branch.
-    # -B creates the branch if it doesn't exist locally, or resets it to origin/production if it does.
-    # This ensures we're working on an up-to-date local 'production' branch.
-    git checkout -B production origin/production
-
-    # Retrieve the 'kubernetes.yaml' file from the specific commit ($COMMIT_SHA)
-    # on the 'candidate' branch that triggered this build.
-    # This command places that version of 'kubernetes.yaml' into the current working
-    # directory (which is now the 'production' branch).
-    git checkout $COMMIT_SHA kubernetes.yaml
-
-    # Stage the 'kubernetes.yaml' file for commit.
-    git add kubernetes.yaml
-
-    # Commit the 'kubernetes.yaml' file to the local 'production' branch.
-    # The commit message includes the SHA and the original commit message from the 'candidate' branch.
+    set -x && \
+    cd hello-cloudbuild-env && \
+    git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)')
+    sed "s/GOOGLE_CLOUD_PROJECT/${PROJECT_ID}/g" kubernetes.yaml.tpl | \
+    git fetch origin production && \
+    # Switch to the production branch and copy the kubernetes.yaml file from the candidate branch
+    git checkout production && \
+    git checkout $COMMIT_SHA kubernetes.yaml && \
+    # Commit the kubernetes.yaml file with a descriptive commit message
     git commit -m "Manifest from commit $COMMIT_SHA
-    Original commit message from candidate: $(git log --format=%B -n 1 $COMMIT_SHA)"
-
-    # Push the changes from the local 'production' branch to the remote 'production' branch on GitHub.
+    $(git log --format=%B -n 1 $COMMIT_SHA)" && \
+    # Push the changes back to Cloud Source Repository
     git push origin production
+  volumes:
+  - name: ssh
+    path: /root/.ssh
 
 availableSecrets:
   secretManager:
-  - versionName: projects/${PROJECT_NUMBER}/secrets/ssh_key_secret/versions/1 # ${PROJECT_NUMBER} is typically substituted by Cloud Build or your script
+  - versionName: projects/${PROJECT_NUMBER}/secrets/ssh_key_secret/versions/1
     env: 'SSH_KEY'
 
 # [END cloudbuild-delivery]
