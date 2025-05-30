@@ -27,15 +27,6 @@
 
 ---
 
-### 🔐 <ins>**Recommendations**</ins>
-
-✔️ Use an OLD **GitHub** account if you have.  
-🔒 **GitHub** will likely block a new account as spam.
-
-🛡️ Enable [Two-Factor Authentication](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication) on your **GitHub** to enhance security.
-
----
-
 ## 🛠️ Configuration Steps 🚀
 
 > 💡 **Pro Tip:** *Watch the full video to ensure you achieve full scores on all "Check My Progress" steps!*
