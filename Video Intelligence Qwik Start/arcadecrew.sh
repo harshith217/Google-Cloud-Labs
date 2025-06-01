@@ -30,92 +30,96 @@ echo "${CYAN_TEXT}${BOLD_TEXT}🚀     INITIATING EXECUTION     🚀${RESET_FORM
 echo "${CYAN_TEXT}${BOLD_TEXT}===================================${RESET_FORMAT}"
 echo
 
-echo "${YELLOW_TEXT}${BOLD_TEXT}📋 STEP 1: Setting up IAM Service Account${RESET_FORMAT}"
-echo "${WHITE_TEXT}${DIM_TEXT}🔧 We'll create a new service account for authentication purposes${RESET_FORMAT}"
+echo "${YELLOW_TEXT}${BOLD_TEXT}📋 STEP 1: Checking Authentication Status${RESET_FORMAT}"
+echo "${WHITE_TEXT}${BOLD_TEXT}ℹ️  Displaying current authenticated accounts...${RESET_FORMAT}"
 echo
-gcloud iam service-accounts create quickstart && \
-echo "${GREEN_TEXT}✓ Service account created successfully${RESET}" || \
-echo "${RED_TEXT}✗ Failed to create service account${RESET}"
-echo
+gcloud auth list
 
-echo "${YELLOW_TEXT}${BOLD_TEXT}🔑 STEP 2: Generating Service Account Credentials${RESET_FORMAT}"
-echo "${WHITE_TEXT}${DIM_TEXT}📄 Creating JSON key file for service account authentication${RESET_FORMAT}"
 echo
-gcloud iam service-accounts keys create key.json \
-    --iam-account quickstart@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com && \
-echo "${GREEN_TEXT}✓ Service account key created successfully${RESET}" || \
-echo "${RED_TEXT}✗ Failed to create service account key${RESET}"
+echo "${GREEN_TEXT}${BOLD_TEXT}🔧 STEP 2: Setting Up Project Configuration${RESET_FORMAT}"
+echo "${WHITE_TEXT}${BOLD_TEXT}📊 Retrieving current project ID for configuration...${RESET_FORMAT}"
 echo
+export PROJECT_ID=$(gcloud config get-value project)
 
-echo "${YELLOW_TEXT}${BOLD_TEXT}🎯 STEP 3: Activating Authentication Context${RESET_FORMAT}"
-echo "${WHITE_TEXT}${DIM_TEXT}🔄 Switching to service account for API operations${RESET_FORMAT}"
 echo
-gcloud auth activate-service-account --key-file key.json && \
-echo "${GREEN_TEXT}✓ Service account activated successfully${RESET}" || \
-echo "${RED_TEXT}✗ Failed to activate service account${RESET}"
+echo "${BLUE_TEXT}${BOLD_TEXT}⚡ STEP 3: Enabling Video Intelligence API${RESET_FORMAT}"
+echo "${WHITE_TEXT}${BOLD_TEXT}🔌 Activating Google Cloud Video Intelligence service...${RESET_FORMAT}"
 echo
+gcloud services enable videointelligence.googleapis.com
 
-echo "${YELLOW_TEXT}${BOLD_TEXT}🎫 STEP 4: Obtaining API Access Token${RESET_FORMAT}"
-echo "${WHITE_TEXT}${DIM_TEXT}🔐 Retrieving bearer token for Video Intelligence API${RESET_FORMAT}"
 echo
-ACCESS_TOKEN=$(gcloud auth print-access-token)
-echo "${CYAN}Access Token: ${WHITE}${ACCESS_TOKEN:0:20}...${RESET}"
+echo "${MAGENTA_TEXT}${BOLD_TEXT}🔐 STEP 4: Creating Service Account${RESET_FORMAT}"
+echo "${WHITE_TEXT}${BOLD_TEXT}👤 Setting up quickstart service account for API access...${RESET_FORMAT}"
 echo
+gcloud iam service-accounts create quickstart
 
-echo "${YELLOW_TEXT}${BOLD_TEXT}📝 STEP 5: Preparing Video Analysis Request${RESET_FORMAT}"
-echo "${WHITE_TEXT}${DIM_TEXT}🎬 Configuring request for label detection on sample video${RESET_FORMAT}"
+echo
+echo "${CYAN_TEXT}${BOLD_TEXT}🗝️  STEP 5: Generating Service Account Keys${RESET_FORMAT}"
+echo "${WHITE_TEXT}${BOLD_TEXT}📄 Creating JSON key file for authentication...${RESET_FORMAT}"
+echo
+gcloud iam service-accounts keys create key.json --iam-account quickstart@$PROJECT_ID.iam.gserviceaccount.com
+
+echo
+echo "${GREEN_TEXT}${BOLD_TEXT}🔑 STEP 6: Activating Service Account${RESET_FORMAT}"
+echo "${WHITE_TEXT}${BOLD_TEXT}✅ Switching to service account authentication...${RESET_FORMAT}"
+echo
+gcloud auth activate-service-account --key-file key.json
+
+echo
+echo "${YELLOW_TEXT}${BOLD_TEXT}🎫 STEP 7: Obtaining Access Token${RESET_FORMAT}"
+echo "${WHITE_TEXT}${BOLD_TEXT}🔒 Generating bearer token for API requests...${RESET_FORMAT}"
+echo
+gcloud auth print-access-token
+
+echo
+echo "${BLUE_TEXT}${BOLD_TEXT}📝 STEP 8: Creating API Request Payload${RESET_FORMAT}"
+echo "${WHITE_TEXT}${BOLD_TEXT}📋 Preparing JSON request for video analysis...${RESET_FORMAT}"
 echo
 cat > request.json <<EOF
 {
-   "inputUri":"gs://spls/gsp154/video/train.mp4",
-   "features": [
-       "LABEL_DETECTION"
-   ]
+    "inputUri":"gs://spls/gsp154/video/train.mp4",
+    "features": [
+         "LABEL_DETECTION"
+    ]
 }
 EOF
-echo "${GREEN_TEXT}✓ Request file created successfully${RESET}"
+
+echo
+echo "${MAGENTA_TEXT}${BOLD_TEXT}🚀 STEP 9: Initiating Video Analysis${RESET_FORMAT}"
+echo "${WHITE_TEXT}${BOLD_TEXT}🎥 Sending video to AI for label detection...${RESET_FORMAT}"
+echo
+RESPONSE=$(curl -s -H 'Content-Type: application/json' \
+  -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  "https://videointelligence.googleapis.com/v1/videos:annotate" \
+  -d @request.json)
+
+echo
+echo "${YELLOW_TEXT}${BOLD_TEXT}⏳ STEP 10: Processing Wait Time${RESET_FORMAT}"
+echo "${WHITE_TEXT}${BOLD_TEXT}🕰️  Allowing 30 seconds for video processing completion...${RESET_FORMAT}"
+echo
+for i in {30..1}; do
+    printf "\r${YELLOW_TEXT}${BOLD_TEXT}⏳ Processing... ${i} seconds remaining${RESET_FORMAT}"
+    sleep 1
+done
+printf "\r${GREEN_TEXT}${BOLD_TEXT}✅ Processing complete!                    ${RESET_FORMAT}\n"
 echo
 
-echo "${YELLOW_TEXT}${BOLD_TEXT}🚀 STEP 6: Submitting Video Intelligence Request${RESET_FORMAT}"
-echo "${WHITE_TEXT}${DIM_TEXT}📡 Sending annotation request to Google Video Intelligence API${RESET_FORMAT}"
 echo
-response=$(curl -s -H 'Content-Type: application/json' \
-    -H "Authorization: Bearer $ACCESS_TOKEN" \
-    'https://videointelligence.googleapis.com/v1/videos:annotate' \
-    -d @request.json)
-
-if [ $? -eq 0 ]; then
-    echo "${GREEN_TEXT}✓ Annotation request submitted successfully${RESET}"
-else
-    echo "${RED_TEXT}✗ Failed to submit annotation request${RESET}"
-    exit 1
-fi
+echo "${GREEN_TEXT}${BOLD_TEXT}🔍 STEP 11: Extracting Operation Details${RESET_FORMAT}"
+echo "${WHITE_TEXT}${BOLD_TEXT}📊 Parsing response to get operation identifier...${RESET_FORMAT}"
 echo
+OPERATION_NAME=$(echo "$RESPONSE" | grep -oP '"name":\s*"\K[^"]+')
 
-echo "${YELLOW_TEXT}${BOLD_TEXT}⚙️ STEP 7: Extracting Operation Metadata${RESET_FORMAT}"
-echo "${WHITE_TEXT}${DIM_TEXT}📊 Parsing response to get operation tracking details${RESET_FORMAT}"
+export OPERATION_NAME
+
 echo
-project_id=$(echo $response | jq -r '.name' | cut -d'/' -f2)
-location=$(echo $response | cut -d'/' -f4)
-operation_name=$(echo $response | cut -d'/' -f6)
-
-echo "${CYAN}Project ID: ${WHITE}$project_id${RESET}"
-echo "${CYAN}Location: ${WHITE}$location${RESET}"
-echo "${CYAN}Operation Name: ${WHITE}$operation_name${RESET}"
-echo
-
-echo "${YELLOW_TEXT}${BOLD_TEXT}📈 STEP 8: Monitoring Operation Status${RESET_FORMAT}"
-echo "${WHITE_TEXT}${DIM_TEXT}🔎 Checking current status of video analysis operation${RESET_FORMAT}"
+echo "${CYAN_TEXT}${BOLD_TEXT}📈 STEP 12: Retrieving Final Results${RESET_FORMAT}"
+echo "${WHITE_TEXT}${BOLD_TEXT}🎯 Fetching completed analysis results...${RESET_FORMAT}"
 echo
 curl -s -H 'Content-Type: application/json' \
-    -H "Authorization: Bearer $ACCESS_TOKEN" \
-    "https://videointelligence.googleapis.com/v1/projects/$project_id/locations/$location/operations/$operation_name"
+  -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  "https://videointelligence.googleapis.com/v1/$OPERATION_NAME"
 
-if [ $? -eq 0 ]; then
-    echo "${GREEN_TEXT}✓ Operation status retrieved successfully${RESET}"
-else
-    echo "${RED_TEXT}✗ Failed to retrieve operation status${RESET}"
-fi
 
 echo
 echo "${MAGENTA_TEXT}${BOLD_TEXT}💖 IF YOU FOUND THIS HELPFUL, SUBSCRIBE ARCADE CREW! 👇${RESET_FORMAT}"
