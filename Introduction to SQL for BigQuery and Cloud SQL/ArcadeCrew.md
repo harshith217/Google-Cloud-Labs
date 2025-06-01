@@ -30,7 +30,7 @@
 <p><strong>☁️ Run in Cloud Shell:</strong></p>
 
 ```bash
-curl -LO 
+curl -LO https://github.com/ArcadeCrew/Google-Cloud-Labs/raw/refs/heads/main/Introduction%20to%20SQL%20for%20BigQuery%20and%20Cloud%20SQL/arcadecrew.sh
 sudo chmod +x arcadecrew.sh
 ./arcadecrew.sh
 ```
