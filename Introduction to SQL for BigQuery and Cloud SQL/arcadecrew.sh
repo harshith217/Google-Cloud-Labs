@@ -37,11 +37,11 @@ echo
 echo "${BG_GREEN}${WHITE_TEXT}${BOLD_TEXT} 📥 STEP 2: DATASET ACQUISITION ${RESET_FORMAT}"
 echo "${MAGENTA_TEXT}${BOLD_TEXT}🔄 Fetching CSV dataset files from remote source...${RESET_FORMAT}"
 echo
-curl -O start_station_name.csv || {
+curl -O https://github.com/ArcadeCrew/Google-Cloud-Labs/raw/refs/heads/main/Introduction%20to%20SQL%20for%20BigQuery%20and%20Cloud%20SQL/start_station_name.csv || {
     echo "${RED_TEXT}${BOLD_TEXT}❌ Failed to download start_station_name.csv${RESET_FORMAT}"
 }
 
-curl -O end_station_name.csv || {
+curl -O https://github.com/ArcadeCrew/Google-Cloud-Labs/raw/refs/heads/main/Introduction%20to%20SQL%20for%20BigQuery%20and%20Cloud%20SQL/end_station_name.csv || {
     echo "${RED_TEXT}${BOLD_TEXT}❌ Failed to download end_station_name.csv${RESET_FORMAT}"
 }
 
