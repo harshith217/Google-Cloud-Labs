@@ -1,11 +1,11 @@
 
 <h1 align="center">
-✨  APIs Explorer: APIs Explorer: Cloud SQL || GSP423 ✨
+✨  Creating dynamic SQL derived tables with LookML and Liquid || GSP932 ✨
 </h1>
 
 <div align="center">
 
-📋 **Lab Link:** [Open](https://www.cloudskillsboost.google/focuses/3685?parent=catalog)  
+📋 **Lab Link:** [Open](https://www.cloudskillsboost.google/focuses/21215?parent=catalog)  
 <!-- 🏆 **SkillBadge Link:** [Open](https://www.cloudskillsboost.google/course_templates/623) -->
 🏆 **SkillBadge Link:** This Lab is not a part of any SkillBadge.
 
