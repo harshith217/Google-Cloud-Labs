@@ -1,6 +1,6 @@
 
 <h1 align="center">
-✨  APIs Explorer: APIs Explorer: Cloud SQL || GSP423 ✨
+✨  APIs Explorer: Cloud SQL || GSP423 ✨
 </h1>
 
 <div align="center">
