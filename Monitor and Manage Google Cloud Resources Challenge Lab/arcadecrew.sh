@@ -322,7 +322,7 @@ echo "${BOLD_TEXT}${CYAN_TEXT}✓${RESET_FORMAT} Defining alerting policy for ac
 # Create JSON file for the alerting policy definition
 cat > active-instances-policy.json <<EOF_END
 {
-  "displayName": "Active Cloud Function Instances Alert",
+  "displayName": "Active Cloud Run Function Instances",
   "combiner": "OR",
   "conditions": [
         {
